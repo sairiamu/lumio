@@ -1,10 +1,11 @@
 import React from 'react';
 import { Minus, Square, X, Hexagon, Palette } from 'lucide-react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
+import { confirm } from '@tauri-apps/plugin-dialog';
 import { useCanvasStore } from '../../store/canvasStore';
 
 export const TitleBar: React.FC = () => {
-  const { setThemePickerOpen, isThemePickerOpen } = useCanvasStore();
+  const { projectName, isDirty, setThemePickerOpen, isThemePickerOpen } = useCanvasStore();
   const handleMinimize = async () => {
     await getCurrentWindow().minimize();
   };
@@ -14,6 +15,13 @@ export const TitleBar: React.FC = () => {
   };
 
   const handleClose = async () => {
+    if (isDirty) {
+      const confirmed = await confirm(
+        'You have unsaved changes. Close without saving?',
+        { title: 'Unsaved Changes', kind: 'warning' }
+      );
+      if (!confirmed) return;
+    }
     await getCurrentWindow().close();
   };
 
@@ -23,8 +31,19 @@ export const TitleBar: React.FC = () => {
       data-tauri-drag-region
     >
       <div className="flex items-center gap-2 pointer-events-none">
-        <Hexagon className="w-5 h-5 text-accent fill-accent-light" />
-        <span className="font-sora font-bold text-sm tracking-tight text-text">VibePlan</span>
+        <div className="flex items-center gap-2">
+          <Hexagon className="w-5 h-5 text-accent fill-accent-light" />
+          <span className="font-sora font-bold text-sm tracking-tight text-text">VibePlan</span>
+        </div>
+        <span className="text-text-muted/30 font-light mx-1">—</span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-inter font-medium text-xs text-text-muted">
+            {projectName}
+          </span>
+          {isDirty && (
+            <div className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_var(--accent)]" />
+          )}
+        </div>
       </div>
 
       <div className="flex items-center -mr-2">

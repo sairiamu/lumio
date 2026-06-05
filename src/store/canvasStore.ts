@@ -56,6 +56,12 @@ interface CanvasStore extends CanvasState {
   setPendingNodeTitle: (title: string | null) => void;
   trackedNodeId: string | null;
   setTrackedNodeId: (id: string | null) => void;
+  projectName: string;
+  projectPath: string | null;
+  isDirty: boolean;
+  setProjectName: (name: string) => void;
+  setProjectPath: (path: string | null) => void;
+  setIsDirty: (dirty: boolean) => void;
   deleteSelectedNodes: () => void;
   deselectAll: () => void;
   saveJSON: () => void;
@@ -101,10 +107,17 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   pendingNodeType: null,
   pendingNodeTitle: null,
   trackedNodeId: null,
+  projectName: 'Untitled Project',
+  projectPath: null,
+  isDirty: false,
   past: [],
   future: [],
   clipboard: null,
   currentTheme: (localStorage.getItem('vibeplan-theme') as ThemeName) || 'slate',
+
+  setProjectName: (projectName) => set({ projectName }),
+  setProjectPath: (projectPath) => set({ projectPath }),
+  setIsDirty: (isDirty) => set({ isDirty }),
 
   setTheme: (theme: ThemeName) => {
     localStorage.setItem('vibeplan-theme', theme);
@@ -112,10 +125,10 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   },
 
   setNodes: (nodes) => {
-    set({ nodes });
+    set({ nodes, isDirty: true });
   },
   setEdges: (edges) => {
-    set({ edges });
+    set({ edges, isDirty: true });
   },
   setExportModalOpen: (isExportModalOpen) => set({ isExportModalOpen }),
   setThemePickerOpen: (isThemePickerOpen) => set({ isThemePickerOpen }),
@@ -156,6 +169,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       freehandStrokes: snapshot.freehandStrokes,
       past: past.slice(0, past.length - 1),
       future: [...future, currentSnapshot].slice(-50),
+      isDirty: true
     });
   },
 
@@ -176,12 +190,15 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       freehandStrokes: snapshot.freehandStrokes,
       future: future.slice(0, future.length - 1),
       past: [...past, currentSnapshot].slice(-50),
+      isDirty: true
     });
   },
 
   onNodesChange: (changes: NodeChange<Node<NodeData>>[]) => {
     const currentNodes = get().nodes;
     const nextNodes = applyNodeChanges<Node<NodeData>>(changes, currentNodes);
+
+    const isActuallyMutating = changes.some(c => c.type !== 'select');
 
     // Persist width/height into node.data and enforce shape-specific rules
     const normalized = nextNodes.map((node) => {
@@ -212,6 +229,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     set({
       nodes: normalized,
       selectedNodeIds,
+      ...(isActuallyMutating ? { isDirty: true } : {})
     });
   },
 
@@ -222,7 +240,8 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
         node.id === nodeId
           ? { ...node, data: { ...node.data, ...data } }
           : node
-      )
+      ),
+      isDirty: true
     }));
   },
 
@@ -233,16 +252,19 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
         edge.id === edgeId
           ? { ...edge, data: { ...(edge.data || {}), ...data } as EdgeData }
           : edge
-      )
+      ),
+      isDirty: true
     }));
   },
 
   onEdgesChange: (changes: EdgeChange<Edge<EdgeData>>[]) => {
     const nextEdges = applyEdgeChanges<Edge<EdgeData>>(changes, get().edges);
     const selectedEdgeIds = nextEdges.filter((edge) => edge.selected).map((edge) => edge.id);
+    const isActuallyMutating = changes.some(c => c.type !== 'select');
     set({
       edges: nextEdges,
       selectedEdgeIds,
+      ...(isActuallyMutating ? { isDirty: true } : {})
     });
   },
 
@@ -264,6 +286,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     };
     set({
       edges: addEdge(newEdge, get().edges),
+      isDirty: true
     });
   },
 
@@ -287,6 +310,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       selectedNodeIds: [],
       selectedEdgeIds: [],
       isPanelOpen: false,
+      isDirty: true
     });
   },
 
@@ -316,7 +340,8 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   setShapeStyle: (style) => {
     get().pushHistory();
     set((state) => ({
-      shapeStyle: { ...state.shapeStyle, ...style }
+      shapeStyle: { ...state.shapeStyle, ...style },
+      isDirty: true
     }));
   },
 
@@ -328,15 +353,16 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     // Wait, the instruction says "Before adding a freehand stroke (on pointer up)"
     // So we should push history BEFORE adding the final stroke.
     set((state) => ({
-      freehandStrokes: [...state.freehandStrokes, stroke]
+      freehandStrokes: [...state.freehandStrokes, stroke],
+      isDirty: true
     }));
   },
 
-  setFreehandStrokes: (freehandStrokes) => set({ freehandStrokes }),
+  setFreehandStrokes: (freehandStrokes) => set({ freehandStrokes, isDirty: true }),
 
   clearFreehandStrokes: () => {
     get().pushHistory();
-    set({ freehandStrokes: [] });
+    set({ freehandStrokes: [], isDirty: true });
   },
 
   copy: () => {
@@ -389,6 +415,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       edges: [...currentEdges, ...newEdges],
       selectedNodeIds: newNodes.map(n => n.id),
       selectedEdgeIds: newEdges.map(e => e.id),
+      isDirty: true
     });
   },
 
@@ -435,6 +462,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       edges: [...deselectedEdges, ...newEdges],
       selectedNodeIds: newNodes.map(n => n.id),
       selectedEdgeIds: newEdges.map(e => e.id),
+      isDirty: true
     });
   },
 

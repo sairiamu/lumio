@@ -64,4 +64,7 @@ export interface CanvasState {
   pendingNodeType: string | null;
   pendingNodeTitle: string | null;
   trackedNodeId: string | null;
+  projectName: string;
+  projectPath: string | null;
+  isDirty: boolean;
 }

@@ -72,6 +72,7 @@ export function buildProjectJSON(): string {
   const state = useCanvasStore.getState();
   const project = {
     version: '1.0',
+    projectName: state.projectName,
     exportedAt: new Date().toISOString(),
     nodes: state.nodes,
     edges: state.edges,

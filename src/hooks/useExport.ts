@@ -51,6 +51,12 @@ export const useExport = () => {
 
       if (!path || Array.isArray(path)) return;
       await writeFile(path, bytes);
+
+      const fileName = path.split(/[\\/]/).pop()?.replace('.vibeplan.json', '') || 'Project';
+      state.setProjectName(fileName);
+      state.setProjectPath(path);
+      state.setIsDirty(false);
+
       showToast('Project saved as JSON', 'success');
     } catch (err) {
       console.error('Failed to save JSON:', err);
@@ -75,6 +81,11 @@ export const useExport = () => {
       if (project.edges) state.setEdges(project.edges);
       if (project.freehandStrokes) state.setFreehandStrokes(project.freehandStrokes);
       if (project.shapeStyle) state.setShapeStyle(project.shapeStyle);
+
+      const fileName = (path as string).split(/[\\/]/).pop()?.replace('.vibeplan.json', '') || 'Project';
+      state.setProjectName(project.projectName || fileName);
+      state.setProjectPath(path as string);
+      state.setIsDirty(false);
 
       state.setExportModalOpen(false);
       showToast('Project loaded successfully', 'success');
