@@ -10,6 +10,7 @@ interface BaseNodeProps extends NodeProps<NodeData> {
   color?: string;
   contentClassName?: string;
   contentStyle?: React.CSSProperties;
+  hideHeader?: boolean;
 }
 
 export const BaseNode: React.FC<BaseNodeProps> = ({
@@ -21,6 +22,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
   color = "#7EB8F7",
   contentClassName = "",
   contentStyle,
+  hideHeader = false,
   children
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -155,9 +157,11 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
           </div>
         ) : (
           <>
-            <div className="font-mono font-bold text-[14px] leading-tight mb-2 border-b border-[var(--clay-text)]/10 pb-1">
-              {data.title || 'Untitled'}
-            </div>
+            {!hideHeader && (
+              <div className="font-mono font-bold text-[14px] leading-tight mb-2 border-b border-[var(--clay-text)]/10 pb-1">
+                {data.title || 'Untitled'}
+              </div>
+            )}
 
             {data.parameters && data.parameters.length > 0 && (
               <div className="flex flex-col gap-1 mb-2">

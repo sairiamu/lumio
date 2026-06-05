@@ -22,7 +22,9 @@ export const useKeyboardShortcuts = () => {
     saveJSON,
     deselectAll,
     deleteSelectedNodes,
-    setIsPanelOpen
+    setIsPanelOpen,
+    isShapeLibraryOpen,
+    setIsShapeLibraryOpen
   } = useCanvasStore();
 
   useEffect(() => {
@@ -115,6 +117,9 @@ export const useKeyboardShortcuts = () => {
         case 't':
           setCurrentTool('text');
           break;
+        case 'l':
+          setIsShapeLibraryOpen(!isShapeLibraryOpen);
+          break;
         case 'delete':
         case 'backspace':
           if (selectedNodeIds.length > 0 || selectedEdgeIds.length > 0) {
@@ -163,6 +168,8 @@ export const useKeyboardShortcuts = () => {
     saveJSON,
     deselectAll,
     setIsPanelOpen,
+    isShapeLibraryOpen,
+    setIsShapeLibraryOpen,
     zoomIn,
     zoomOut,
     setViewport,

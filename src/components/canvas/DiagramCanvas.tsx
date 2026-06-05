@@ -12,6 +12,7 @@ import { CircleNode } from '../nodes/CircleNode';
 import { DiamondNode } from '../nodes/DiamondNode';
 import { CardNode } from '../nodes/CardNode';
 import { TextNode } from '../nodes/TextNode';
+import { UniversalNode } from '../nodes/UniversalNode';
 import { CustomEdge } from './CustomEdge';
 import ContextMenu from './ContextMenu';
 
@@ -21,6 +22,7 @@ const nodeTypes = {
   diamond: DiamondNode,
   card: CardNode,
   text: TextNode,
+  universal: UniversalNode,
 };
 
 const edgeTypes = {
@@ -39,6 +41,9 @@ const DiagramCanvasInner: React.FC = () => {
     isGridEnabled,
     canvasMode,
     currentTool,
+    pendingNodeType,
+    pendingNodeTitle,
+    setCurrentTool,
     setNodes,
     setSelectedNodeIds,
     setSelectedEdgeIds,
@@ -129,8 +134,30 @@ const DiagramCanvasInner: React.FC = () => {
       };
 
       setNodes([...nodes, newNode]);
+    } else if (currentTool === 'place' && pendingNodeType) {
+      pushHistory();
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      const newNode = {
+        id: `node_${Date.now()}`,
+        type: 'universal',
+        position,
+        data: {
+          title: pendingNodeTitle || '',
+          shapeType: pendingNodeType,
+          parameters: [],
+          description: '',
+          color: '#7EB8F7'
+        },
+      };
+
+      setNodes([...nodes, newNode]);
+      setCurrentTool('select');
     }
-  }, [currentTool, nodes, setNodes, screenToFlowPosition, deselectAll, setIsPanelOpen]);
+  }, [currentTool, pendingNodeType, pendingNodeTitle, nodes, setNodes, screenToFlowPosition, deselectAll, setIsPanelOpen, setCurrentTool, pushHistory]);
 
   const onSelectionChange = useCallback(({ nodes, edges }: { nodes: any[]; edges: any[] }) => {
     if (nodes.length > 0 || edges.length > 0) {

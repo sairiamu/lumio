@@ -2,7 +2,7 @@ import { Node, Edge } from '@xyflow/react';
 
 export type CanvasMode = 'diagram' | 'freehand';
 
-export type ToolType = 'select' | 'rect' | 'circle' | 'diamond' | 'text' | 'card' | 'draw' | 'eraser';
+export type ToolType = 'select' | 'rect' | 'circle' | 'diamond' | 'text' | 'card' | 'draw' | 'eraser' | 'place';
 
 export interface ShapeStyle {
   fill: string;
@@ -57,4 +57,7 @@ export interface CanvasState {
   isGridEnabled: boolean;
   zoomLevel: number;
   isExportModalOpen: boolean;
+  isShapeLibraryOpen: boolean;
+  pendingNodeType: string | null;
+  pendingNodeTitle: string | null;
 }

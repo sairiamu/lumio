@@ -3,6 +3,7 @@ import { DiagramCanvas } from './DiagramCanvas';
 import { FreehandCanvas } from './FreehandCanvas';
 import { CanvasControls } from './CanvasControls';
 import { ExportModal } from '../modals/ExportModal';
+import { ShapeLibrary } from '../panels/ShapeLibrary';
 import { useCanvasStore } from '../../store/canvasStore';
 
 export const CanvasWrapper: React.FC = () => {
@@ -17,6 +18,8 @@ export const CanvasWrapper: React.FC = () => {
       <FreehandCanvas active={canvasMode === 'freehand'} />
 
       <CanvasControls />
+
+      <ShapeLibrary />
 
       <ExportModal />
     </div>

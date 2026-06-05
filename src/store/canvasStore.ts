@@ -46,6 +46,12 @@ interface CanvasStore extends CanvasState {
   isPanelOpen: boolean;
   setIsPanelOpen: (open: boolean) => void;
   togglePanelOpen: () => void;
+  isShapeLibraryOpen: boolean;
+  setIsShapeLibraryOpen: (open: boolean) => void;
+  pendingNodeType: string | null;
+  setPendingNodeType: (type: string | null) => void;
+  pendingNodeTitle: string | null;
+  setPendingNodeTitle: (title: string | null) => void;
   deleteSelectedNodes: () => void;
   deselectAll: () => void;
   saveJSON: () => void;
@@ -85,6 +91,9 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   isExportModalOpen: false,
   isThemePickerOpen: false,
   isPanelOpen: false,
+  isShapeLibraryOpen: false,
+  pendingNodeType: null,
+  pendingNodeTitle: null,
   past: [],
   future: [],
   clipboard: null,
@@ -105,6 +114,9 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   setThemePickerOpen: (isThemePickerOpen) => set({ isThemePickerOpen }),
   setIsPanelOpen: (isPanelOpen) => set({ isPanelOpen }),
   togglePanelOpen: () => set((state) => ({ isPanelOpen: !state.isPanelOpen })),
+  setIsShapeLibraryOpen: (isShapeLibraryOpen) => set({ isShapeLibraryOpen }),
+  setPendingNodeType: (pendingNodeType) => set({ pendingNodeType }),
+  setPendingNodeTitle: (pendingNodeTitle) => set({ pendingNodeTitle }),
   setSelectedNodeIds: (selectedNodeIds) => set({ selectedNodeIds }),
   setSelectedEdgeIds: (selectedEdgeIds) => set({ selectedEdgeIds }),
 

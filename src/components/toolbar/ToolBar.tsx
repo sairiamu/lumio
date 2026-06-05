@@ -8,14 +8,21 @@ import {
   CreditCard,
   Pencil,
   Eraser,
-  Download
+  Download,
+  LayoutGrid
 } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { ToolButton } from './ToolButton';
 import { ToolType } from '../../types';
 
 export const ToolBar: React.FC = () => {
-  const { currentTool, setCurrentTool, setExportModalOpen } = useCanvasStore();
+  const {
+    currentTool,
+    setCurrentTool,
+    setExportModalOpen,
+    isShapeLibraryOpen,
+    setIsShapeLibraryOpen
+  } = useCanvasStore();
 
   const tools: { type: ToolType; icon: any; label: string; shortcut: string }[] = [
     { type: 'select', icon: MousePointer2, label: 'Select', shortcut: 'V' },
@@ -38,9 +45,22 @@ export const ToolBar: React.FC = () => {
             label={tool.label}
             shortcut={tool.shortcut}
             isActive={currentTool === tool.type}
-            onClick={() => setCurrentTool(tool.type)}
+            onClick={() => {
+              setCurrentTool(tool.type);
+              setIsShapeLibraryOpen(false);
+            }}
           />
         ))}
+
+        <div className="mt-2 pt-2 border-t border-border w-full flex flex-col items-center gap-2">
+          <ToolButton
+            icon={LayoutGrid}
+            label="Shape Library"
+            shortcut="L"
+            isActive={isShapeLibraryOpen}
+            onClick={() => setIsShapeLibraryOpen(!isShapeLibraryOpen)}
+          />
+        </div>
       </div>
 
       <div className="pt-4 border-t border-border w-full flex flex-col items-center">
