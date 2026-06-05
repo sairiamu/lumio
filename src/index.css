@@ -1,0 +1,81 @@
+@import "@xyflow/react/dist/style.css";
+@import "tailwindcss";
+
+@theme {
+  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Inter", sans-serif;
+  --font-sora: "Sora", sans-serif;
+
+  --color-iris: var(--iris);
+  --color-iris-light: var(--iris-light);
+  --color-mint: var(--mint);
+  --color-ember: var(--ember);
+  --color-cloud: var(--cloud);
+  --color-fog: var(--fog);
+  --color-void: var(--void);
+  --color-ash: var(--ash);
+  --color-graphite: var(--graphite);
+  --color-steel: var(--steel);
+}
+
+:root {
+  --void: #0F1117;
+  --ash: #1C1E26;
+  --graphite: #252830;
+  --steel: #3A3D4A;
+  --iris: #6366F1;
+  --iris-light: #6366F166;
+  --mint: #34D399;
+  --ember: #F87171;
+  --cloud: #E2E8F0;
+  --fog: #94A3B8;
+  --clay-blue: #7EB8F7;
+  --clay-purple: #B48EF7;
+  --clay-green: #6EDBB4;
+  --clay-peach: #F7A97E;
+  --clay-pink: #F78EBF;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--void);
+  color: var(--cloud);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.clay-shape {
+  transition: all 0.15s ease-in-out;
+  box-shadow: 6px 6px 0px rgba(0,0,0,0.25);
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.clay-inner-sheen {
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
+}
+
+/* Tailwind utility classes fallback (standard flexbox/spacing) */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-1 { flex: 1 1 0%; }
+.relative { position: relative; }
+.absolute { position: absolute; }
+.overflow-hidden { overflow: hidden; }
+.h-screen { height: 100vh; }
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.z-50 { z-index: 50; }

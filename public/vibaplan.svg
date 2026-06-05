@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" style="background-color: #1c1e26;">
+  <defs>
+    <!-- Gradients for the 3D platform -->
+    <linearGradient id="platformTopGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8e8aff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6e69e3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="platformSide1Gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6e69e3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4e4ad3;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="platformSide2Gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4e4ad3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3e3ac3;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient for the glow -->
+    <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" style="stop-color:#00e5ff;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#00f2fe;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#1c1e26;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- Filter for the glow effect -->
+    <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="15" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Left: Cube with contents -->
+  <g transform="translate(150, 150)">
+    <!-- Glow -->
+    <ellipse cx="200" cy="250" rx="150" ry="80" fill="url(#glowGradient)" filter="url(#glowFilter)" />
+
+    <!-- Isometric Cube Wireframe (Transparent) -->
+    <path d="M 0,100 L 200,0 L 400,100 L 400,300 L 200,400 L 0,300 Z" fill="none" stroke="#a0a5b0" stroke-width="1.5" />
+    <path d="M 0,100 L 200,200 L 400,100" fill="none" stroke="#a0a5b0" stroke-width="1.5" />
+    <path d="M 200,200 L 200,400" fill="none" stroke="#a0a5b0" stroke-width="1.5" />
+
+    <!-- Floating Platform (3D with depth) -->
+    <g transform="translate(100, 120)">
+      <!-- Top surface -->
+      <path d="M 0,30 L 100,0 L 200,30 L 100,60 Z" fill="url(#platformTopGradient)" />
+      <!-- Side 1 (Right) -->
+      <path d="M 200,30 L 200,60 L 100,90 L 100,60 Z" fill="url(#platformSide1Gradient)" />
+      <!-- Side 2 (Left-Front) -->
+      <path d="M 0,30 L 0,60 L 100,90 L 100,60 Z" fill="url(#platformSide2Gradient)" />
+    </g>
+  </g>
+
+  <!-- Right: Text "VibePlan" -->
+  <g transform="translate(620, 290)">
+    <text font-family="Arial, sans-serif" font-weight="bold" font-size="70" kerning="3">
+      <tspan x="0" y="0" fill="#e6eaee">Vibe</tspan>
+      <tspan fill="#bec2c8">Plan</tspan>
+    </text>
+  </g>
+
+  <!-- Bottom Right Sparkle -->
+  <g transform="translate(900, 520)">
+    <path d="M 0,20 L 20,0 L 40,20 L 20,40 Z" fill="#a0a5b0" />
+    <path d="M 10,20 L 20,10 L 30,20 L 20,30 Z" fill="white" stroke="#1c1e26" stroke-width="2" />
+  </g>
+</svg>
