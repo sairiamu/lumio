@@ -43,23 +43,11 @@ export const useExport = () => {
   };
 
   const exportAsJSON = async () => {
-    try {
-      await saveProject(state.projectName);
-      showToast('Project saved as JSON', 'success');
-    } catch (err) {
-      console.error('Failed to save JSON:', err);
-      showToast('JSON export failed', 'error');
-    }
+    await saveProject(state.projectName);
   };
 
   const importProject = async () => {
-    try {
-      await loadProject();
-      showToast('Project loaded successfully', 'success');
-    } catch (err) {
-      console.error('Failed to import JSON:', err);
-      showToast('JSON import failed', 'error');
-    }
+    await loadProject();
   };
 
   return { exportAsSVG, handlePNGExport, exportAsJSON, importProject };

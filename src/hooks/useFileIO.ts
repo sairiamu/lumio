@@ -1,13 +1,13 @@
 import { save, open } from '@tauri-apps/plugin-dialog';
 import { writeFile, readFile } from '@tauri-apps/plugin-fs';
 import { useCanvasStore } from '../store/canvasStore';
-import { buildProjectJSON } from '../utils/exportUtils';
+import { buildProjectJSON, showToast } from '../utils/exportUtils';
 import { getDefaultSavePath, ensureProjectsDir } from '../utils/projectDir';
 
 export const useFileIO = () => {
   const store = useCanvasStore();
 
-  const saveProject = async (projectName: string): Promise<void> => {
+  const saveProject = async (projectName: string): Promise<boolean> => {
     try {
       const defaultPath = await getDefaultSavePath(projectName);
       const path = await save({
@@ -15,23 +15,26 @@ export const useFileIO = () => {
         filters: [{ name: 'VibePlan Project', extensions: ['json'] }]
       });
 
-      if (!path || Array.isArray(path)) return;
+      if (!path || Array.isArray(path)) return false;
 
       const jsonString = buildProjectJSON();
-      const bytes = new TextEncoder().encode(jsonString);
-      await writeFile(path, bytes);
+      await writeFile(path, new TextEncoder().encode(jsonString));
 
       const name = path.split(/[\\/]/).pop()?.replace('.vibeplan.json', '') || projectName;
       store.setProjectName(name);
       store.setProjectPath(path);
       store.setIsDirty(false);
       store.addRecentProject(path);
-    } catch (err) {
+      showToast('Project saved successfully', 'success');
+      return true;
+    } catch (err: any) {
       console.error('Failed to save project:', err);
+      showToast(`Save failed: ${err.message || err}`, 'error');
+      return false;
     }
   };
 
-  const loadProject = async (directPath?: string): Promise<void> => {
+  const loadProject = async (directPath?: string): Promise<boolean> => {
     try {
       let path: string | null = directPath || null;
 
@@ -42,7 +45,7 @@ export const useFileIO = () => {
           filters: [{ name: 'VibePlan Project', extensions: ['json'] }],
           multiple: false
         });
-        if (!selected || Array.isArray(selected)) return;
+        if (!selected || Array.isArray(selected)) return false;
         path = selected;
       }
 
@@ -62,8 +65,12 @@ export const useFileIO = () => {
 
       // If we have a modal open, close it
       store.setExportModalOpen(false);
-    } catch (err) {
+      showToast('Project loaded successfully', 'success');
+      return true;
+    } catch (err: any) {
       console.error('Failed to load project:', err);
+      showToast(`Load failed: ${err.message || err}`, 'error');
+      return false;
     }
   };
 
