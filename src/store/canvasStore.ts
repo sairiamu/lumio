@@ -94,6 +94,8 @@ interface CanvasStore extends CanvasState {
   nextStep: () => void;
   prevStep: () => void;
   exitStepMode: () => void;
+  addToStepNodes: (nodeId: string) => void;
+  clearStepNodes: () => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -541,6 +543,13 @@ export const useCanvasStore = create<CanvasStore>()(
   }),
 
   exitStepMode: () => set({ currentStep: -1 }),
+
+  addToStepNodes: (nodeId: string) => set((state) => {
+    if (state.stepNodes.includes(nodeId)) return state;
+    return { stepNodes: [...state.stepNodes, nodeId] };
+  }),
+
+  clearStepNodes: () => set({ stepNodes: [], currentStep: -1 }),
     }),
     {
       name: 'vibeplan-storage',

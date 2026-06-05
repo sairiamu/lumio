@@ -28,12 +28,19 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<NodeData>(data);
-  const { nodes, setNodes } = useCanvasStore();
+  const { nodes, setNodes, isPresentationMode, stepNodes, currentStep } = useCanvasStore();
   const editRef = useRef<HTMLDivElement>(null);
   const { glowNodeIds, trackedNodeId } = useTrackedRelations();
 
   const isTracked = glowNodeIds.includes(id);
   const isOrigin = trackedNodeId === id;
+
+  const stepIndex = stepNodes.indexOf(id);
+  const isInStepOrder = stepIndex !== -1;
+  const isCurrentStep = isInStepOrder && currentStep === stepIndex;
+
+  // Opacity logic: if in presentation mode and stepping, dim other nodes
+  const shouldDim = isPresentationMode && currentStep !== -1 && !isCurrentStep;
 
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -106,17 +113,27 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
         backgroundColor: data.clayColor || clayColor,
         border: '1.5px solid var(--border)',
         borderColor: data.strokeColor || 'var(--border)',
-        boxShadow: isTracked
-          ? isOrigin
-            ? '0 0 0 3px var(--accent), 0 0 24px 6px var(--accent-light)'
-            : '0 0 0 2px var(--success), 0 0 16px 4px rgba(52,211,153,0.3)'
-          : 'none',
-        transition: 'box-shadow 0.25s ease',
+        boxShadow: isCurrentStep
+          ? '0 0 0 3px var(--accent), 0 0 32px 8px var(--accent-light)'
+          : isTracked
+            ? isOrigin
+              ? '0 0 0 3px var(--accent), 0 0 24px 6px var(--accent-light)'
+              : '0 0 0 2px var(--success), 0 0 16px 4px rgba(52,211,153,0.3)'
+            : 'none',
+        opacity: shouldDim ? 0.2 : 1,
+        transition: 'all 0.4s ease-in-out',
         ...style,
         width: '100%',
         height: '100%'
       }}
     >
+      {isInStepOrder && (
+        <div
+          className="absolute -top-2 -right-2 w-[18px] h-[18px] bg-accent text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border border-white/20 z-50 animate-in zoom-in duration-300"
+        >
+          {stepIndex + 1}
+        </div>
+      )}
       <Handle type="target" position={Position.Top} className="w-2 h-2 !bg-success border-none" />
       <Handle type="source" position={Position.Bottom} className="w-2 h-2 !bg-success border-none" />
       <Handle type="target" position={Position.Left} className="w-1.5 h-1.5 !bg-success border-none" />

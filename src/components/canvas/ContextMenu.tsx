@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow } from '@xyflow/react';
-import { Waypoints } from 'lucide-react';
+import { Waypoints, Presentation, Trash2 } from 'lucide-react';
 
 interface ContextMenuProps {
   visible: boolean;
@@ -13,7 +13,16 @@ interface ContextMenuProps {
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetNodeId, onClose }) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const { nodes, edges, setNodes, updateNodeData, trackedNodeId, setTrackedNodeId } = useCanvasStore();
+  const {
+    nodes,
+    edges,
+    setNodes,
+    updateNodeData,
+    trackedNodeId,
+    setTrackedNodeId,
+    addToStepNodes,
+    clearStepNodes
+  } = useCanvasStore();
   const { deleteElements, fitView } = useReactFlow();
   const [clampedPos, setClampedPos] = useState({ left: x, top: y });
   const [hasPaste, setHasPaste] = useState(false);
@@ -193,6 +202,18 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
     close();
   };
 
+  const handleAddToPresentation = () => {
+    if (targetNodeId) {
+      addToStepNodes(targetNodeId);
+    }
+    close();
+  };
+
+  const handleClearPresentation = () => {
+    clearStepNodes();
+    close();
+  };
+
   if (!visible) return null;
 
   return (
@@ -213,6 +234,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
             <Waypoints size={16} />
             Track Relations
           </button>
+          <button
+            className="flex items-center gap-2 text-left px-3 py-2 hover:bg-white/10 rounded transition-colors"
+            onClick={handleAddToPresentation}
+          >
+            <Presentation size={16} className="text-accent" />
+            Add to Presentation
+          </button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleEditProperties}>Edit Properties</button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleOpenColour}>Change Colour</button>
           {showColourPicker && (
@@ -231,6 +259,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors disabled:opacity-30" onClick={handlePaste} disabled={!hasPaste}>Paste</button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleSelectAll}>Select All</button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleFitView}>Fit View</button>
+          <button
+            className="flex items-center gap-2 text-left px-3 py-2 hover:bg-white/10 rounded transition-colors text-danger"
+            onClick={handleClearPresentation}
+          >
+            <Trash2 size={16} />
+            Clear Presentation Order
+          </button>
           <div className="my-1 border-t border-border" />
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors text-accent font-medium" onClick={handleSaveAsTemplate}>Save as Template</button>
         </div>
