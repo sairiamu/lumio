@@ -14,6 +14,7 @@ export interface ShapeStyle {
 }
 
 export interface Stroke {
+  id: string;
   points: { x: number; y: number }[];
   color: string;
   width: number;
@@ -54,6 +55,8 @@ export interface CanvasState {
   currentTool: ToolType;
   shapeStyle: ShapeStyle;
   freehandStrokes: Stroke[];
+  penColor: string;
+  penWidth: number;
   isGridEnabled: boolean;
   zoomLevel: number;
   isExportModalOpen: boolean;

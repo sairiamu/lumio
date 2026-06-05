@@ -34,6 +34,8 @@ interface CanvasStore extends CanvasState {
   setCanvasMode: (mode: CanvasMode) => void;
   setCurrentTool: (tool: ToolType) => void;
   setShapeStyle: (style: Partial<ShapeStyle>) => void;
+  setPenColor: (color: string) => void;
+  setPenWidth: (width: number) => void;
   addFreehandStroke: (stroke: Stroke) => void;
   setFreehandStrokes: (strokes: Stroke[]) => void;
   clearFreehandStrokes: () => void;
@@ -86,6 +88,8 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     opacity: 1,
   },
   freehandStrokes: [],
+  penColor: '#E2E8F0',
+  penWidth: 3,
   isGridEnabled: true,
   zoomLevel: 1,
   isExportModalOpen: false,
@@ -311,6 +315,9 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       shapeStyle: { ...state.shapeStyle, ...style }
     }));
   },
+
+  setPenColor: (penColor) => set({ penColor }),
+  setPenWidth: (penWidth) => set({ penWidth }),
 
   addFreehandStroke: (stroke) => {
     // We don't push history here because it's called during drawing?

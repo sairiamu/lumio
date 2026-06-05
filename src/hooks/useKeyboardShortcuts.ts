@@ -117,6 +117,12 @@ export const useKeyboardShortcuts = () => {
         case 't':
           setCurrentTool('text');
           break;
+        case 'p':
+          setCurrentTool('draw');
+          break;
+        case 'e':
+          setCurrentTool('eraser');
+          break;
         case 'l':
           setIsShapeLibraryOpen(!isShapeLibraryOpen);
           break;

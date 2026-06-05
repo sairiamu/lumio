@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useCanvasStore } from '../../store/canvasStore';
 
 interface FreehandCanvasProps {
@@ -8,34 +8,21 @@ interface FreehandCanvasProps {
 export const FreehandCanvas: React.FC<FreehandCanvasProps> = ({ active }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const { addFreehandStroke, freehandStrokes, currentTool, pushHistory } = useCanvasStore();
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const {
+    addFreehandStroke,
+    freehandStrokes,
+    setFreehandStrokes,
+    currentTool,
+    pushHistory,
+    penColor,
+    penWidth
+  } = useCanvasStore();
 
   const currentPoints = useRef<{ x: number; y: number }[]>([]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Set canvas size to match parent
-    const resize = () => {
-      const parent = canvas.parentElement;
-      if (parent) {
-        canvas.width = parent.clientWidth;
-        canvas.height = parent.clientHeight;
-        redraw();
-      }
-    };
-
-    window.addEventListener('resize', resize);
-    resize();
-
-    return () => window.removeEventListener('resize', resize);
-  }, []);
-
-  const redraw = () => {
+  const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -51,7 +38,7 @@ export const FreehandCanvas: React.FC<FreehandCanvasProps> = ({ active }) => {
       ctx.lineWidth = stroke.width;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.globalAlpha = stroke.opacity;
+      ctx.globalAlpha = stroke.opacity ?? 1;
 
       ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
       for (let i = 1; i < stroke.points.length; i++) {
@@ -59,44 +46,113 @@ export const FreehandCanvas: React.FC<FreehandCanvasProps> = ({ active }) => {
       }
       ctx.stroke();
     });
-  };
 
-  // Re-draw when strokes change
+    // Draw eraser cursor if active
+    if (active && currentTool === 'eraser') {
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      const radius = penWidth * 5;
+      ctx.arc(mousePos.x, mousePos.y, radius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Also a solid inner circle
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.arc(mousePos.x, mousePos.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }, [freehandStrokes, currentTool, active, mousePos, penWidth]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const resize = () => {
+      const parent = canvas.parentElement;
+      if (parent) {
+        canvas.width = parent.clientWidth;
+        canvas.height = parent.clientHeight;
+        redraw();
+      }
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    return () => window.removeEventListener('resize', resize);
+  }, [redraw]);
+
+  // Re-draw when dependencies change
   useEffect(() => {
     redraw();
-  }, [freehandStrokes]);
+  }, [redraw]);
+
+  const handleEraser = (x: number, y: number) => {
+    const radius = penWidth * 5;
+
+    const newStrokes = freehandStrokes.filter(stroke =>
+      !stroke.points.some(pt =>
+        Math.hypot(pt.x - x, pt.y - y) < radius
+      )
+    );
+
+    if (newStrokes.length !== freehandStrokes.length) {
+      setFreehandStrokes(newStrokes);
+    }
+  };
 
   const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!active || currentTool !== 'draw') return;
-    setIsDrawing(true);
+    if (!active) return;
+    if (currentTool !== 'draw' && currentTool !== 'eraser') return;
 
+    setIsDrawing(true);
     const pos = getPos(e);
-    currentPoints.current = [pos];
+    setMousePos(pos);
+
+    if (currentTool === 'draw') {
+      currentPoints.current = [pos];
+    } else if (currentTool === 'eraser') {
+      pushHistory();
+      handleEraser(pos.x, pos.y);
+    }
   };
 
   const draw = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDrawing || !active || currentTool !== 'draw') return;
-
+    if (!active) return;
     const pos = getPos(e);
-    currentPoints.current.push(pos);
+    setMousePos(pos);
 
-    // Draw current line segment
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!isDrawing) {
+      // If just moving in eraser mode, we still want to redraw the cursor
+      if (currentTool === 'eraser') redraw();
+      return;
+    }
 
-    ctx.beginPath();
-    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#6366F1';
-    ctx.lineWidth = 3;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    if (currentTool === 'draw') {
+      currentPoints.current.push(pos);
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-    const points = currentPoints.current;
-    if (points.length > 1) {
-      ctx.moveTo(points[points.length - 2].x, points[points.length - 2].y);
-      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-      ctx.stroke();
+      ctx.beginPath();
+      ctx.strokeStyle = penColor;
+      ctx.lineWidth = penWidth;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.globalAlpha = 1;
+
+      const points = currentPoints.current;
+      if (points.length > 1) {
+        ctx.moveTo(points[points.length - 2].x, points[points.length - 2].y);
+        ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+        ctx.stroke();
+      }
+    } else if (currentTool === 'eraser') {
+      handleEraser(pos.x, pos.y);
     }
   };
 
@@ -104,12 +160,13 @@ export const FreehandCanvas: React.FC<FreehandCanvasProps> = ({ active }) => {
     if (!isDrawing) return;
     setIsDrawing(false);
 
-    if (currentPoints.current.length > 1) {
+    if (currentTool === 'draw' && currentPoints.current.length > 1) {
       pushHistory();
       addFreehandStroke({
+        id: `stroke_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         points: [...currentPoints.current],
-        color: getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#6366F1',
-        width: 3,
+        color: penColor,
+        width: penWidth,
         opacity: 1
       });
     }
@@ -140,7 +197,13 @@ export const FreehandCanvas: React.FC<FreehandCanvasProps> = ({ active }) => {
   return (
     <canvas
       ref={canvasRef}
-      className={`absolute inset-0 z-10 ${active ? 'cursor-crosshair pointer-events-auto' : 'pointer-events-none'}`}
+      className={`absolute inset-0 z-10 ${
+        active
+          ? currentTool === 'eraser'
+            ? 'cursor-none pointer-events-auto'
+            : 'cursor-crosshair pointer-events-auto'
+          : 'pointer-events-none'
+      }`}
       onMouseDown={startDrawing}
       onMouseMove={draw}
       onMouseUp={stopDrawing}

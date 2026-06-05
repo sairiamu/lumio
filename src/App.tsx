@@ -2,6 +2,7 @@ import React from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { TitleBar } from './components/shell/TitleBar';
 import { ToolBar } from './components/toolbar/ToolBar';
+import { PenToolbar } from './components/toolbar/PenToolbar';
 import { CanvasWrapper } from './components/canvas/CanvasWrapper';
 import { PropertiesPanel } from './components/panels/PropertiesPanel';
 import { StatusBar } from './components/shell/StatusBar';
@@ -51,6 +52,7 @@ const App: React.FC = () => {
 
       <StatusBar />
       <ThemePicker />
+      <PenToolbar />
 
       {/* Visual Debug Indicator */}
       <div className="absolute top-12 left-20 bg-accent px-2 py-1 rounded text-white text-[10px] z-100 shadow-lg pointer-events-none">
