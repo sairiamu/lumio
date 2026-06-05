@@ -52,7 +52,8 @@ const DiagramCanvasInner: React.FC = () => {
     shapeStyle,
     currentTheme,
     pushHistory,
-    setTrackedNodeId
+    setTrackedNodeId,
+    setAlignmentGuides
   } = useCanvasStore();
 
   const isDark = currentTheme !== 'arctic';
@@ -173,6 +174,24 @@ const DiagramCanvasInner: React.FC = () => {
     pushHistory();
   }, [pushHistory]);
 
+  const onNodeDrag = useCallback((_: any, draggedNode: any) => {
+    const SNAP_THRESHOLD = 8;
+    const guides: { x?: number; y?: number } = {};
+
+    nodes.forEach(n => {
+      if (n.id === draggedNode.id) return;
+      const dx = draggedNode.position.x - n.position.x;
+      const dy = draggedNode.position.y - n.position.y;
+      if (Math.abs(dx) < SNAP_THRESHOLD) guides.x = n.position.x;
+      if (Math.abs(dy) < SNAP_THRESHOLD) guides.y = n.position.y;
+    });
+    setAlignmentGuides(guides);
+  }, [nodes, setAlignmentGuides]);
+
+  const onNodeDragStop = useCallback(() => {
+    setAlignmentGuides({});
+  }, [setAlignmentGuides]);
+
   const onSelectionDragStart = useCallback(() => {
     pushHistory();
   }, [pushHistory]);
@@ -201,6 +220,8 @@ const DiagramCanvasInner: React.FC = () => {
         onSelectionChange={onSelectionChange}
         onEdgeClick={onEdgeClick}
         onNodeDragStart={onNodeDragStart}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStop={onNodeDragStop}
         onSelectionDragStart={onSelectionDragStart}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}

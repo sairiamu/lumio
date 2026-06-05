@@ -1,10 +1,13 @@
 import React from 'react';
-import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2 } from 'lucide-react';
+import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2, LayoutDashboard } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow, useViewport } from '@xyflow/react';
+import { autoLayout } from '../../utils/layoutUtils';
 
-export const CanvasControls: React.FC = () => {
-  const { isGridEnabled, toggleGrid, undo, redo, past, future } = useCanvasStore();
+export interface CanvasControlsProps {}
+
+export const CanvasControls: React.FC<CanvasControlsProps> = () => {
+  const { isGridEnabled, toggleGrid, undo, redo, past, future, nodes, edges, setNodes, pushHistory } = useCanvasStore();
   const { zoomIn, zoomOut, fitView, setViewport, getViewport } = useReactFlow();
   const { zoom } = useViewport();
 
@@ -17,6 +20,13 @@ export const CanvasControls: React.FC = () => {
     } else {
       setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 0 });
     }
+  };
+
+  const handleAutoLayout = () => {
+    pushHistory();
+    const laid = autoLayout(nodes, edges);
+    setNodes(laid);
+    setTimeout(() => fitView({ padding: 0.2, duration: 400 }), 50);
   };
 
   return (
@@ -59,6 +69,14 @@ export const CanvasControls: React.FC = () => {
           <Plus className="w-4 h-4" />
         </button>
       </div>
+
+      <button
+        onClick={handleAutoLayout}
+        className="glass-panel p-2.5 text-text-muted hover:text-text"
+        aria-label="Auto Layout"
+      >
+        <LayoutDashboard className="w-4 h-4" />
+      </button>
 
       <button
         onClick={toggleGrid}

@@ -67,6 +67,7 @@ interface CanvasStore extends CanvasState {
   setProjectName: (name: string) => void;
   setProjectPath: (path: string | null) => void;
   setIsDirty: (dirty: boolean) => void;
+  setAlignmentGuides: (guides: { x?: number; y?: number }) => void;
   deleteSelectedNodes: () => void;
   deselectAll: () => void;
   undo: () => void;
@@ -126,6 +127,7 @@ export const useCanvasStore = create<CanvasStore>()(
   projectName: 'Untitled Project',
   projectPath: null,
   isDirty: false,
+  alignmentGuides: {},
   past: [],
   future: [],
   clipboard: null,
@@ -134,6 +136,7 @@ export const useCanvasStore = create<CanvasStore>()(
   setProjectName: (projectName) => set({ projectName }),
   setProjectPath: (projectPath) => set({ projectPath }),
   setIsDirty: (isDirty) => set({ isDirty }),
+  setAlignmentGuides: (alignmentGuides) => set({ alignmentGuides }),
 
   setTheme: (theme: ThemeName) => {
     localStorage.setItem('vibeplan-theme', theme);

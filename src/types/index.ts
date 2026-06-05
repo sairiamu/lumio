@@ -68,4 +68,5 @@ export interface CanvasState {
   projectName: string;
   projectPath: string | null;
   isDirty: boolean;
+  alignmentGuides: { x?: number; y?: number };
 }
