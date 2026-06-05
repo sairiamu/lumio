@@ -34,10 +34,22 @@ export interface NodeData extends Record<string, unknown> {
   label?: string;
 }
 
+export interface EdgeData extends Record<string, unknown> {
+  label?: string;
+  strokeColor: string;
+  strokeWidth: number;
+  strokeStyle: 'solid' | 'dashed' | 'dotted';
+  animated: boolean;
+  lineEnd: 'none' | 'arrow' | 'circle'; // Arrowheads/Jointers
+  lineStart: 'none' | 'arrow' | 'circle';
+  pathType: 'default' | 'smooth' | 'step' | 'straight';
+}
+
 export interface CanvasState {
   nodes: Node<NodeData>[];
-  edges: Edge[];
+  edges: Edge<EdgeData>[];
   selectedNodeIds: string[];
+  selectedEdgeIds: string[];
   canvasMode: CanvasMode;
   currentTool: ToolType;
   shapeStyle: ShapeStyle;

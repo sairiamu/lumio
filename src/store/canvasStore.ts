@@ -12,16 +12,18 @@ import {
   OnEdgesChange,
   OnConnect
 } from '@xyflow/react';
-import { CanvasState, CanvasMode, ToolType, ShapeStyle, Stroke, NodeData } from '../types';
+import { CanvasState, CanvasMode, ToolType, ShapeStyle, Stroke, NodeData, EdgeData } from '../types';
 
 interface CanvasStore extends CanvasState {
   setNodes: (nodes: Node<NodeData>[]) => void;
-  setEdges: (edges: Edge[]) => void;
+  setEdges: (edges: Edge<EdgeData>[]) => void;
   setSelectedNodeIds: (selectedNodeIds: string[]) => void;
+  setSelectedEdgeIds: (selectedEdgeIds: string[]) => void;
   onNodesChange: OnNodesChange<Node<NodeData>>;
-  onEdgesChange: OnEdgesChange;
+  onEdgesChange: OnEdgesChange<Edge<EdgeData>>;
   onConnect: OnConnect;
   updateNodeData: (nodeId: string, data: Partial<NodeData>) => void;
+  updateEdgeData: (edgeId: string, data: Partial<EdgeData>) => void;
   setCanvasMode: (mode: CanvasMode) => void;
   setCurrentTool: (tool: ToolType) => void;
   setShapeStyle: (style: Partial<ShapeStyle>) => void;
@@ -47,6 +49,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   nodes: [],
   edges: [],
   selectedNodeIds: [],
+  selectedEdgeIds: [],
   canvasMode: 'diagram',
   currentTool: 'select',
   shapeStyle: {
@@ -76,6 +79,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   setIsPanelOpen: (isPanelOpen) => set({ isPanelOpen }),
   togglePanelOpen: () => set((state) => ({ isPanelOpen: !state.isPanelOpen })),
   setSelectedNodeIds: (selectedNodeIds) => set({ selectedNodeIds }),
+  setSelectedEdgeIds: (selectedEdgeIds) => set({ selectedEdgeIds }),
 
   takeSnapshot: () => {
     const { nodes, edges, past } = get();
@@ -91,7 +95,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     const newPast = past.slice(0, past.length - 1);
     set({
       nodes: previous.nodes,
-      edges: previous.edges,
+      edges: previous.edges as Edge<EdgeData>[],
       past: newPast
     });
   },
@@ -143,16 +147,44 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     }));
   },
 
-  onEdgesChange: (changes: EdgeChange[]) => {
+  updateEdgeData: (edgeId, data) => {
+    get().takeSnapshot();
+    set((state) => ({
+      edges: state.edges.map((edge) =>
+        edge.id === edgeId
+          ? { ...edge, data: { ...(edge.data || {}), ...data } as EdgeData }
+          : edge
+      )
+    }));
+  },
+
+  onEdgesChange: (changes: EdgeChange<Edge<EdgeData>>[]) => {
+    const nextEdges = applyEdgeChanges<Edge<EdgeData>>(changes, get().edges);
+    const selectedEdgeIds = nextEdges.filter((edge) => edge.selected).map((edge) => edge.id);
     set({
-      edges: applyEdgeChanges(changes, get().edges),
+      edges: nextEdges,
+      selectedEdgeIds,
     });
   },
 
   onConnect: (connection: Connection) => {
     get().takeSnapshot();
+    const newEdge: Edge<EdgeData> = {
+      ...connection,
+      id: `edge_${Date.now()}`,
+      type: 'default',
+      data: {
+        strokeColor: '#94A3B8',
+        strokeWidth: 2,
+        strokeStyle: 'solid',
+        animated: false,
+        lineEnd: 'arrow',
+        lineStart: 'none',
+        pathType: 'default',
+      }
+    };
     set({
-      edges: addEdge(connection, get().edges),
+      edges: addEdge(newEdge, get().edges),
     });
   },
 
@@ -165,20 +197,27 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
   deleteSelectedNodes: () => {
     get().takeSnapshot();
-    const { nodes, selectedNodeIds, edges } = get();
+    const { nodes, selectedNodeIds, edges, selectedEdgeIds } = get();
     set({
       nodes: nodes.filter((node) => !selectedNodeIds.includes(node.id)),
-      edges: edges.filter((edge) => !selectedNodeIds.includes(edge.source) && !selectedNodeIds.includes(edge.target)),
+      edges: edges.filter((edge) =>
+        !selectedEdgeIds.includes(edge.id) &&
+        !selectedNodeIds.includes(edge.source) &&
+        !selectedNodeIds.includes(edge.target)
+      ),
       selectedNodeIds: [],
+      selectedEdgeIds: [],
       isPanelOpen: false,
     });
   },
 
   deselectAll: () => {
-    const { nodes } = get();
+    const { nodes, edges } = get();
     set({
       nodes: nodes.map((node) => ({ ...node, selected: false })),
+      edges: edges.map((edge) => ({ ...edge, selected: false })),
       selectedNodeIds: [],
+      selectedEdgeIds: [],
       isPanelOpen: false,
     });
   },

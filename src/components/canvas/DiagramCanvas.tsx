@@ -3,7 +3,8 @@ import {
   ReactFlow,
   Background,
   BackgroundVariant,
-  useReactFlow
+  useReactFlow,
+  MarkerType
 } from '@xyflow/react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { RectNode } from '../nodes/RectNode';
@@ -33,10 +34,31 @@ const DiagramCanvasInner: React.FC = () => {
     currentTool,
     setNodes,
     setSelectedNodeIds,
+    setSelectedEdgeIds,
     setIsPanelOpen,
     deselectAll,
     shapeStyle
   } = useCanvasStore();
+
+  const styledEdges = useMemo(() => {
+    return edges.map((edge) => ({
+      ...edge,
+      type: edge.data?.pathType === 'default' ? undefined : edge.data?.pathType,
+      style: {
+        stroke: edge.data?.strokeColor || '#94A3B8',
+        strokeWidth: edge.data?.strokeWidth || 2,
+        strokeDasharray:
+          edge.data?.strokeStyle === 'dashed' ? '8 4' :
+          edge.data?.strokeStyle === 'dotted' ? '2 4' :
+          undefined,
+      },
+      markerStart: edge.data?.lineStart === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || '#94A3B8' } :
+                  edge.data?.lineStart === 'circle' ? { type: MarkerType.Circle, color: edge.data?.strokeColor || '#94A3B8' } : undefined,
+      markerEnd: edge.data?.lineEnd === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || '#94A3B8' } :
+                edge.data?.lineEnd === 'circle' ? { type: MarkerType.Circle, color: edge.data?.strokeColor || '#94A3B8' } : undefined,
+      animated: edge.data?.animated || false,
+    }));
+  }, [edges]);
 
   const { screenToFlowPosition } = useReactFlow();
 
@@ -98,15 +120,17 @@ const DiagramCanvasInner: React.FC = () => {
     }
   }, [currentTool, nodes, setNodes, screenToFlowPosition, deselectAll, setIsPanelOpen]);
 
-  const onSelectionChange = useCallback(({ nodes }: { nodes: Array<{ id: string }> }) => {
-    if (nodes.length > 0) {
+  const onSelectionChange = useCallback(({ nodes, edges }: { nodes: any[]; edges: any[] }) => {
+    if (nodes.length > 0 || edges.length > 0) {
       setIsPanelOpen(true);
-      setSelectedNodeIds(nodes.map((node) => node.id));
     } else {
       setIsPanelOpen(false);
-      setSelectedNodeIds([]);
     }
-  }, [setIsPanelOpen, setSelectedNodeIds]);
+  }, [setIsPanelOpen]);
+
+  const onEdgeClick = useCallback((_: React.MouseEvent, edge: any) => {
+    setIsPanelOpen(true);
+  }, [setIsPanelOpen]);
 
   const rfStyle = useMemo(() => ({
     backgroundColor: 'transparent',
@@ -123,13 +147,14 @@ const DiagramCanvasInner: React.FC = () => {
       )}
       <ReactFlow
         nodes={nodes}
-        edges={edges}
+        edges={styledEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeContextMenu={onNodeContextMenu}
         onPaneContextMenu={onPaneContextMenu}
         onSelectionChange={onSelectionChange}
+        onEdgeClick={onEdgeClick}
         nodeTypes={nodeTypes}
         onPaneClick={onPaneClick}
         style={rfStyle}

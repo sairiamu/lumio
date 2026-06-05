@@ -119,7 +119,7 @@ const App: React.FC = () => {
         </main>
 
         <div
-          className={`transition-all duration-200 ease-in-out shrink-0 overflow-hidden ${isPanelOpen ? 'w-[256px] translate-x-0 pointer-events-auto' : 'w-0 translate-x-full pointer-events-none'}`}
+          className={`transition-all duration-200 ease-in-out shrink-0 overflow-hidden h-full ${isPanelOpen ? 'w-[256px] translate-x-0 pointer-events-auto' : 'w-0 translate-x-full pointer-events-none'}`}
         >
           <PropertiesPanel />
         </div>

@@ -67,20 +67,28 @@ const formatColorValue = (hex: string, opacity: number) => {
 
 const isValidHex = (value: string) => normalizeHex(value) !== null;
 
-export const ColourPicker: React.FC = () => {
-  const { nodes, selectedNodeIds, updateNodeData } = useCanvasStore();
+export const ColourPicker: React.FC<{ mode?: 'node' | 'edge' }> = ({ mode = 'node' }) => {
+  const { nodes, edges, selectedNodeIds, selectedEdgeIds, updateNodeData, updateEdgeData } = useCanvasStore();
+
   const selectedNode = useMemo(
     () => nodes.find((node) => selectedNodeIds.includes(node.id)),
     [nodes, selectedNodeIds]
   );
 
-  const fillValue = selectedNode?.data.color ?? '#7EB8F7';
-  const strokeValue = selectedNode?.data.strokeColor ?? 'rgba(255,255,255,0.2)';
+  const selectedEdge = useMemo(
+    () => edges.find((edge) => selectedEdgeIds.includes(edge.id)),
+    [edges, selectedEdgeIds]
+  );
+
+  const fillValue = mode === 'node' ? (selectedNode?.data.color ?? '#7EB8F7') : 'transparent';
+  const strokeValue = mode === 'node'
+    ? (selectedNode?.data.strokeColor ?? 'rgba(255,255,255,0.2)')
+    : (selectedEdge?.data?.strokeColor ?? '#94A3B8');
 
   const parsedFill = useMemo(() => parseColorValue(fillValue), [fillValue]);
   const parsedStroke = useMemo(() => parseColorValue(strokeValue), [strokeValue]);
 
-  const [activeTab, setActiveTab] = useState<ColorTab>('fill');
+  const [activeTab, setActiveTab] = useState<ColorTab>(mode === 'node' ? 'fill' : 'stroke');
   const [fillHex, setFillHex] = useState(parsedFill.hex);
   const [fillOpacity, setFillOpacity] = useState(parsedFill.opacity);
   const [strokeHex, setStrokeHex] = useState(parsedStroke.hex);
@@ -98,12 +106,15 @@ export const ColourPicker: React.FC = () => {
   const activeOpacity = activeTab === 'fill' ? fillOpacity : strokeOpacity;
 
   const applyColorUpdate = (nextHex: string, nextOpacity: number) => {
-    if (!selectedNode) return;
     const formatted = formatColorValue(nextHex, nextOpacity);
-    if (activeTab === 'fill') {
-      updateNodeData(selectedNode.id, { color: formatted });
-    } else {
-      updateNodeData(selectedNode.id, { strokeColor: formatted });
+    if (mode === 'node' && selectedNode) {
+      if (activeTab === 'fill') {
+        updateNodeData(selectedNode.id, { color: formatted });
+      } else {
+        updateNodeData(selectedNode.id, { strokeColor: formatted });
+      }
+    } else if (mode === 'edge' && selectedEdge) {
+      updateEdgeData(selectedEdge.id, { strokeColor: formatted });
     }
   };
 
@@ -158,22 +169,30 @@ export const ColourPicker: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 rounded-xl overflow-hidden border border-white/10 bg-white/5 text-[11px]">
-        {COLOR_TABS.map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className={`py-2 text-sm font-semibold transition ${
-              activeTab === tab
-                ? 'bg-iris text-void'
-                : 'bg-graphite/80 text-cloud hover:bg-white/10'
-            }`}
-          >
-            {tab === 'fill' ? 'Fill' : 'Stroke'}
-          </button>
-        ))}
-      </div>
+      {mode === 'node' && (
+        <div className="grid grid-cols-2 rounded-xl overflow-hidden border border-white/10 bg-white/5 text-[11px]">
+          {COLOR_TABS.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`py-2 text-sm font-semibold transition ${
+                activeTab === tab
+                  ? 'bg-iris text-void'
+                  : 'bg-graphite/80 text-cloud hover:bg-white/10'
+              }`}
+            >
+              {tab === 'fill' ? 'Fill' : 'Stroke'}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {mode === 'edge' && (
+        <label className="block text-[10px] font-sora uppercase tracking-[0.18em] text-fog mb-[-8px]">
+          Line Colour
+        </label>
+      )}
 
       <div className="grid grid-cols-6 gap-2">
         {PRESET_COLORS.map((color) => (

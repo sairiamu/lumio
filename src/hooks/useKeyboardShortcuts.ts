@@ -4,8 +4,9 @@ import { useCanvasStore } from '../store/canvasStore';
 
 export const useKeyboardShortcuts = () => {
   const { deleteElements, zoomIn, zoomOut, setViewport } = useReactFlow();
-  const {
+    const {
     selectedNodeIds,
+    selectedEdgeIds,
     nodes,
     edges,
     setCurrentTool,
@@ -78,10 +79,12 @@ export const useKeyboardShortcuts = () => {
           break;
         case 'delete':
         case 'backspace':
-          if (selectedNodeIds.length > 0) {
+          if (selectedNodeIds.length > 0 || selectedEdgeIds.length > 0) {
             const nodesToDelete = nodes.filter((n) => selectedNodeIds.includes(n.id));
             const edgesToDelete = edges.filter((e) =>
-              selectedNodeIds.includes(e.source) || selectedNodeIds.includes(e.target)
+              selectedEdgeIds.includes(e.id) ||
+              selectedNodeIds.includes(e.source) ||
+              selectedNodeIds.includes(e.target)
             );
 
             // Delete from ReactFlow
@@ -105,6 +108,7 @@ export const useKeyboardShortcuts = () => {
   }, [
     deleteElements,
     selectedNodeIds,
+    selectedEdgeIds,
     nodes,
     edges,
     setCurrentTool,
