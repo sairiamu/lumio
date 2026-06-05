@@ -12,6 +12,7 @@ import { CircleNode } from '../nodes/CircleNode';
 import { DiamondNode } from '../nodes/DiamondNode';
 import { CardNode } from '../nodes/CardNode';
 import { TextNode } from '../nodes/TextNode';
+import { CustomEdge } from './CustomEdge';
 import ContextMenu from './ContextMenu';
 
 const nodeTypes = {
@@ -20,6 +21,12 @@ const nodeTypes = {
   diamond: DiamondNode,
   card: CardNode,
   text: TextNode,
+};
+
+const edgeTypes = {
+  default: CustomEdge,
+  smoothstep: CustomEdge,
+  straight: CustomEdge,
 };
 
 const DiagramCanvasInner: React.FC = () => {
@@ -156,6 +163,7 @@ const DiagramCanvasInner: React.FC = () => {
         onSelectionChange={onSelectionChange}
         onEdgeClick={onEdgeClick}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onPaneClick={onPaneClick}
         style={rfStyle}
         colorMode="dark"
@@ -177,6 +185,17 @@ const DiagramCanvasInner: React.FC = () => {
           size={1}
           color={isGridEnabled ? 'rgba(255,255,255,0.05)' : 'transparent'}
         />
+        <svg style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0 }}>
+          <defs>
+            <filter id="edge-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+        </svg>
       </ReactFlow>
       <ContextMenu visible={ctxVisible} x={ctxX} y={ctxY} targetNodeId={ctxTargetNodeId} onClose={closeContextMenu} />
     </div>
