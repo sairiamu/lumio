@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { TitleBar } from './components/shell/TitleBar';
 import { ToolBar } from './components/toolbar/ToolBar';
@@ -12,91 +12,12 @@ import { useTheme } from './hooks/useTheme';
 
 const App: React.FC = () => {
   const {
-    setExportModalOpen,
-    isExportModalOpen,
-    setCurrentTool,
-    deleteSelectedNodes,
-    undo,
-    saveJSON,
-    deselectAll,
     isPanelOpen,
     togglePanelOpen
   } = useCanvasStore();
 
   useTheme();
   useKeyboardShortcuts();
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts if user is typing in an input/textarea
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      ) {
-        return;
-      }
-
-      // Meta/Ctrl shortcuts
-      if (e.ctrlKey || e.metaKey) {
-        switch (e.key.toLowerCase()) {
-          case 'e':
-            e.preventDefault();
-            setExportModalOpen(true);
-            break;
-          case 'z':
-            e.preventDefault();
-            undo();
-            break;
-          case 's':
-            e.preventDefault();
-            saveJSON();
-            break;
-        }
-        return;
-      }
-
-      // Single key shortcuts
-      switch (e.key.toLowerCase()) {
-        case 'v':
-          setCurrentTool('select');
-          break;
-        case 'r':
-          setCurrentTool('rect');
-          break;
-        case 'c':
-          setCurrentTool('circle');
-          break;
-        case 'd':
-          setCurrentTool('diamond');
-          break;
-        case 't':
-          setCurrentTool('text');
-          break;
-        case 'delete':
-        case 'backspace':
-          deleteSelectedNodes();
-          break;
-        case 'escape':
-          if (isExportModalOpen) {
-            setExportModalOpen(false);
-          } else {
-            deselectAll();
-          }
-          break;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [
-    setExportModalOpen,
-    isExportModalOpen,
-    setCurrentTool,
-    deleteSelectedNodes,
-    undo,
-    saveJSON,
-    deselectAll
-  ]);
 
   return (
     <div

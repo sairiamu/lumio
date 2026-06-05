@@ -45,7 +45,8 @@ const DiagramCanvasInner: React.FC = () => {
     setIsPanelOpen,
     deselectAll,
     shapeStyle,
-    currentTheme
+    currentTheme,
+    pushHistory
   } = useCanvasStore();
 
   const isDark = currentTheme !== 'arctic';
@@ -105,6 +106,7 @@ const DiagramCanvasInner: React.FC = () => {
 
     const shapeTools = ['rect', 'circle', 'diamond', 'card', 'text'];
     if (shapeTools.includes(currentTool)) {
+      pushHistory();
       const position = screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
@@ -142,6 +144,14 @@ const DiagramCanvasInner: React.FC = () => {
     setIsPanelOpen(true);
   }, [setIsPanelOpen]);
 
+  const onNodeDragStart = useCallback(() => {
+    pushHistory();
+  }, [pushHistory]);
+
+  const onSelectionDragStart = useCallback(() => {
+    pushHistory();
+  }, [pushHistory]);
+
   const rfStyle = useMemo(() => ({
     backgroundColor: 'transparent',
   }), []);
@@ -165,6 +175,8 @@ const DiagramCanvasInner: React.FC = () => {
         onPaneContextMenu={onPaneContextMenu}
         onSelectionChange={onSelectionChange}
         onEdgeClick={onEdgeClick}
+        onNodeDragStart={onNodeDragStart}
+        onSelectionDragStart={onSelectionDragStart}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         onPaneClick={onPaneClick}

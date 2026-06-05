@@ -1,10 +1,10 @@
 import React from 'react';
-import { Plus, Minus, Maximize, Grid3X3 } from 'lucide-react';
+import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2 } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow, useViewport } from '@xyflow/react';
 
 export const CanvasControls: React.FC = () => {
-  const { isGridEnabled, toggleGrid } = useCanvasStore();
+  const { isGridEnabled, toggleGrid, undo, redo, past, future } = useCanvasStore();
   const { zoomIn, zoomOut, fitView, setViewport, getViewport } = useReactFlow();
   const { zoom } = useViewport();
 
@@ -21,6 +21,25 @@ export const CanvasControls: React.FC = () => {
 
   return (
     <div className="absolute bottom-6 left-6 flex items-center gap-2 z-30">
+      <div className="glass-panel p-1 flex items-center gap-1">
+        <button
+          onClick={undo}
+          disabled={past.length === 0}
+          className={`p-1.5 rounded-md transition-colors ${past.length === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/10 text-text-muted hover:text-text'}`}
+          aria-label="Undo"
+        >
+          <Undo2 className="w-4 h-4" />
+        </button>
+        <button
+          onClick={redo}
+          disabled={future.length === 0}
+          className={`p-1.5 rounded-md transition-colors ${future.length === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white/10 text-text-muted hover:text-text'}`}
+          aria-label="Redo"
+        >
+          <Redo2 className="w-4 h-4" />
+        </button>
+      </div>
+
       <div className="glass-panel p-1 flex items-center gap-1">
         <button
           onClick={() => zoomOut({ duration: 200 })}

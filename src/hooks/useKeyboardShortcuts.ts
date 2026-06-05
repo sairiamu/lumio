@@ -13,9 +13,16 @@ export const useKeyboardShortcuts = () => {
     setExportModalOpen,
     isExportModalOpen,
     undo,
+    redo,
+    copy,
+    paste,
+    cut,
+    duplicate,
+    selectAll,
     saveJSON,
     deselectAll,
-    deleteSelectedNodes
+    deleteSelectedNodes,
+    setIsPanelOpen
   } = useCanvasStore();
 
   useEffect(() => {
@@ -30,6 +37,13 @@ export const useKeyboardShortcuts = () => {
 
       // Meta/Ctrl shortcuts
       if (e.ctrlKey || e.metaKey) {
+        // Handle Ctrl+Shift+Z separately
+        if (e.shiftKey && e.key.toLowerCase() === 'z') {
+          e.preventDefault();
+          redo();
+          return;
+        }
+
         switch (e.key.toLowerCase()) {
           case 'e':
             e.preventDefault();
@@ -38,6 +52,30 @@ export const useKeyboardShortcuts = () => {
           case 'z':
             e.preventDefault();
             undo();
+            break;
+          case 'y':
+            e.preventDefault();
+            redo();
+            break;
+          case 'c':
+            e.preventDefault();
+            copy();
+            break;
+          case 'v':
+            e.preventDefault();
+            paste();
+            break;
+          case 'x':
+            e.preventDefault();
+            cut();
+            break;
+          case 'a':
+            e.preventDefault();
+            selectAll();
+            break;
+          case 'd':
+            e.preventDefault();
+            duplicate();
             break;
           case 's':
             e.preventDefault();
@@ -98,6 +136,7 @@ export const useKeyboardShortcuts = () => {
             setExportModalOpen(false);
           } else {
             deselectAll();
+            setIsPanelOpen(false);
           }
           break;
       }
@@ -115,10 +154,18 @@ export const useKeyboardShortcuts = () => {
     setExportModalOpen,
     isExportModalOpen,
     undo,
+    redo,
+    copy,
+    paste,
+    cut,
+    duplicate,
+    selectAll,
     saveJSON,
     deselectAll,
+    setIsPanelOpen,
     zoomIn,
     zoomOut,
-    setViewport
+    setViewport,
+    deleteSelectedNodes
   ]);
 };

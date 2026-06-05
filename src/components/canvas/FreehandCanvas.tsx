@@ -8,7 +8,7 @@ interface FreehandCanvasProps {
 export const FreehandCanvas: React.FC<FreehandCanvasProps> = ({ active }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const { addFreehandStroke, freehandStrokes, currentTool } = useCanvasStore();
+  const { addFreehandStroke, freehandStrokes, currentTool, pushHistory } = useCanvasStore();
 
   const currentPoints = useRef<{ x: number; y: number }[]>([]);
 
@@ -105,6 +105,7 @@ export const FreehandCanvas: React.FC<FreehandCanvasProps> = ({ active }) => {
     setIsDrawing(false);
 
     if (currentPoints.current.length > 1) {
+      pushHistory();
       addFreehandStroke({
         points: [...currentPoints.current],
         color: getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#6366F1',

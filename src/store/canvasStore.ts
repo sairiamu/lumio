@@ -15,6 +15,12 @@ import {
 import { CanvasState, CanvasMode, ToolType, ShapeStyle, Stroke, NodeData, EdgeData } from '../types';
 import { ThemeName } from '../themes/themes';
 
+interface HistorySnapshot {
+  nodes: Node<NodeData>[];
+  edges: Edge<EdgeData>[];
+  freehandStrokes: Stroke[];
+}
+
 interface CanvasStore extends CanvasState {
   setNodes: (nodes: Node<NodeData>[]) => void;
   setEdges: (edges: Edge<EdgeData>[]) => void;
@@ -44,8 +50,16 @@ interface CanvasStore extends CanvasState {
   deselectAll: () => void;
   saveJSON: () => void;
   undo: () => void;
-  takeSnapshot: () => void;
-  past: { nodes: Node<NodeData>[]; edges: Edge[] }[];
+  redo: () => void;
+  pushHistory: () => void;
+  past: HistorySnapshot[];
+  future: HistorySnapshot[];
+  clipboard: { nodes: Node<NodeData>[]; edges: Edge<EdgeData>[] } | null;
+  copy: () => void;
+  paste: () => void;
+  cut: () => void;
+  duplicate: () => void;
+  selectAll: () => void;
   currentTheme: ThemeName;
   setTheme: (theme: ThemeName) => void;
 }
@@ -72,6 +86,8 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   isThemePickerOpen: false,
   isPanelOpen: false,
   past: [],
+  future: [],
+  clipboard: null,
   currentTheme: (localStorage.getItem('vibeplan-theme') as ThemeName) || 'slate',
 
   setTheme: (theme: ThemeName) => {
@@ -80,11 +96,9 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   },
 
   setNodes: (nodes) => {
-    get().takeSnapshot();
     set({ nodes });
   },
   setEdges: (edges) => {
-    get().takeSnapshot();
     set({ edges });
   },
   setExportModalOpen: (isExportModalOpen) => set({ isExportModalOpen }),
@@ -94,22 +108,54 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   setSelectedNodeIds: (selectedNodeIds) => set({ selectedNodeIds }),
   setSelectedEdgeIds: (selectedEdgeIds) => set({ selectedEdgeIds }),
 
-  takeSnapshot: () => {
-    const { nodes, edges, past } = get();
-    // Only keep last 20 states
-    const newPast = [...past, { nodes, edges }].slice(-20);
-    set({ past: newPast });
+  pushHistory: () => {
+    const { nodes, edges, freehandStrokes, past } = get();
+    const snapshot: HistorySnapshot = {
+      nodes: JSON.parse(JSON.stringify(nodes)),
+      edges: JSON.parse(JSON.stringify(edges)),
+      freehandStrokes: JSON.parse(JSON.stringify(freehandStrokes)),
+    };
+    const newPast = [...past, snapshot].slice(-50);
+    set({ past: newPast, future: [] });
   },
 
   undo: () => {
-    const { past } = get();
+    const { past, nodes, edges, freehandStrokes, future } = get();
     if (past.length === 0) return;
-    const previous = past[past.length - 1];
-    const newPast = past.slice(0, past.length - 1);
+
+    const snapshot = past[past.length - 1];
+    const currentSnapshot: HistorySnapshot = {
+      nodes: JSON.parse(JSON.stringify(nodes)),
+      edges: JSON.parse(JSON.stringify(edges)),
+      freehandStrokes: JSON.parse(JSON.stringify(freehandStrokes)),
+    };
+
     set({
-      nodes: previous.nodes,
-      edges: previous.edges as Edge<EdgeData>[],
-      past: newPast
+      nodes: snapshot.nodes,
+      edges: snapshot.edges,
+      freehandStrokes: snapshot.freehandStrokes,
+      past: past.slice(0, past.length - 1),
+      future: [...future, currentSnapshot].slice(-50),
+    });
+  },
+
+  redo: () => {
+    const { future, nodes, edges, freehandStrokes, past } = get();
+    if (future.length === 0) return;
+
+    const snapshot = future[future.length - 1];
+    const currentSnapshot: HistorySnapshot = {
+      nodes: JSON.parse(JSON.stringify(nodes)),
+      edges: JSON.parse(JSON.stringify(edges)),
+      freehandStrokes: JSON.parse(JSON.stringify(freehandStrokes)),
+    };
+
+    set({
+      nodes: snapshot.nodes,
+      edges: snapshot.edges,
+      freehandStrokes: snapshot.freehandStrokes,
+      future: future.slice(0, future.length - 1),
+      past: [...past, currentSnapshot].slice(-50),
     });
   },
 
@@ -150,7 +196,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   },
 
   updateNodeData: (nodeId, data) => {
-    get().takeSnapshot();
+    get().pushHistory();
     set((state) => ({
       nodes: state.nodes.map((node) =>
         node.id === nodeId
@@ -161,7 +207,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   },
 
   updateEdgeData: (edgeId, data) => {
-    get().takeSnapshot();
+    get().pushHistory();
     set((state) => ({
       edges: state.edges.map((edge) =>
         edge.id === edgeId
@@ -181,7 +227,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   },
 
   onConnect: (connection: Connection) => {
-    get().takeSnapshot();
+    get().pushHistory();
     const newEdge: Edge<EdgeData> = {
       ...connection,
       id: `edge_${Date.now()}`,
@@ -209,7 +255,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   },
 
   deleteSelectedNodes: () => {
-    get().takeSnapshot();
+    get().pushHistory();
     const { nodes, selectedNodeIds, edges, selectedEdgeIds } = get();
     set({
       nodes: nodes.filter((node) => !selectedNodeIds.includes(node.id)),
@@ -247,17 +293,137 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     URL.revokeObjectURL(url);
   },
 
-  setShapeStyle: (style) => set((state) => ({
-    shapeStyle: { ...state.shapeStyle, ...style }
-  })),
+  setShapeStyle: (style) => {
+    get().pushHistory();
+    set((state) => ({
+      shapeStyle: { ...state.shapeStyle, ...style }
+    }));
+  },
 
-  addFreehandStroke: (stroke) => set((state) => ({
-    freehandStrokes: [...state.freehandStrokes, stroke]
-  })),
+  addFreehandStroke: (stroke) => {
+    // We don't push history here because it's called during drawing?
+    // Wait, the instruction says "Before adding a freehand stroke (on pointer up)"
+    // So we should push history BEFORE adding the final stroke.
+    set((state) => ({
+      freehandStrokes: [...state.freehandStrokes, stroke]
+    }));
+  },
 
   setFreehandStrokes: (freehandStrokes) => set({ freehandStrokes }),
 
-  clearFreehandStrokes: () => set({ freehandStrokes: [] }),
+  clearFreehandStrokes: () => {
+    get().pushHistory();
+    set({ freehandStrokes: [] });
+  },
+
+  copy: () => {
+    const { nodes, edges, selectedNodeIds, selectedEdgeIds } = get();
+    const selectedNodes = nodes.filter((n) => selectedNodeIds.includes(n.id));
+    const selectedEdges = edges.filter((e) => selectedEdgeIds.includes(e.id));
+
+    if (selectedNodes.length === 0) return;
+
+    set({
+      clipboard: {
+        nodes: JSON.parse(JSON.stringify(selectedNodes)),
+        edges: JSON.parse(JSON.stringify(selectedEdges))
+      }
+    });
+  },
+
+  paste: () => {
+    const { clipboard, nodes, edges } = get();
+    if (!clipboard) return;
+
+    get().pushHistory();
+
+    const idMap: Record<string, string> = {};
+    const newNodes = clipboard.nodes.map((node) => {
+      const newId = `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      idMap[node.id] = newId;
+      return {
+        ...node,
+        id: newId,
+        position: { x: node.position.x + 20, y: node.position.y + 20 },
+        selected: true,
+      };
+    });
+
+    const newEdges = clipboard.edges.map((edge) => ({
+      ...edge,
+      id: `edge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      source: idMap[edge.source] || edge.source,
+      target: idMap[edge.target] || edge.target,
+      selected: true,
+    }));
+
+    // Deselect old ones
+    const currentNodes = nodes.map(n => ({ ...n, selected: false }));
+    const currentEdges = edges.map(e => ({ ...e, selected: false }));
+
+    set({
+      nodes: [...currentNodes, ...newNodes],
+      edges: [...currentEdges, ...newEdges],
+      selectedNodeIds: newNodes.map(n => n.id),
+      selectedEdgeIds: newEdges.map(e => e.id),
+    });
+  },
+
+  cut: () => {
+    get().copy();
+    get().deleteSelectedNodes();
+  },
+
+  duplicate: () => {
+    const { nodes, edges, selectedNodeIds, selectedEdgeIds } = get();
+    const selectedNodes = nodes.filter((n) => selectedNodeIds.includes(n.id));
+    const selectedEdges = edges.filter((e) => selectedEdgeIds.includes(e.id));
+
+    if (selectedNodes.length === 0) return;
+
+    get().pushHistory();
+
+    const idMap: Record<string, string> = {};
+    const newNodes = selectedNodes.map((node) => {
+      const newId = `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      idMap[node.id] = newId;
+      return {
+        ...node,
+        id: newId,
+        position: { x: node.position.x + 20, y: node.position.y + 20 },
+        selected: true,
+      };
+    });
+
+    const newEdges = selectedEdges.map((edge) => ({
+      ...edge,
+      id: `edge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      source: idMap[edge.source] || edge.source,
+      target: idMap[edge.target] || edge.target,
+      selected: true,
+    }));
+
+    // Deselect current
+    const deselectedNodes = nodes.map(n => ({ ...n, selected: false }));
+    const deselectedEdges = edges.map(e => ({ ...e, selected: false }));
+
+    set({
+      nodes: [...deselectedNodes, ...newNodes],
+      edges: [...deselectedEdges, ...newEdges],
+      selectedNodeIds: newNodes.map(n => n.id),
+      selectedEdgeIds: newEdges.map(e => e.id),
+    });
+  },
+
+  selectAll: () => {
+    const { nodes, edges } = get();
+    set({
+      nodes: nodes.map((node) => ({ ...node, selected: true })),
+      edges: edges.map((edge) => ({ ...edge, selected: true })),
+      selectedNodeIds: nodes.map((node) => node.id),
+      selectedEdgeIds: edges.map((edge) => edge.id),
+    });
+  },
 
   toggleGrid: () => set((state) => ({ isGridEnabled: !state.isGridEnabled })),
 
