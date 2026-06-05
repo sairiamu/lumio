@@ -3,7 +3,7 @@ import { useReactFlow } from '@xyflow/react';
 import { useCanvasStore } from '../store/canvasStore';
 
 export const useKeyboardShortcuts = () => {
-  const { deleteElements } = useReactFlow();
+  const { deleteElements, zoomIn, zoomOut, setViewport } = useReactFlow();
   const {
     selectedNodeIds,
     nodes,
@@ -13,7 +13,8 @@ export const useKeyboardShortcuts = () => {
     isExportModalOpen,
     undo,
     saveJSON,
-    deselectAll
+    deselectAll,
+    deleteSelectedNodes
   } = useCanvasStore();
 
   useEffect(() => {
@@ -40,6 +41,19 @@ export const useKeyboardShortcuts = () => {
           case 's':
             e.preventDefault();
             saveJSON();
+            break;
+          case '=':
+          case '+':
+            e.preventDefault();
+            zoomIn({ duration: 200 });
+            break;
+          case '-':
+            e.preventDefault();
+            zoomOut({ duration: 200 });
+            break;
+          case '0':
+            e.preventDefault();
+            setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 200 });
             break;
         }
         return;
@@ -72,6 +86,8 @@ export const useKeyboardShortcuts = () => {
 
             // Delete from ReactFlow
             deleteElements({ nodes: nodesToDelete, edges: edgesToDelete });
+            // Remove from our zustand store and clear selection
+            deleteSelectedNodes();
           }
           break;
         case 'escape':
@@ -96,6 +112,9 @@ export const useKeyboardShortcuts = () => {
     isExportModalOpen,
     undo,
     saveJSON,
-    deselectAll
+    deselectAll,
+    zoomIn,
+    zoomOut,
+    setViewport
   ]);
 };

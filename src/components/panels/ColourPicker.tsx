@@ -193,19 +193,20 @@ export const ColourPicker: React.FC = () => {
       </div>
 
       <div className="flex items-end gap-3">
-        <button
-          type="button"
-          onClick={openColorInput}
-          className="relative min-w-[92px] rounded-2xl border border-transparent bg-graphite/80 px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-cloud transition hover:border-white/20"
-          style={{ backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))' }}
-        >
-          Custom
-        </button>
+        <div className="rounded-2xl bg-linear-to-br from-iris/70 via-white/10 to-amber-400 p-px">
+          <button
+            type="button"
+            onClick={openColorInput}
+            className="min-w-23 rounded-2xl bg-graphite/80 px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-cloud transition hover:border-white/20"
+          >
+            Custom
+          </button>
+        </div>
 
         <input
           ref={colorInputRef}
           type="color"
-          value={activeHex}
+          value={isValidHex(activeHex) ? activeHex : '#FFFFFF'}
           onChange={(event) => handleCustomColor(event.target.value)}
           className="sr-only"
         />

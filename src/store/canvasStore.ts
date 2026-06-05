@@ -17,6 +17,7 @@ import { CanvasState, CanvasMode, ToolType, ShapeStyle, Stroke, NodeData } from 
 interface CanvasStore extends CanvasState {
   setNodes: (nodes: Node<NodeData>[]) => void;
   setEdges: (edges: Edge[]) => void;
+  setSelectedNodeIds: (selectedNodeIds: string[]) => void;
   onNodesChange: OnNodesChange<Node<NodeData>>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
@@ -31,6 +32,9 @@ interface CanvasStore extends CanvasState {
   setZoomLevel: (zoom: number) => void;
   isExportModalOpen: boolean;
   setExportModalOpen: (open: boolean) => void;
+  isPanelOpen: boolean;
+  setIsPanelOpen: (open: boolean) => void;
+  togglePanelOpen: () => void;
   deleteSelectedNodes: () => void;
   deselectAll: () => void;
   saveJSON: () => void;
@@ -57,6 +61,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   isGridEnabled: true,
   zoomLevel: 1,
   isExportModalOpen: false,
+  isPanelOpen: false,
   past: [],
 
   setNodes: (nodes) => {
@@ -68,6 +73,9 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     set({ edges });
   },
   setExportModalOpen: (isExportModalOpen) => set({ isExportModalOpen }),
+  setIsPanelOpen: (isPanelOpen) => set({ isPanelOpen }),
+  togglePanelOpen: () => set((state) => ({ isPanelOpen: !state.isPanelOpen })),
+  setSelectedNodeIds: (selectedNodeIds) => set({ selectedNodeIds }),
 
   takeSnapshot: () => {
     const { nodes, edges, past } = get();
@@ -92,13 +100,34 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     const currentNodes = get().nodes;
     const nextNodes = applyNodeChanges<Node<NodeData>>(changes, currentNodes);
 
-    // Update selectedNodeIds based on the changes
-    const selectedNodeIds = nextNodes
-      .filter((node) => node.selected)
-      .map((node) => node.id);
+    // Persist width/height into node.data and enforce shape-specific rules
+    const normalized = nextNodes.map((node) => {
+      const w = (node.width as number) || 0;
+      const h = (node.height as number) || 0;
+
+      // Circle: lock aspect ratio to square
+      if (node.type === 'circle') {
+        const size = Math.max(w, h) || 60;
+        return {
+          ...node,
+          width: size,
+          height: size,
+          data: { ...node.data, width: size, height: size }
+        };
+      }
+
+      // Default: store measured size into node.data so it persists
+      if (w || h) {
+        return { ...node, data: { ...node.data, width: w, height: h } };
+      }
+      return node;
+    });
+
+    // Update selectedNodeIds based on the normalized nodes
+    const selectedNodeIds = normalized.filter((node) => node.selected).map((node) => node.id);
 
     set({
-      nodes: nextNodes,
+      nodes: normalized,
       selectedNodeIds,
     });
   },
@@ -141,6 +170,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       nodes: nodes.filter((node) => !selectedNodeIds.includes(node.id)),
       edges: edges.filter((edge) => !selectedNodeIds.includes(edge.source) && !selectedNodeIds.includes(edge.target)),
       selectedNodeIds: [],
+      isPanelOpen: false,
     });
   },
 
@@ -149,6 +179,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     set({
       nodes: nodes.map((node) => ({ ...node, selected: false })),
       selectedNodeIds: [],
+      isPanelOpen: false,
     });
   },
 

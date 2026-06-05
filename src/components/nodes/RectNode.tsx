@@ -1,5 +1,5 @@
 import React from 'react';
-import { NodeProps } from '@xyflow/react';
+import { NodeProps, NodeResizer } from '@xyflow/react';
 import { BaseNode } from './BaseNode';
 import { NodeData } from '../../types';
 
@@ -9,6 +9,15 @@ export const RectNode: React.FC<NodeProps<NodeData>> = (props) => {
       {...props}
       color={props.data.color}
       className="rounded-[16px] min-w-[180px]"
-    />
+    >
+      <NodeResizer
+        isVisible={props.selected}
+        minWidth={80}
+        minHeight={40}
+        handleStyle={{ width: 10, height: 10, backgroundColor: 'var(--iris)', borderRadius: '50%' }}
+        lineStyle={{ borderColor: 'var(--iris)', borderWidth: 1 }}
+      />
+    </BaseNode>
+   
   );
 };

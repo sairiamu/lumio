@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -11,6 +11,7 @@ import { CircleNode } from '../nodes/CircleNode';
 import { DiamondNode } from '../nodes/DiamondNode';
 import { CardNode } from '../nodes/CardNode';
 import { TextNode } from '../nodes/TextNode';
+import ContextMenu from './ContextMenu';
 
 const nodeTypes = {
   rect: RectNode,
@@ -31,12 +32,45 @@ const DiagramCanvasInner: React.FC = () => {
     canvasMode,
     currentTool,
     setNodes,
+    setSelectedNodeIds,
+    setIsPanelOpen,
+    deselectAll,
     shapeStyle
   } = useCanvasStore();
 
   const { screenToFlowPosition } = useReactFlow();
 
+  // Context menu state
+  const [ctxVisible, setCtxVisible] = useState(false);
+  const [ctxX, setCtxX] = useState(0);
+  const [ctxY, setCtxY] = useState(0);
+  const [ctxTargetNodeId, setCtxTargetNodeId] = useState<string | null>(null);
+
+  const closeContextMenu = useCallback(() => {
+    setCtxVisible(false);
+    setCtxTargetNodeId(null);
+  }, []);
+
+  const onNodeContextMenu = useCallback((event: React.MouseEvent, node: any) => {
+    event.preventDefault();
+    setCtxX(event.clientX);
+    setCtxY(event.clientY);
+    setCtxTargetNodeId(node.id);
+    setCtxVisible(true);
+  }, []);
+
+  const onPaneContextMenu = useCallback((event: React.MouseEvent) => {
+    event.preventDefault();
+    setCtxX(event.clientX);
+    setCtxY(event.clientY);
+    setCtxTargetNodeId(null);
+    setCtxVisible(true);
+  }, []);
+
   const onPaneClick = useCallback((event: React.MouseEvent) => {
+    deselectAll();
+    setIsPanelOpen(false);
+
     const shapeTools = ['rect', 'circle', 'diamond', 'card', 'text'];
     if (shapeTools.includes(currentTool)) {
       const position = screenToFlowPosition({
@@ -62,7 +96,17 @@ const DiagramCanvasInner: React.FC = () => {
 
       setNodes([...nodes, newNode]);
     }
-  }, [currentTool, nodes, setNodes, screenToFlowPosition]);
+  }, [currentTool, nodes, setNodes, screenToFlowPosition, deselectAll, setIsPanelOpen]);
+
+  const onSelectionChange = useCallback(({ nodes }: { nodes: Array<{ id: string }> }) => {
+    if (nodes.length > 0) {
+      setIsPanelOpen(true);
+      setSelectedNodeIds(nodes.map((node) => node.id));
+    } else {
+      setIsPanelOpen(false);
+      setSelectedNodeIds([]);
+    }
+  }, [setIsPanelOpen, setSelectedNodeIds]);
 
   const rfStyle = useMemo(() => ({
     backgroundColor: 'transparent',
@@ -83,6 +127,9 @@ const DiagramCanvasInner: React.FC = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeContextMenu={onNodeContextMenu}
+        onPaneContextMenu={onPaneContextMenu}
+        onSelectionChange={onSelectionChange}
         nodeTypes={nodeTypes}
         onPaneClick={onPaneClick}
         style={rfStyle}
@@ -90,6 +137,12 @@ const DiagramCanvasInner: React.FC = () => {
         nodesDraggable={canvasMode === 'diagram'}
         nodesConnectable={canvasMode === 'diagram'}
         elementsSelectable={canvasMode === 'diagram'}
+        zoomOnScroll={true}
+        zoomOnPinch={true}
+        zoomOnDoubleClick={false}
+        panOnScroll={false}
+        panOnDrag={true}
+        preventScrolling={true}
         fitView
         proOptions={{ hideAttribution: true }}
       >
@@ -100,6 +153,7 @@ const DiagramCanvasInner: React.FC = () => {
           color={isGridEnabled ? 'rgba(255,255,255,0.05)' : 'transparent'}
         />
       </ReactFlow>
+      <ContextMenu visible={ctxVisible} x={ctxX} y={ctxY} targetNodeId={ctxTargetNodeId} onClose={closeContextMenu} />
     </div>
   );
 };

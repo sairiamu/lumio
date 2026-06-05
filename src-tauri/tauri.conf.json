@@ -15,7 +15,8 @@
         "title": "vibeplan",
         "width": 1280,
         "height": 800,
-        "decorations": false
+        "decorations": false,
+        "zoomHotkeysEnabled": false
       }
     ],
     "security": {

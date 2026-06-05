@@ -9,6 +9,7 @@ interface BaseNodeProps extends NodeProps<NodeData> {
   style?: React.CSSProperties;
   color?: string;
   contentClassName?: string;
+  contentStyle?: React.CSSProperties;
 }
 
 export const BaseNode: React.FC<BaseNodeProps> = ({
@@ -19,6 +20,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
   style,
   color = "#7EB8F7",
   contentClassName = "",
+  contentStyle,
   children
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -97,7 +99,9 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
         backgroundColor: color,
         borderColor: data.strokeColor || 'rgba(255,255,255,0.2)',
         boxShadow: `6px 6px 0px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.3)`,
-        ...style
+        ...style,
+        width: '100%',
+        height: '100%'
       }}
     >
       <Handle type="target" position={Position.Top} className="w-2 h-2 !bg-mint border-none" />
@@ -105,7 +109,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
       <Handle type="target" position={Position.Left} className="w-1.5 h-1.5 !bg-mint border-none" />
       <Handle type="source" position={Position.Right} className="w-1.5 h-1.5 !bg-mint border-none" />
 
-      <div className={`p-4 text-void flex flex-col ${contentClassName}`} ref={editRef}>
+      <div className={`p-4 text-void flex flex-col ${contentClassName}`} style={contentStyle} ref={editRef}>
         {isEditing ? (
           <div className="flex flex-col gap-2 min-w-[160px]" onKeyDown={handleKeyDown}>
             <input
