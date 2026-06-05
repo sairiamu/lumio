@@ -72,4 +72,7 @@ export interface CanvasState {
   isPresentationMode: boolean;
   stepNodes: string[];
   currentStep: number;
+  isMinimapOpen: boolean;
+  searchQuery: string;
+  searchResults: string[];
 }

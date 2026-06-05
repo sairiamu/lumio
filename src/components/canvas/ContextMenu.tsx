@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow } from '@xyflow/react';
-import { Waypoints, Presentation, Trash2 } from 'lucide-react';
+import { Waypoints, Presentation, Trash2, Group, Ungroup } from 'lucide-react';
 
 interface ContextMenuProps {
   visible: boolean;
@@ -21,7 +21,10 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
     trackedNodeId,
     setTrackedNodeId,
     addToStepNodes,
-    clearStepNodes
+    clearStepNodes,
+    selectedNodeIds,
+    groupSelectedNodes,
+    ungroupSelectedNodes
   } = useCanvasStore();
   const { deleteElements, fitView } = useReactFlow();
   const [clampedPos, setClampedPos] = useState({ left: x, top: y });
@@ -216,15 +219,39 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
 
   if (!visible) return null;
 
+  const targetNode = nodes.find(n => n.id === targetNodeId);
+  const isGroupNode = targetNode?.type === 'group';
+  const canGroup = selectedNodeIds.length >= 2;
+
   return (
     <div
       ref={ref}
-      className="absolute z-50 p-2 glass-panel w-44 text-sm text-text"
+      className="absolute z-50 p-2 glass-panel w-44 text-sm text-text shadow-2xl"
       style={{ left: clampedPos.left, top: clampedPos.top }}
       role="menu"
     >
       {targetNodeId ? (
         <div className="flex flex-col">
+          {isGroupNode ? (
+            <button
+              className="flex items-center gap-2 text-left px-3 py-2 hover:bg-white/10 rounded transition-colors text-accent"
+              onClick={() => { ungroupSelectedNodes(); close(); }}
+            >
+              <Ungroup size={16} />
+              Ungroup
+            </button>
+          ) : canGroup ? (
+            <button
+              className="flex items-center gap-2 text-left px-3 py-2 hover:bg-white/10 rounded transition-colors text-accent"
+              onClick={() => { groupSelectedNodes(); close(); }}
+            >
+              <Group size={16} />
+              Group Selection
+            </button>
+          ) : null}
+
+          <div className="my-1 border-t border-white/5" />
+
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleDuplicate}>Duplicate Node</button>
           <button
             className="flex items-center gap-2 text-left px-3 py-2 hover:bg-white/10 rounded transition-colors"

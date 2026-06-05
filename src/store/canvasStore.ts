@@ -96,6 +96,15 @@ interface CanvasStore extends CanvasState {
   exitStepMode: () => void;
   addToStepNodes: (nodeId: string) => void;
   clearStepNodes: () => void;
+  isMinimapOpen: boolean;
+  toggleMinimap: () => void;
+  searchQuery: string;
+  searchResults: string[];
+  setSearchQuery: (q: string) => void;
+  isSearchOpen: boolean;
+  setIsSearchOpen: (open: boolean) => void;
+  groupSelectedNodes: () => void;
+  ungroupSelectedNodes: () => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -144,6 +153,10 @@ export const useCanvasStore = create<CanvasStore>()(
   isPresentationMode: false,
   stepNodes: [],
   currentStep: -1,
+  isMinimapOpen: false,
+  searchQuery: '',
+  searchResults: [],
+  isSearchOpen: false,
   past: [],
   future: [],
   clipboard: null,
@@ -550,6 +563,96 @@ export const useCanvasStore = create<CanvasStore>()(
   }),
 
   clearStepNodes: () => set({ stepNodes: [], currentStep: -1 }),
+
+  toggleMinimap: () => set((state) => ({ isMinimapOpen: !state.isMinimapOpen })),
+
+  setSearchQuery: (searchQuery) => {
+    const { nodes } = get();
+    const results = searchQuery
+      ? nodes
+          .filter((n) => n.data?.title?.toLowerCase().includes(searchQuery.toLowerCase()))
+          .map((n) => n.id)
+      : [];
+    set({ searchQuery, searchResults: results });
+  },
+
+  setIsSearchOpen: (isSearchOpen) => set({ isSearchOpen }),
+
+  groupSelectedNodes: () => {
+    const { nodes, selectedNodeIds, pushHistory } = get();
+    const selectedNodes = nodes.filter(n => selectedNodeIds.includes(n.id));
+    if (selectedNodes.length < 2) return;
+
+    pushHistory();
+
+    const minX = Math.min(...selectedNodes.map(n => n.position.x));
+    const minY = Math.min(...selectedNodes.map(n => n.position.y));
+    const maxX = Math.max(...selectedNodes.map(n => n.position.x + (n.measured?.width || 150)));
+    const maxY = Math.max(...selectedNodes.map(n => n.position.y + (n.measured?.height || 100)));
+
+    const width = maxX - minX + 40;
+    const height = maxY - minY + 40;
+    const groupId = `group_${Date.now()}`;
+
+    const groupNode: Node = {
+      id: groupId,
+      type: 'group',
+      position: { x: minX - 20, y: minY - 20 },
+      data: { title: 'New Group', parameters: [], description: '' },
+      style: { width, height },
+    };
+
+    const updatedNodes = nodes.map(n => {
+      if (selectedNodeIds.includes(n.id)) {
+        return {
+          ...n,
+          parentId: groupId,
+          extent: 'parent' as const,
+          position: {
+            x: n.position.x - (minX - 20),
+            y: n.position.y - (minY - 20)
+          }
+        };
+      }
+      return n;
+    });
+
+    set({
+      nodes: [groupNode, ...updatedNodes],
+      selectedNodeIds: [groupId],
+      isDirty: true
+    });
+  },
+
+  ungroupSelectedNodes: () => {
+    const { nodes, selectedNodeIds, pushHistory } = get();
+    const groupsToUngroup = nodes.filter(n => n.type === 'group' && selectedNodeIds.includes(n.id));
+
+    if (groupsToUngroup.length === 0) return;
+
+    pushHistory();
+
+    let nextNodes = [...nodes];
+
+    groupsToUngroup.forEach(group => {
+      nextNodes = nextNodes.map(n => {
+        if (n.parentId === group.id) {
+          return {
+            ...n,
+            parentId: undefined,
+            extent: undefined,
+            position: {
+              x: n.position.x + group.position.x,
+              y: n.position.y + group.position.y
+            }
+          };
+        }
+        return n;
+      }).filter(n => n.id !== group.id);
+    });
+
+    set({ nodes: nextNodes, isDirty: true });
+  },
     }),
     {
       name: 'vibeplan-storage',

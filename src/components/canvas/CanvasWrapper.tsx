@@ -5,6 +5,7 @@ import { DiagramCanvas } from './DiagramCanvas';
 import { FreehandCanvas } from './FreehandCanvas';
 import { CanvasControls } from './CanvasControls';
 import { AlignmentGuides } from './AlignmentGuides';
+import { NodeSearch } from './NodeSearch';
 import { ExportModal } from '../modals/ExportModal';
 import { ShareModal } from '../modals/ShareModal';
 import { ShapeLibrary } from '../panels/ShapeLibrary';
@@ -33,6 +34,8 @@ export const CanvasWrapper: React.FC = () => {
       <FreehandCanvas active={canvasMode === 'freehand'} />
 
       <AlignmentGuides />
+
+      <NodeSearch />
 
       {!isPresentationMode && <CanvasControls />}
 

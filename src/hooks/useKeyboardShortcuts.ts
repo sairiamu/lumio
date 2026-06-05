@@ -30,7 +30,12 @@ export const useKeyboardShortcuts = () => {
     isPresentationMode,
     togglePresentationMode,
     nextStep,
-    prevStep
+    prevStep,
+    groupSelectedNodes,
+    ungroupSelectedNodes,
+    setIsSearchOpen,
+    isSearchOpen,
+    setSearchQuery
   } = useCanvasStore();
 
   const { saveProject } = useFileIO();
@@ -42,6 +47,10 @@ export const useKeyboardShortcuts = () => {
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
       ) {
+        if (e.key === 'Escape' && isSearchOpen) {
+          setIsSearchOpen(false);
+          setSearchQuery('');
+        }
         return;
       }
 
@@ -54,7 +63,22 @@ export const useKeyboardShortcuts = () => {
           return;
         }
 
+        // Handle Ctrl+Shift+G for ungroup
+        if (e.shiftKey && e.key.toLowerCase() === 'g') {
+          e.preventDefault();
+          ungroupSelectedNodes();
+          return;
+        }
+
         switch (e.key.toLowerCase()) {
+          case 'f':
+            e.preventDefault();
+            setIsSearchOpen(true);
+            break;
+          case 'g':
+            e.preventDefault();
+            groupSelectedNodes();
+            break;
           case 'e':
             e.preventDefault();
             setExportModalOpen(true);
@@ -213,6 +237,11 @@ export const useKeyboardShortcuts = () => {
     isPresentationMode,
     togglePresentationMode,
     nextStep,
-    prevStep
+    prevStep,
+    groupSelectedNodes,
+    ungroupSelectedNodes,
+    setIsSearchOpen,
+    isSearchOpen,
+    setSearchQuery
   ]);
 };

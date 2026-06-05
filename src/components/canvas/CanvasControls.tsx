@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2, LayoutDashboard } from 'lucide-react';
+import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2, LayoutDashboard, Map } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow, useViewport } from '@xyflow/react';
 import { autoLayout } from '../../utils/layoutUtils';
@@ -7,7 +7,7 @@ import { autoLayout } from '../../utils/layoutUtils';
 export interface CanvasControlsProps {}
 
 export const CanvasControls: React.FC<CanvasControlsProps> = () => {
-  const { isGridEnabled, toggleGrid, undo, redo, past, future, nodes, edges, setNodes, pushHistory } = useCanvasStore();
+  const { isGridEnabled, toggleGrid, undo, redo, past, future, nodes, edges, setNodes, pushHistory, isMinimapOpen, toggleMinimap } = useCanvasStore();
   const { zoomIn, zoomOut, fitView, setViewport, getViewport } = useReactFlow();
   const { zoom } = useViewport();
 
@@ -92,6 +92,15 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
         aria-label="Fit view"
       >
         <Maximize className="w-4 h-4" />
+      </button>
+
+      <button
+        onClick={toggleMinimap}
+        className={`glass-panel p-2.5 transition-all ${isMinimapOpen ? 'bg-accent text-white shadow-lg border-accent' : 'text-text-muted hover:text-text'}`}
+        title="Toggle Minimap"
+        aria-label="Toggle Minimap"
+      >
+        <Map className="w-4 h-4" />
       </button>
     </div>
   );

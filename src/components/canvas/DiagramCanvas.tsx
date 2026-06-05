@@ -4,7 +4,8 @@ import {
   Background,
   BackgroundVariant,
   useReactFlow,
-  MarkerType
+  MarkerType,
+  MiniMap
 } from '@xyflow/react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { RectNode } from '../nodes/RectNode';
@@ -13,6 +14,7 @@ import { DiamondNode } from '../nodes/DiamondNode';
 import { CardNode } from '../nodes/CardNode';
 import { TextNode } from '../nodes/TextNode';
 import { UniversalNode } from '../nodes/UniversalNode';
+import { GroupNode } from '../nodes/GroupNode';
 import { CustomEdge } from './CustomEdge';
 import ContextMenu from './ContextMenu';
 
@@ -23,6 +25,7 @@ const nodeTypes = {
   card: CardNode,
   text: TextNode,
   universal: UniversalNode,
+  group: GroupNode,
 };
 
 const edgeTypes = {
@@ -53,7 +56,8 @@ const DiagramCanvasInner: React.FC = () => {
     currentTheme,
     pushHistory,
     setTrackedNodeId,
-    setAlignmentGuides
+    setAlignmentGuides,
+    isMinimapOpen
   } = useCanvasStore();
 
   const isDark = currentTheme !== 'arctic';
@@ -93,11 +97,23 @@ const DiagramCanvasInner: React.FC = () => {
 
   const onNodeContextMenu = useCallback((event: React.MouseEvent, node: any) => {
     event.preventDefault();
+
+    // Select the node if it's not already selected
+    const isSelected = nodes.find(n => n.id === node.id)?.selected;
+    if (!isSelected) {
+      const updatedNodes = nodes.map((n) => ({
+        ...n,
+        selected: n.id === node.id,
+      }));
+      setNodes(updatedNodes);
+      setSelectedNodeIds([node.id]);
+    }
+
     setCtxX(event.clientX);
     setCtxY(event.clientY);
     setCtxTargetNodeId(node.id);
     setCtxVisible(true);
-  }, []);
+  }, [nodes, setNodes, setSelectedNodeIds]);
 
   const onPaneContextMenu = useCallback((event: React.MouseEvent) => {
     event.preventDefault();
@@ -246,6 +262,17 @@ const DiagramCanvasInner: React.FC = () => {
           size={1}
           color={isGridEnabled ? 'var(--grid-color)' : 'transparent'}
         />
+        {isMinimapOpen && (
+          <MiniMap
+            nodeColor={(node) => (node.data as any)?.clayColor || 'var(--accent)'}
+            maskColor="rgba(15,17,23,0.8)"
+            style={{
+              background: 'var(--panel)',
+              border: '1px solid var(--border)',
+              borderRadius: 12,
+            }}
+          />
+        )}
         <svg style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0 }}>
           <defs>
             <filter id="edge-glow" x="-20%" y="-20%" width="140%" height="140%">

@@ -28,7 +28,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<NodeData>(data);
-  const { nodes, setNodes, isPresentationMode, stepNodes, currentStep } = useCanvasStore();
+  const { nodes, setNodes, isPresentationMode, stepNodes, currentStep, searchQuery, searchResults } = useCanvasStore();
   const editRef = useRef<HTMLDivElement>(null);
   const { glowNodeIds, trackedNodeId } = useTrackedRelations();
 
@@ -39,8 +39,16 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
   const isInStepOrder = stepIndex !== -1;
   const isCurrentStep = isInStepOrder && currentStep === stepIndex;
 
+  const isSearchActive = searchQuery.length > 0;
+  const isMatch = isSearchActive && searchResults.includes(id);
+
   // Opacity logic: if in presentation mode and stepping, dim other nodes
-  const shouldDim = isPresentationMode && currentStep !== -1 && !isCurrentStep;
+  let opacity = 1;
+  if (isPresentationMode && currentStep !== -1 && !isCurrentStep) {
+    opacity = 0.2;
+  } else if (isSearchActive && !isMatch) {
+    opacity = 0.25;
+  }
 
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -111,8 +119,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
       className={`clay-shape relative ${selected ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg' : ''} ${className}`}
       style={{
         backgroundColor: data.clayColor || clayColor,
-        border: '1.5px solid var(--border)',
-        borderColor: data.strokeColor || 'var(--border)',
+        border: isMatch ? '2px solid var(--success)' : (data.strokeColor ? `1.5px solid ${data.strokeColor}` : '1.5px solid var(--border)'),
         boxShadow: isCurrentStep
           ? '0 0 0 3px var(--accent), 0 0 32px 8px var(--accent-light)'
           : isTracked
@@ -120,7 +127,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
               ? '0 0 0 3px var(--accent), 0 0 24px 6px var(--accent-light)'
               : '0 0 0 2px var(--success), 0 0 16px 4px rgba(52,211,153,0.3)'
             : 'none',
-        opacity: shouldDim ? 0.2 : 1,
+        opacity: opacity,
         transition: 'all 0.4s ease-in-out',
         ...style,
         width: '100%',
