@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { NodeData } from '../../types';
 import { useCanvasStore } from '../../store/canvasStore';
+import { useTrackedRelations } from '../../hooks/useTrackedRelations';
 
 interface BaseNodeProps extends NodeProps<NodeData> {
   children?: React.ReactNode;
@@ -29,6 +30,10 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
   const [editData, setEditData] = useState<NodeData>(data);
   const { nodes, setNodes } = useCanvasStore();
   const editRef = useRef<HTMLDivElement>(null);
+  const { glowNodeIds, trackedNodeId } = useTrackedRelations();
+
+  const isTracked = glowNodeIds.includes(id);
+  const isOrigin = trackedNodeId === id;
 
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -101,7 +106,12 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
         backgroundColor: data.clayColor || clayColor,
         border: '1.5px solid var(--border)',
         borderColor: data.strokeColor || 'var(--border)',
-        boxShadow: 'none',
+        boxShadow: isTracked
+          ? isOrigin
+            ? '0 0 0 3px var(--accent), 0 0 24px 6px var(--accent-light)'
+            : '0 0 0 2px var(--success), 0 0 16px 4px rgba(52,211,153,0.3)'
+          : 'none',
+        transition: 'box-shadow 0.25s ease',
         ...style,
         width: '100%',
         height: '100%'

@@ -51,7 +51,8 @@ const DiagramCanvasInner: React.FC = () => {
     deselectAll,
     shapeStyle,
     currentTheme,
-    pushHistory
+    pushHistory,
+    setTrackedNodeId
   } = useCanvasStore();
 
   const isDark = currentTheme !== 'arctic';
@@ -108,6 +109,7 @@ const DiagramCanvasInner: React.FC = () => {
   const onPaneClick = useCallback((event: React.MouseEvent) => {
     deselectAll();
     setIsPanelOpen(false);
+    setTrackedNodeId(null);
 
     const shapeTools = ['rect', 'circle', 'diamond', 'card', 'text'];
     if (shapeTools.includes(currentTool)) {
@@ -153,7 +155,7 @@ const DiagramCanvasInner: React.FC = () => {
       setNodes([...nodes, newNode]);
       setCurrentTool('select');
     }
-  }, [currentTool, pendingNodeType, pendingNodeTitle, nodes, setNodes, screenToFlowPosition, deselectAll, setIsPanelOpen, setCurrentTool, pushHistory]);
+  }, [currentTool, pendingNodeType, pendingNodeTitle, nodes, setNodes, screenToFlowPosition, deselectAll, setIsPanelOpen, setCurrentTool, pushHistory, setTrackedNodeId]);
 
   const onSelectionChange = useCallback(({ nodes, edges }: { nodes: any[]; edges: any[] }) => {
     if (nodes.length > 0 || edges.length > 0) {

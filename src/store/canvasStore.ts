@@ -54,6 +54,8 @@ interface CanvasStore extends CanvasState {
   setPendingNodeType: (type: string | null) => void;
   pendingNodeTitle: string | null;
   setPendingNodeTitle: (title: string | null) => void;
+  trackedNodeId: string | null;
+  setTrackedNodeId: (id: string | null) => void;
   deleteSelectedNodes: () => void;
   deselectAll: () => void;
   saveJSON: () => void;
@@ -98,6 +100,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   isShapeLibraryOpen: false,
   pendingNodeType: null,
   pendingNodeTitle: null,
+  trackedNodeId: null,
   past: [],
   future: [],
   clipboard: null,
@@ -121,6 +124,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   setIsShapeLibraryOpen: (isShapeLibraryOpen) => set({ isShapeLibraryOpen }),
   setPendingNodeType: (pendingNodeType) => set({ pendingNodeType }),
   setPendingNodeTitle: (pendingNodeTitle) => set({ pendingNodeTitle }),
+  setTrackedNodeId: (trackedNodeId) => set({ trackedNodeId }),
   setSelectedNodeIds: (selectedNodeIds) => set({ selectedNodeIds }),
   setSelectedEdgeIds: (selectedEdgeIds) => set({ selectedEdgeIds }),
 

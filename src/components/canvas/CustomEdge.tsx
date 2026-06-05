@@ -1,6 +1,7 @@
 import React from 'react';
 import { EdgeProps, getBezierPath, getSmoothStepPath, getStraightPath } from '@xyflow/react';
 import { useCanvasStore } from '../../store/canvasStore';
+import { useTrackedRelations } from '../../hooks/useTrackedRelations';
 
 export const CustomEdge: React.FC<EdgeProps> = ({
   id,
@@ -41,11 +42,9 @@ export const CustomEdge: React.FC<EdgeProps> = ({
   const selectedNodeIds = useCanvasStore((s) => s.selectedNodeIds);
   const selectedEdgeIds = useCanvasStore((s) => s.selectedEdgeIds);
 
-  const isGlowing =
-    selected ||
-    selectedEdgeIds.includes(id) ||
-    selectedNodeIds.includes(source) ||
-    selectedNodeIds.includes(target);
+  const { glowEdgeIds, edgeColourMap } = useTrackedRelations();
+  const isTrackedGlowing = glowEdgeIds.includes(id);
+  const glowColor = edgeColourMap[id] || 'var(--accent)';
 
   const strokeColor = data.strokeColor || 'var(--text-muted)';
   const strokeWidth = data.strokeWidth || 2;
@@ -59,12 +58,12 @@ export const CustomEdge: React.FC<EdgeProps> = ({
       <path
         id={id + '_glow'}
         d={edgePath}
-        stroke={strokeColor}
-        strokeWidth={(strokeWidth as number) + 6}
-        opacity={isGlowing ? 0.35 : 0}
+        stroke={glowColor}
+        strokeWidth={(strokeWidth as number) + 8}
+        opacity={isTrackedGlowing ? 0.5 : 0}
         filter="url(#edge-glow)"
         fill="none"
-        style={{ transition: 'opacity 0.2s ease', pointerEvents: 'none' }}
+        style={{ transition: 'opacity 0.25s ease', pointerEvents: 'none' }}
       />
       <path
         id={id}

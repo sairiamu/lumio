@@ -4,7 +4,7 @@ import { useCanvasStore } from '../../store/canvasStore';
 import { Layers, Maximize, MousePointer2, Pencil } from 'lucide-react';
 
 export const StatusBar: React.FC = () => {
-  const { nodes, canvasMode } = useCanvasStore();
+  const { nodes, canvasMode, trackedNodeId } = useCanvasStore();
   const { zoom } = useViewport();
   const displayZoom = Math.round((zoom ?? 1) * 100);
 
@@ -25,6 +25,13 @@ export const StatusBar: React.FC = () => {
           <span>{nodes.length} Elements</span>
         </div>
       </div>
+
+      {trackedNodeId && (
+        <div className="absolute left-1/2 -translate-x-1/2 px-3 py-0.5 bg-accent text-white rounded-full font-semibold flex items-center gap-2 shadow-lg border border-white/10 animate-in fade-in zoom-in duration-200">
+          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+          <span>Tracking Relations — Press Esc to clear</span>
+        </div>
+      )}
 
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1.5">

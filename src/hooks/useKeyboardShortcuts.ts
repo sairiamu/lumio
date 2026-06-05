@@ -24,7 +24,8 @@ export const useKeyboardShortcuts = () => {
     deleteSelectedNodes,
     setIsPanelOpen,
     isShapeLibraryOpen,
-    setIsShapeLibraryOpen
+    setIsShapeLibraryOpen,
+    setTrackedNodeId
   } = useCanvasStore();
 
   useEffect(() => {
@@ -148,6 +149,7 @@ export const useKeyboardShortcuts = () => {
           } else {
             deselectAll();
             setIsPanelOpen(false);
+            setTrackedNodeId(null);
           }
           break;
       }
@@ -179,6 +181,7 @@ export const useKeyboardShortcuts = () => {
     zoomIn,
     zoomOut,
     setViewport,
-    deleteSelectedNodes
+    deleteSelectedNodes,
+    setTrackedNodeId
   ]);
 };

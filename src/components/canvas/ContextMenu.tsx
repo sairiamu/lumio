@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow } from '@xyflow/react';
+import { Waypoints } from 'lucide-react';
 
 interface ContextMenuProps {
   visible: boolean;
@@ -12,7 +13,7 @@ interface ContextMenuProps {
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetNodeId, onClose }) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const { nodes, edges, setNodes, updateNodeData } = useCanvasStore();
+  const { nodes, edges, setNodes, updateNodeData, trackedNodeId, setTrackedNodeId } = useCanvasStore();
   const { deleteElements, fitView } = useReactFlow();
   const [clampedPos, setClampedPos] = useState({ left: x, top: y });
   const [hasPaste, setHasPaste] = useState(false);
@@ -93,6 +94,16 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
       position: { x: (node.position as any).x + 24, y: (node.position as any).y + 24 },
     } as any;
     setNodes([...nodes, newNode]);
+    close();
+  };
+
+  const handleTrackRelations = () => {
+    if (!targetNodeId) return;
+    if (trackedNodeId === targetNodeId) {
+      setTrackedNodeId(null);
+    } else {
+      setTrackedNodeId(targetNodeId);
+    }
     close();
   };
 
@@ -177,6 +188,14 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
       {targetNodeId ? (
         <div className="flex flex-col">
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleDuplicate}>Duplicate Node</button>
+          <button
+            className="flex items-center gap-2 text-left px-3 py-2 hover:bg-white/10 rounded transition-colors"
+            style={{ color: 'var(--accent)' }}
+            onClick={handleTrackRelations}
+          >
+            <Waypoints size={16} />
+            Track Relations
+          </button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleEditProperties}>Edit Properties</button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleOpenColour}>Change Colour</button>
           {showColourPicker && (
