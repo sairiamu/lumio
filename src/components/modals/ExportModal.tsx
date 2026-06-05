@@ -8,7 +8,7 @@ export interface ExportModalProps {}
 const ExportModalInner: React.FC = () => {
   const { setExportModalOpen } = useCanvasStore();
   const [activeTab, setActiveTab] = useState<'svg' | 'png' | 'json'>('svg');
-  const { exportAsSVG, exportAsPNG, exportAsJSON, importProject } = useExport();
+  const { exportAsSVG, handlePNGExport, exportAsJSON, importProject } = useExport();
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
@@ -82,7 +82,7 @@ const ExportModalInner: React.FC = () => {
                   Ideal for sharing or embedding in documents.
                 </p>
                 <button
-                  onClick={exportAsPNG}
+                  onClick={handlePNGExport}
                   className="w-full bg-iris hover:bg-iris/90 text-white font-bold py-3 rounded-xl shadow-lg transition-all transform active:scale-[0.98] cursor-pointer"
                 >
                   Export PNG

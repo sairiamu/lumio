@@ -2,12 +2,26 @@ import { toPng, toSvg } from 'html-to-image';
 import { useCanvasStore } from '../store/canvasStore';
 
 export async function exportPNG(): Promise<Uint8Array> {
-  const node = document.querySelector('.react-flow') as HTMLElement;
-  if (!node) throw new Error('Canvas element not found');
+  // Target the inner viewport — not the outer wrapper
+  const node = document.querySelector('.react-flow__viewport') as HTMLElement;
+  if (!node) throw new Error('Viewport element not found');
+
+  // Make sure SVG edges are visible to html-to-image
+  // Force all edge SVG elements to have explicit dimensions
+  const svgEls = node.querySelectorAll('svg');
+  svgEls.forEach((svg) => {
+    if (!svg.getAttribute('width')) {
+      const box = svg.getBoundingClientRect();
+      svg.setAttribute('width', String(box.width));
+      svg.setAttribute('height', String(box.height));
+    }
+  });
 
   const dataUrl = await toPng(node, {
     pixelRatio: 2,
-    backgroundColor: '#1C1E26'
+    backgroundColor: '#1C1E26',
+    includeQueryParams: true,
+    skipFonts: false,
   });
 
   const base64 = dataUrl.split(',')[1];
@@ -16,11 +30,11 @@ export async function exportPNG(): Promise<Uint8Array> {
   return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 }
 
-export async function exportSVG(): Promise<string> {
+export async function exportSVG(): Promise<Uint8Array> {
   const node = document.querySelector('.react-flow') as HTMLElement;
   if (!node) throw new Error('Canvas not found');
 
-  const svgString = await toSvg(node, {
+  const dataUrl = await toSvg(node, {
     backgroundColor: '#1C1E26',
     filter: (child) => {
       if (child instanceof Element) {
@@ -31,7 +45,27 @@ export async function exportSVG(): Promise<string> {
     }
   });
 
-  return svgString;
+  // CRITICAL: extract actual SVG string from data URL
+  let svgString: string;
+
+  if (dataUrl.includes('base64,')) {
+    // base64 encoded — decode it
+    const base64 = dataUrl.split('base64,')[1];
+    svgString = atob(base64);
+  } else {
+    // plain URI encoded — decode URI component
+    const encoded = dataUrl.split('data:image/svg+xml;charset=utf-8,')[1];
+    svgString = decodeURIComponent(encoded);
+  }
+
+  // Verify it starts with < before writing
+  const trimmed = svgString.trimStart();
+  if (!trimmed.startsWith('<')) {
+    throw new Error('SVG extraction failed — content does not start with <');
+  }
+
+  const encoder = new TextEncoder();
+  return encoder.encode(trimmed);
 }
 
 export function buildProjectJSON(): string {

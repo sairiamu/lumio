@@ -8,14 +8,14 @@ export const useExport = () => {
 
   const exportAsSVG = async () => {
     try {
-      const svgString = await exportSVG();
+      const bytes = await exportSVG();
       const path = await save({
         defaultPath: `vibeplan-${Date.now()}.svg`,
         filters: [{ name: 'SVG File', extensions: ['svg'] }]
       });
 
       if (!path || Array.isArray(path)) return;
-      await writeFile(path, new TextEncoder().encode(svgString));
+      await writeFile(path, bytes);
       showToast('SVG export saved', 'success');
     } catch (err) {
       console.error('Failed to save SVG:', err);
@@ -23,16 +23,16 @@ export const useExport = () => {
     }
   };
 
-  const exportAsPNG = async () => {
+  const handlePNGExport = async () => {
     try {
-      const bytes = await exportPNG();
+      const binary = await exportPNG();
       const path = await save({
         defaultPath: `vibeplan-${Date.now()}.png`,
         filters: [{ name: 'PNG Image', extensions: ['png'] }]
       });
 
       if (!path || Array.isArray(path)) return;
-      await writeFile(path, bytes);
+      await writeFile(path, binary);
       showToast('PNG export saved', 'success');
     } catch (err) {
       console.error('Failed to save PNG:', err);
@@ -84,5 +84,5 @@ export const useExport = () => {
     }
   };
 
-  return { exportAsSVG, exportAsPNG, exportAsJSON, importProject };
+  return { exportAsSVG, handlePNGExport, exportAsJSON, importProject };
 };
