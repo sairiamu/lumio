@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "vibeplan",
+        "title": "VibePlan",
         "width": 1280,
         "height": 800,
         "decorations": false,

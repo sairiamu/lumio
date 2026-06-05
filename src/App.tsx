@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { TitleBar } from './components/shell/TitleBar';
 import { ToolBar } from './components/toolbar/ToolBar';
@@ -10,6 +10,7 @@ import { ThemePicker } from './components/modals/ThemePicker';
 import { useCanvasStore } from './store/canvasStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTheme } from './hooks/useTheme';
+import { ensureProjectsDir } from './utils/projectDir';
 
 const App: React.FC = () => {
   const {
@@ -19,6 +20,10 @@ const App: React.FC = () => {
 
   useTheme();
   useKeyboardShortcuts();
+
+  useEffect(() => {
+    ensureProjectsDir().catch(console.error);
+  }, []);
 
   return (
     <div

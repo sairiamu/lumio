@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import {
   Connection,
   Edge,
@@ -22,6 +23,8 @@ interface HistorySnapshot {
 }
 
 interface CanvasStore extends CanvasState {
+  recentProjects: string[];
+  addRecentProject: (path: string) => void;
   setNodes: (nodes: Node<NodeData>[]) => void;
   setEdges: (edges: Edge<EdgeData>[]) => void;
   setSelectedNodeIds: (selectedNodeIds: string[]) => void;
@@ -64,7 +67,6 @@ interface CanvasStore extends CanvasState {
   setIsDirty: (dirty: boolean) => void;
   deleteSelectedNodes: () => void;
   deselectAll: () => void;
-  saveJSON: () => void;
   undo: () => void;
   redo: () => void;
   pushHistory: () => void;
@@ -80,8 +82,19 @@ interface CanvasStore extends CanvasState {
   setTheme: (theme: ThemeName) => void;
 }
 
-export const useCanvasStore = create<CanvasStore>((set, get) => ({
-  nodes: [],
+export const useCanvasStore = create<CanvasStore>()(
+  persist(
+    (set, get) => ({
+      recentProjects: [],
+      addRecentProject: (path: string) => {
+        set((state) => {
+          const filtered = state.recentProjects.filter((p) => p !== path);
+          return {
+            recentProjects: [path, ...filtered].slice(0, 5),
+          };
+        });
+      },
+      nodes: [],
   edges: [],
   selectedNodeIds: [],
   selectedEdgeIds: [],
@@ -325,18 +338,6 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     });
   },
 
-  saveJSON: () => {
-    const { nodes, edges } = get();
-    const data = JSON.stringify({ nodes, edges }, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `vibeplan-export-${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-  },
-
   setShapeStyle: (style) => {
     get().pushHistory();
     set((state) => ({
@@ -479,4 +480,11 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   toggleGrid: () => set((state) => ({ isGridEnabled: !state.isGridEnabled })),
 
   setZoomLevel: (zoomLevel) => set({ zoomLevel }),
-}));
+    }),
+    {
+      name: 'vibeplan-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ recentProjects: state.recentProjects }),
+    }
+  )
+);

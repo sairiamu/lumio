@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import { useCanvasStore } from '../store/canvasStore';
+import { useFileIO } from './useFileIO';
 
 export const useKeyboardShortcuts = () => {
   const { deleteElements, zoomIn, zoomOut, setViewport } = useReactFlow();
-    const {
+  const {
     selectedNodeIds,
     selectedEdgeIds,
     nodes,
@@ -19,14 +20,16 @@ export const useKeyboardShortcuts = () => {
     cut,
     duplicate,
     selectAll,
-    saveJSON,
     deselectAll,
     deleteSelectedNodes,
     setIsPanelOpen,
     isShapeLibraryOpen,
     setIsShapeLibraryOpen,
-    setTrackedNodeId
+    setTrackedNodeId,
+    projectName
   } = useCanvasStore();
+
+  const { saveProject } = useFileIO();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -82,7 +85,7 @@ export const useKeyboardShortcuts = () => {
             break;
           case 's':
             e.preventDefault();
-            saveJSON();
+            saveProject(projectName);
             break;
           case '=':
           case '+':
@@ -173,7 +176,6 @@ export const useKeyboardShortcuts = () => {
     cut,
     duplicate,
     selectAll,
-    saveJSON,
     deselectAll,
     setIsPanelOpen,
     isShapeLibraryOpen,
@@ -182,6 +184,8 @@ export const useKeyboardShortcuts = () => {
     zoomOut,
     setViewport,
     deleteSelectedNodes,
-    setTrackedNodeId
+    setTrackedNodeId,
+    saveProject,
+    projectName
   ]);
 };
