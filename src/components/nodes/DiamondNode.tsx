@@ -22,8 +22,8 @@ export const DiamondNode: React.FC<NodeProps<NodeData>> = (props) => {
         isVisible={props.selected}
         minWidth={70}
         minHeight={70}
-        handleStyle={{ width: 10, height: 10, backgroundColor: 'var(--accent)', borderRadius: '50%' }}
-        lineStyle={{ borderColor: 'var(--accent)', borderWidth: 1 }}
+        handleStyle={{ width: 10, height: 10, backgroundColor: 'var(--accent)', borderRadius: '50%', boxShadow: 'none' }}
+        lineStyle={{ borderColor: 'var(--accent)', borderWidth: 1, boxShadow: 'none' }}
       />
     </BaseNode>
   );

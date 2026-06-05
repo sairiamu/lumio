@@ -99,8 +99,9 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
       className={`clay-shape relative ${selected ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg' : ''} ${className}`}
       style={{
         backgroundColor: data.clayColor || clayColor,
+        border: '1.5px solid var(--border)',
         borderColor: data.strokeColor || 'var(--border)',
-        boxShadow: `6px 6px 0px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.3)`,
+        boxShadow: 'none',
         ...style,
         width: '100%',
         height: '100%'

@@ -8,7 +8,7 @@ export const CardNode: React.FC<NodeProps<NodeData>> = (props) => {
     <BaseNode
       {...props}
       clayColor={props.data.clayColor}
-      className="rounded-lg min-w-[220px] shadow-xl overflow-hidden"
+      className="rounded-lg min-w-[220px] overflow-hidden"
       hideHeader={true}
       contentClassName="!p-0 !flex-col !justify-start"
     >
@@ -36,8 +36,8 @@ export const CardNode: React.FC<NodeProps<NodeData>> = (props) => {
         isVisible={props.selected}
         minWidth={120}
         minHeight={80}
-        handleStyle={{ width: 10, height: 10, backgroundColor: 'var(--accent)', borderRadius: '50%' }}
-        lineStyle={{ borderColor: 'var(--accent)', borderWidth: 1 }}
+        handleStyle={{ width: 10, height: 10, backgroundColor: 'var(--accent)', borderRadius: '50%', boxShadow: 'none' }}
+        lineStyle={{ borderColor: 'var(--accent)', borderWidth: 1, boxShadow: 'none' }}
       />
     </BaseNode>
   );

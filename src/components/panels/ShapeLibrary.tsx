@@ -173,7 +173,7 @@ export const ShapeLibrary: React.FC = () => {
                         className="group flex flex-col items-center justify-center gap-1 w-[56px] h-[56px] clay-shape rounded-xl transition-all hover:scale-105 active:scale-95 border border-border hover:border-accent hover:bg-accent-light"
                         style={{
                           backgroundColor: 'var(--canvas)',
-                          boxShadow: '4px 4px 0px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.1)',
+                          boxShadow: 'none',
                           color: 'var(--text)'
                         }}
                       >

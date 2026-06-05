@@ -73,15 +73,15 @@ html, body, #root {
 
 .clay-shape {
   transition: all 0.15s ease-in-out;
-  box-shadow: 6px 6px 0px rgba(0,0,0,0.25);
-  border: 2px solid rgba(255,255,255,0.2);
+  box-shadow: none;
+  border: 1.5px solid var(--border);
   display: flex;
   flex-direction: column;
 }
 
 .clay-shape:hover {
   transform: scale(1.02);
-  box-shadow: 8px 8px 0px rgba(0,0,0,0.3);
+  box-shadow: none;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -102,7 +102,7 @@ html, body, #root {
 }
 
 .clay-inner-sheen {
-  box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
+  box-shadow: none;
 }
 
 /* Tailwind utility classes fallback (standard flexbox/spacing) */
