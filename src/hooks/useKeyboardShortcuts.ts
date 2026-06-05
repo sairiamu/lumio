@@ -26,7 +26,11 @@ export const useKeyboardShortcuts = () => {
     isShapeLibraryOpen,
     setIsShapeLibraryOpen,
     setTrackedNodeId,
-    projectName
+    projectName,
+    isPresentationMode,
+    togglePresentationMode,
+    nextStep,
+    prevStep
   } = useCanvasStore();
 
   const { saveProject } = useFileIO();
@@ -106,6 +110,23 @@ export const useKeyboardShortcuts = () => {
 
       // Single key shortcuts
       switch (e.key.toLowerCase()) {
+        case 'f11':
+          e.preventDefault();
+          togglePresentationMode();
+          break;
+        case 'arrowright':
+        case ' ':
+          if (isPresentationMode) {
+            e.preventDefault();
+            nextStep();
+          }
+          break;
+        case 'arrowleft':
+          if (isPresentationMode) {
+            e.preventDefault();
+            prevStep();
+          }
+          break;
         case 'v':
           setCurrentTool('select');
           break;
@@ -149,6 +170,8 @@ export const useKeyboardShortcuts = () => {
         case 'escape':
           if (isExportModalOpen) {
             setExportModalOpen(false);
+          } else if (isPresentationMode) {
+            togglePresentationMode();
           } else {
             deselectAll();
             setIsPanelOpen(false);
@@ -186,6 +209,10 @@ export const useKeyboardShortcuts = () => {
     deleteSelectedNodes,
     setTrackedNodeId,
     saveProject,
-    projectName
+    projectName,
+    isPresentationMode,
+    togglePresentationMode,
+    nextStep,
+    prevStep
   ]);
 };

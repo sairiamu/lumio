@@ -69,4 +69,7 @@ export interface CanvasState {
   projectPath: string | null;
   isDirty: boolean;
   alignmentGuides: { x?: number; y?: number };
+  isPresentationMode: boolean;
+  stepNodes: string[];
+  currentStep: number;
 }

@@ -89,6 +89,11 @@ interface CanvasStore extends CanvasState {
   customTemplates: Template[];
   addCustomTemplate: (template: Template) => void;
   deleteCustomTemplate: (id: string) => void;
+  togglePresentationMode: () => void;
+  setStepNodes: (ids: string[]) => void;
+  nextStep: () => void;
+  prevStep: () => void;
+  exitStepMode: () => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -134,6 +139,9 @@ export const useCanvasStore = create<CanvasStore>()(
   projectPath: null,
   isDirty: false,
   alignmentGuides: {},
+  isPresentationMode: false,
+  stepNodes: [],
+  currentStep: -1,
   past: [],
   future: [],
   clipboard: null,
@@ -513,6 +521,26 @@ export const useCanvasStore = create<CanvasStore>()(
   toggleGrid: () => set((state) => ({ isGridEnabled: !state.isGridEnabled })),
 
   setZoomLevel: (zoomLevel) => set({ zoomLevel }),
+
+  togglePresentationMode: () => set((state) => ({ isPresentationMode: !state.isPresentationMode })),
+
+  setStepNodes: (stepNodes) => set({ stepNodes }),
+
+  nextStep: () => set((state) => {
+    if (state.stepNodes.length === 0) return state;
+    const nextStep = state.currentStep + 1;
+    if (nextStep >= state.stepNodes.length) return state;
+    return { currentStep: nextStep };
+  }),
+
+  prevStep: () => set((state) => {
+    if (state.stepNodes.length === 0) return state;
+    const prevStep = state.currentStep - 1;
+    if (prevStep < 0) return state;
+    return { currentStep: prevStep };
+  }),
+
+  exitStepMode: () => set({ currentStep: -1 }),
     }),
     {
       name: 'vibeplan-storage',
