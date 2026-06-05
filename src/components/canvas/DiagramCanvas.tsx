@@ -42,6 +42,7 @@ const DiagramCanvasInner: React.FC = () => {
     onEdgesChange,
     onConnect,
     isGridEnabled,
+    gridStyle,
     canvasMode,
     currentTool,
     pendingNodeType,
@@ -256,12 +257,27 @@ const DiagramCanvasInner: React.FC = () => {
         fitView
         proOptions={{ hideAttribution: true }}
       >
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={20}
-          size={1}
-          color={isGridEnabled ? 'var(--grid-color)' : 'transparent'}
-        />
+        {isGridEnabled && (
+          <>
+            {gridStyle === 'dots' && (
+              <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="var(--grid-color)" />
+            )}
+            {gridStyle === 'lines' && (
+              <Background variant={BackgroundVariant.Lines} gap={16} color="var(--grid-color)" />
+            )}
+            {gridStyle === 'crosshatch' && (
+              <>
+                <Background variant={BackgroundVariant.Lines} gap={16} color="var(--grid-color)" />
+                <Background
+                  variant={BackgroundVariant.Lines}
+                  gap={16}
+                  color="var(--grid-color)"
+                  style={{ transform: 'rotate(90deg)' }}
+                />
+              </>
+            )}
+          </>
+        )}
         {isMinimapOpen && (
           <MiniMap
             nodeColor={(node) => (node.data as any)?.clayColor || 'var(--accent)'}

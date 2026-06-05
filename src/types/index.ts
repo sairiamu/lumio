@@ -58,6 +58,8 @@ export interface CanvasState {
   penColor: string;
   penWidth: number;
   isGridEnabled: boolean;
+  gridStyle: 'none' | 'dots' | 'lines' | 'crosshatch';
+  isCommandPaletteOpen: boolean;
   zoomLevel: number;
   isExportModalOpen: boolean;
   isShareModalOpen: boolean;

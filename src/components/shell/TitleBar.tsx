@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Minus, Square, X, Hexagon, Palette, FileText, FolderOpen, Save, Clock, ChevronDown, Share2, Layout, Monitor } from 'lucide-react';
+import {
+  Minus, Square, X, Hexagon, Palette, FileText, FolderOpen,
+  Save, Clock, ChevronDown, Share2, Layout, Monitor, Search, Grid3X3
+} from 'lucide-react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { confirm } from '@tauri-apps/plugin-dialog';
 import { useCanvasStore } from '../../store/canvasStore';
@@ -15,7 +18,10 @@ export const TitleBar: React.FC = () => {
     setShareModalOpen,
     recentProjects,
     setTemplateModalOpen,
-    togglePresentationMode
+    togglePresentationMode,
+    toggleCommandPalette,
+    toggleGrid,
+    isGridEnabled
   } = useCanvasStore();
   const { saveProject, loadProject } = useFileIO();
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
@@ -136,6 +142,26 @@ export const TitleBar: React.FC = () => {
             </div>
           )}
         </div>
+
+        <div className="h-4 w-px bg-white/10 mx-1" />
+
+        <button
+          onClick={toggleCommandPalette}
+          className="flex items-center gap-1.5 px-2 py-1 rounded-md text-text-muted hover:bg-white/5 hover:text-text transition-colors text-xs font-medium"
+          title="Command Palette (Ctrl+P)"
+        >
+          <Search className="w-3.5 h-3.5 text-accent" />
+          Commands
+        </button>
+
+        <button
+          onClick={toggleGrid}
+          className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors text-xs font-medium ${isGridEnabled ? 'text-accent hover:bg-white/10' : 'text-text-muted hover:bg-white/5'}`}
+          title="Toggle Grid (G)"
+        >
+          <Grid3X3 className="w-3.5 h-3.5" />
+          Grid
+        </button>
 
         <div className="flex items-center gap-1.5 pointer-events-none">
           <span className="text-text-muted/30 font-light mx-1">—</span>

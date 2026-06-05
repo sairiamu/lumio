@@ -1,5 +1,5 @@
-import React from 'react';
-import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2, LayoutDashboard, Map } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2, LayoutDashboard, Map, Square, Grip, Rows, Hash } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow, useViewport } from '@xyflow/react';
 import { autoLayout } from '../../utils/layoutUtils';
@@ -7,11 +7,39 @@ import { autoLayout } from '../../utils/layoutUtils';
 export interface CanvasControlsProps {}
 
 export const CanvasControls: React.FC<CanvasControlsProps> = () => {
-  const { isGridEnabled, toggleGrid, undo, redo, past, future, nodes, edges, setNodes, pushHistory, isMinimapOpen, toggleMinimap } = useCanvasStore();
+  const {
+    isGridEnabled,
+    gridStyle,
+    setGridStyle,
+    toggleGrid,
+    undo,
+    redo,
+    past,
+    future,
+    nodes,
+    edges,
+    setNodes,
+    pushHistory,
+    isMinimapOpen,
+    toggleMinimap
+  } = useCanvasStore();
   const { zoomIn, zoomOut, fitView, setViewport, getViewport } = useReactFlow();
   const { zoom } = useViewport();
 
+  const [showGridOptions, setShowGridOptions] = useState(false);
+  const gridButtonRef = useRef<HTMLDivElement>(null);
+
   const displayZoom = Math.round((zoom ?? 1) * 100);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (gridButtonRef.current && !gridButtonRef.current.contains(event.target as Node)) {
+        setShowGridOptions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleFitView = () => {
     const viewport = getViewport();
@@ -27,6 +55,11 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
     const laid = autoLayout(nodes, edges);
     setNodes(laid);
     setTimeout(() => fitView({ padding: 0.2, duration: 400 }), 50);
+  };
+
+  const handleGridContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowGridOptions(true);
   };
 
   return (
@@ -78,13 +111,41 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
         <LayoutDashboard className="w-4 h-4" />
       </button>
 
-      <button
-        onClick={toggleGrid}
-        className={`glass-panel p-2.5 transition-all ${isGridEnabled ? 'text-accent shadow-lg' : 'text-text-muted'}`}
-        aria-label="Toggle grid"
-      >
-        <Grid3X3 className="w-4 h-4" />
-      </button>
+      <div className="relative" ref={gridButtonRef}>
+        <button
+          onClick={toggleGrid}
+          onContextMenu={handleGridContextMenu}
+          className={`glass-panel p-2.5 transition-all ${isGridEnabled ? 'text-accent shadow-lg' : 'text-text-muted'}`}
+          aria-label="Toggle grid"
+          title="Right-click for grid styles"
+        >
+          <Grid3X3 className="w-4 h-4" />
+        </button>
+
+        {showGridOptions && (
+          <div className="absolute bottom-full left-0 mb-2 glass-panel p-2 grid grid-cols-2 gap-2 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-200">
+            {[
+              { id: 'none', icon: Square, label: 'None' },
+              { id: 'dots', icon: Grip, label: 'Dots' },
+              { id: 'lines', icon: Rows, label: 'Lines' },
+              { id: 'crosshatch', icon: Hash, label: 'Crosshatch' }
+            ].map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => {
+                  setGridStyle(opt.id as any);
+                  setShowGridOptions(false);
+                  if (!isGridEnabled) toggleGrid();
+                }}
+                className={`p-2 rounded-lg transition-all flex items-center justify-center ${gridStyle === opt.id ? 'ring-2 ring-accent bg-accent/20' : 'hover:bg-white/10'}`}
+                title={opt.label}
+              >
+                <opt.icon className="w-4 h-4 text-text" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       <button
         onClick={handleFitView}

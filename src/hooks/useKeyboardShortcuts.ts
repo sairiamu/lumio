@@ -36,7 +36,9 @@ export const useKeyboardShortcuts = () => {
     ungroupSelectedNodes,
     setIsSearchOpen,
     isSearchOpen,
-    setSearchQuery
+    setSearchQuery,
+    toggleCommandPalette,
+    toggleGrid
   } = useCanvasStore();
 
   const { saveProject } = useFileIO();
@@ -80,6 +82,11 @@ export const useKeyboardShortcuts = () => {
         }
 
         switch (e.key.toLowerCase()) {
+          case 'p':
+          case 'k':
+            e.preventDefault();
+            toggleCommandPalette();
+            break;
           case 'f':
             e.preventDefault();
             setIsSearchOpen(true);
@@ -159,6 +166,9 @@ export const useKeyboardShortcuts = () => {
             e.preventDefault();
             prevStep();
           }
+          break;
+        case 'g':
+          toggleGrid();
           break;
         case 'v':
           setCurrentTool('select');
@@ -251,6 +261,8 @@ export const useKeyboardShortcuts = () => {
     ungroupSelectedNodes,
     setIsSearchOpen,
     isSearchOpen,
-    setSearchQuery
+    setSearchQuery,
+    toggleCommandPalette,
+    toggleGrid
   ]);
 };

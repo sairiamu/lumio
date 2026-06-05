@@ -109,6 +109,8 @@ interface CanvasStore extends CanvasState {
   setSearchQuery: (q: string) => void;
   isSearchOpen: boolean;
   setIsSearchOpen: (open: boolean) => void;
+  setGridStyle: (style: 'none' | 'dots' | 'lines' | 'crosshatch') => void;
+  toggleCommandPalette: () => void;
   groupSelectedNodes: () => void;
   ungroupSelectedNodes: () => void;
   toasts: ToastMessage[];
@@ -146,6 +148,8 @@ export const useCanvasStore = create<CanvasStore>()(
   penColor: 'var(--text)',
   penWidth: 3,
   isGridEnabled: true,
+  gridStyle: 'dots',
+  isCommandPaletteOpen: false,
   zoomLevel: 1,
   isExportModalOpen: false,
   isShareModalOpen: false,
@@ -587,6 +591,9 @@ export const useCanvasStore = create<CanvasStore>()(
 
   setIsSearchOpen: (isSearchOpen) => set({ isSearchOpen }),
 
+  setGridStyle: (gridStyle) => set({ gridStyle }),
+  toggleCommandPalette: () => set((state) => ({ isCommandPaletteOpen: !state.isCommandPaletteOpen })),
+
   toasts: [],
   addToast: (message, type) => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -682,7 +689,10 @@ export const useCanvasStore = create<CanvasStore>()(
     {
       name: 'vibeplan-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ recentProjects: state.recentProjects }),
+      partialize: (state) => ({
+        recentProjects: state.recentProjects,
+        gridStyle: state.gridStyle
+      }),
     }
   )
 );
