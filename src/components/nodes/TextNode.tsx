@@ -15,8 +15,8 @@ export const TextNode: React.FC<NodeProps<NodeData>> = (props) => {
         isVisible={props.selected}
         minWidth={60}
         minHeight={24}
-        handleStyle={{ width: 10, height: 10, backgroundColor: 'var(--iris)', borderRadius: '50%' }}
-        lineStyle={{ borderColor: 'var(--iris)', borderWidth: 1 }}
+        handleStyle={{ width: 10, height: 10, backgroundColor: 'var(--accent)', borderRadius: '50%' }}
+        lineStyle={{ borderColor: 'var(--accent)', borderWidth: 1 }}
       />
     </BaseNode>
     

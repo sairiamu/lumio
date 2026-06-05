@@ -24,17 +24,17 @@ export const CanvasControls: React.FC = () => {
       <div className="glass-panel p-1 flex items-center gap-1">
         <button
           onClick={() => zoomOut({ duration: 200 })}
-          className="p-1.5 hover:bg-white/10 rounded-md transition-colors text-fog hover:text-cloud"
+          className="p-1.5 hover:bg-white/10 rounded-md transition-colors text-text-muted hover:text-text"
           aria-label="Zoom out"
         >
           <Minus className="w-4 h-4" />
         </button>
-        <div className="w-10 text-center text-[11px] font-mono font-medium">
+        <div className="w-10 text-center text-[11px] font-mono font-medium text-text">
           {displayZoom}%
         </div>
         <button
           onClick={() => zoomIn({ duration: 200 })}
-          className="p-1.5 hover:bg-white/10 rounded-md transition-colors text-fog hover:text-cloud"
+          className="p-1.5 hover:bg-white/10 rounded-md transition-colors text-text-muted hover:text-text"
           aria-label="Zoom in"
         >
           <Plus className="w-4 h-4" />
@@ -43,7 +43,7 @@ export const CanvasControls: React.FC = () => {
 
       <button
         onClick={toggleGrid}
-        className={`glass-panel p-2.5 transition-all ${isGridEnabled ? 'text-iris shadow-[0_0_12px_rgba(99,102,241,0.3)]' : 'text-fog'}`}
+        className={`glass-panel p-2.5 transition-all ${isGridEnabled ? 'text-accent shadow-lg' : 'text-text-muted'}`}
         aria-label="Toggle grid"
       >
         <Grid3X3 className="w-4 h-4" />
@@ -51,7 +51,7 @@ export const CanvasControls: React.FC = () => {
 
       <button
         onClick={handleFitView}
-        className="glass-panel p-2.5 text-fog hover:text-cloud"
+        className="glass-panel p-2.5 text-text-muted hover:text-text"
         aria-label="Fit view"
       >
         <Maximize className="w-4 h-4" />

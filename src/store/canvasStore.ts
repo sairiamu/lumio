@@ -13,6 +13,7 @@ import {
   OnConnect
 } from '@xyflow/react';
 import { CanvasState, CanvasMode, ToolType, ShapeStyle, Stroke, NodeData, EdgeData } from '../types';
+import { ThemeName } from '../themes/themes';
 
 interface CanvasStore extends CanvasState {
   setNodes: (nodes: Node<NodeData>[]) => void;
@@ -34,6 +35,8 @@ interface CanvasStore extends CanvasState {
   setZoomLevel: (zoom: number) => void;
   isExportModalOpen: boolean;
   setExportModalOpen: (open: boolean) => void;
+  isThemePickerOpen: boolean;
+  setThemePickerOpen: (open: boolean) => void;
   isPanelOpen: boolean;
   setIsPanelOpen: (open: boolean) => void;
   togglePanelOpen: () => void;
@@ -43,6 +46,8 @@ interface CanvasStore extends CanvasState {
   undo: () => void;
   takeSnapshot: () => void;
   past: { nodes: Node<NodeData>[]; edges: Edge[] }[];
+  currentTheme: ThemeName;
+  setTheme: (theme: ThemeName) => void;
 }
 
 export const useCanvasStore = create<CanvasStore>((set, get) => ({
@@ -64,8 +69,15 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   isGridEnabled: true,
   zoomLevel: 1,
   isExportModalOpen: false,
+  isThemePickerOpen: false,
   isPanelOpen: false,
   past: [],
+  currentTheme: (localStorage.getItem('vibeplan-theme') as ThemeName) || 'slate',
+
+  setTheme: (theme: ThemeName) => {
+    localStorage.setItem('vibeplan-theme', theme);
+    set({ currentTheme: theme });
+  },
 
   setNodes: (nodes) => {
     get().takeSnapshot();
@@ -76,6 +88,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     set({ edges });
   },
   setExportModalOpen: (isExportModalOpen) => set({ isExportModalOpen }),
+  setThemePickerOpen: (isThemePickerOpen) => set({ isThemePickerOpen }),
   setIsPanelOpen: (isPanelOpen) => set({ isPanelOpen }),
   togglePanelOpen: () => set((state) => ({ isPanelOpen: !state.isPanelOpen })),
   setSelectedNodeIds: (selectedNodeIds) => set({ selectedNodeIds }),
@@ -174,7 +187,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       id: `edge_${Date.now()}`,
       type: 'default',
       data: {
-        strokeColor: '#94A3B8',
+        strokeColor: 'var(--text-muted)',
         strokeWidth: 2,
         strokeStyle: 'solid',
         animated: false,

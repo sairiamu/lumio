@@ -5,8 +5,10 @@ import { ToolBar } from './components/toolbar/ToolBar';
 import { CanvasWrapper } from './components/canvas/CanvasWrapper';
 import { PropertiesPanel } from './components/panels/PropertiesPanel';
 import { StatusBar } from './components/shell/StatusBar';
+import { ThemePicker } from './components/modals/ThemePicker';
 import { useCanvasStore } from './store/canvasStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useTheme } from './hooks/useTheme';
 
 const App: React.FC = () => {
   const {
@@ -21,6 +23,7 @@ const App: React.FC = () => {
     togglePanelOpen
   } = useCanvasStore();
 
+  useTheme();
   useKeyboardShortcuts();
 
   useEffect(() => {
@@ -98,20 +101,20 @@ const App: React.FC = () => {
   return (
     <div
       className="flex flex-col h-screen overflow-hidden"
-      style={{ backgroundColor: 'var(--void)', color: 'var(--cloud)' }}
+      style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}
     >
       <TitleBar />
 
       <div className="flex flex-1 relative overflow-hidden">
         <ToolBar />
 
-        <main className="flex-1 relative overflow-hidden" style={{ backgroundColor: 'var(--ash)' }}>
+        <main className="flex-1 relative overflow-hidden" style={{ backgroundColor: 'var(--canvas)' }}>
           <CanvasWrapper />
 
           <button
             type="button"
             onClick={togglePanelOpen}
-            className={`absolute top-4 right-4 z-40 rounded-full p-2 transition-all duration-200 shadow-lg ${isPanelOpen ? 'bg-iris text-white' : 'glass-panel text-cloud hover:bg-white/10'}`}
+            className={`absolute top-4 right-4 z-40 rounded-full p-2 transition-all duration-200 shadow-lg ${isPanelOpen ? 'bg-accent text-white' : 'glass-panel text-text hover:bg-white/10'}`}
             aria-label="Properties Panel"
           >
             <SlidersHorizontal className="w-5 h-5" />
@@ -126,9 +129,10 @@ const App: React.FC = () => {
       </div>
 
       <StatusBar />
+      <ThemePicker />
 
       {/* Visual Debug Indicator */}
-      <div className="absolute top-12 left-20 bg-indigo-600 px-2 py-1 rounded text-white text-[10px] z-100 shadow-lg pointer-events-none" style={{ backgroundColor: 'var(--iris)' }}>
+      <div className="absolute top-12 left-20 bg-accent px-2 py-1 rounded text-white text-[10px] z-100 shadow-lg pointer-events-none">
         VibePlan
       </div>
     </div>

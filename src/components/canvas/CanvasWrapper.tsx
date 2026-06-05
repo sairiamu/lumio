@@ -9,7 +9,7 @@ export const CanvasWrapper: React.FC = () => {
   const { canvasMode } = useCanvasStore();
 
   return (
-    <div className="w-full h-full relative bg-ash">
+    <div className="w-full h-full relative bg-canvas">
       {/* The diagram canvas is always present but its interaction might be limited when drawing */}
       <DiagramCanvas />
 

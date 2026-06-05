@@ -87,7 +87,7 @@ export const FreehandCanvas: React.FC<FreehandCanvasProps> = ({ active }) => {
     if (!ctx) return;
 
     ctx.beginPath();
-    ctx.strokeStyle = '#6366F1'; // Iris
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#6366F1';
     ctx.lineWidth = 3;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -107,7 +107,7 @@ export const FreehandCanvas: React.FC<FreehandCanvasProps> = ({ active }) => {
     if (currentPoints.current.length > 1) {
       addFreehandStroke({
         points: [...currentPoints.current],
-        color: '#6366F1',
+        color: getComputedStyle(document.documentElement).getPropertyValue('--accent') || '#6366F1',
         width: 3,
         opacity: 1
       });

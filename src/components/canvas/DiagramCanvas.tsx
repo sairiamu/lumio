@@ -44,25 +44,28 @@ const DiagramCanvasInner: React.FC = () => {
     setSelectedEdgeIds,
     setIsPanelOpen,
     deselectAll,
-    shapeStyle
+    shapeStyle,
+    currentTheme
   } = useCanvasStore();
+
+  const isDark = currentTheme !== 'arctic';
 
   const styledEdges = useMemo(() => {
     return edges.map((edge) => ({
       ...edge,
       type: edge.data?.pathType === 'default' ? undefined : edge.data?.pathType,
       style: {
-        stroke: edge.data?.strokeColor || '#94A3B8',
+        stroke: edge.data?.strokeColor || 'var(--text-muted)',
         strokeWidth: edge.data?.strokeWidth || 2,
         strokeDasharray:
           edge.data?.strokeStyle === 'dashed' ? '8 4' :
           edge.data?.strokeStyle === 'dotted' ? '2 4' :
           undefined,
       },
-      markerStart: edge.data?.lineStart === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || '#94A3B8' } :
-                  edge.data?.lineStart === 'circle' ? { type: MarkerType.Circle, color: edge.data?.strokeColor || '#94A3B8' } : undefined,
-      markerEnd: edge.data?.lineEnd === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || '#94A3B8' } :
-                edge.data?.lineEnd === 'circle' ? { type: MarkerType.Circle, color: edge.data?.strokeColor || '#94A3B8' } : undefined,
+      markerStart: edge.data?.lineStart === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } :
+                  edge.data?.lineStart === 'circle' ? { type: MarkerType.Circle, color: edge.data?.strokeColor || 'var(--text-muted)' } : undefined,
+      markerEnd: edge.data?.lineEnd === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } :
+                edge.data?.lineEnd === 'circle' ? { type: MarkerType.Circle, color: edge.data?.strokeColor || 'var(--text-muted)' } : undefined,
       animated: edge.data?.animated || false,
     }));
   }, [edges]);
@@ -147,7 +150,7 @@ const DiagramCanvasInner: React.FC = () => {
     <div className="relative w-full h-full">
       {nodes.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-          <p className="text-fog font-sans text-sm animate-pulse">
+          <p className="text-text-muted font-sans text-sm animate-pulse">
             Click a shape in the toolbar to get started
           </p>
         </div>
@@ -166,7 +169,7 @@ const DiagramCanvasInner: React.FC = () => {
         edgeTypes={edgeTypes}
         onPaneClick={onPaneClick}
         style={rfStyle}
-        colorMode="dark"
+        colorMode={isDark ? 'dark' : 'light'}
         nodesDraggable={canvasMode === 'diagram'}
         nodesConnectable={canvasMode === 'diagram'}
         elementsSelectable={canvasMode === 'diagram'}
@@ -183,7 +186,7 @@ const DiagramCanvasInner: React.FC = () => {
           variant={BackgroundVariant.Dots}
           gap={20}
           size={1}
-          color={isGridEnabled ? 'rgba(255,255,255,0.05)' : 'transparent'}
+          color={isGridEnabled ? 'var(--grid-color)' : 'transparent'}
         />
         <svg style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0 }}>
           <defs>

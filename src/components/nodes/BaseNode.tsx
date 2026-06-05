@@ -94,7 +94,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
   return (
     <div
       onDoubleClick={handleDoubleClick}
-      className={`clay-shape relative ${selected ? 'ring-2 ring-iris ring-offset-2 ring-offset-void' : ''} ${className}`}
+      className={`clay-shape relative ${selected ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg' : ''} ${className}`}
       style={{
         backgroundColor: color,
         borderColor: data.strokeColor || 'rgba(255,255,255,0.2)',
@@ -104,17 +104,17 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
         height: '100%'
       }}
     >
-      <Handle type="target" position={Position.Top} className="w-2 h-2 !bg-mint border-none" />
-      <Handle type="source" position={Position.Bottom} className="w-2 h-2 !bg-mint border-none" />
-      <Handle type="target" position={Position.Left} className="w-1.5 h-1.5 !bg-mint border-none" />
-      <Handle type="source" position={Position.Right} className="w-1.5 h-1.5 !bg-mint border-none" />
+      <Handle type="target" position={Position.Top} className="w-2 h-2 !bg-success border-none" />
+      <Handle type="source" position={Position.Bottom} className="w-2 h-2 !bg-success border-none" />
+      <Handle type="target" position={Position.Left} className="w-1.5 h-1.5 !bg-success border-none" />
+      <Handle type="source" position={Position.Right} className="w-1.5 h-1.5 !bg-success border-none" />
 
-      <div className={`p-4 text-void flex flex-col ${contentClassName}`} style={contentStyle} ref={editRef}>
+      <div className={`p-4 text-[var(--clay-text)] flex flex-col ${contentClassName}`} style={contentStyle} ref={editRef}>
         {isEditing ? (
           <div className="flex flex-col gap-2 min-w-[160px]" onKeyDown={handleKeyDown}>
             <input
               autoFocus
-              className="bg-white/30 border-none rounded px-1.5 py-0.5 font-mono font-bold text-[13px] outline-none placeholder:text-void/40"
+              className="bg-white/30 border-none rounded px-1.5 py-0.5 font-mono font-bold text-[13px] outline-none placeholder:text-[var(--clay-text)]/40"
               value={editData.title}
               onChange={(e) => setEditData({ ...editData, title: e.target.value })}
               placeholder="Title"
@@ -146,7 +146,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
               </button>
             </div>
             <textarea
-              className="bg-white/20 border-none rounded px-1.5 py-1 font-sans text-[11px] outline-none resize-none placeholder:text-void/40"
+              className="bg-white/20 border-none rounded px-1.5 py-1 font-sans text-[11px] outline-none resize-none placeholder:text-[var(--clay-text)]/40"
               value={editData.description}
               onChange={(e) => setEditData({ ...editData, description: e.target.value })}
               placeholder="Description"
@@ -155,7 +155,7 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
           </div>
         ) : (
           <>
-            <div className="font-mono font-bold text-[14px] leading-tight mb-2 border-b border-void/10 pb-1">
+            <div className="font-mono font-bold text-[14px] leading-tight mb-2 border-b border-[var(--clay-text)]/10 pb-1">
               {data.title || 'Untitled'}
             </div>
 

@@ -170,7 +170,7 @@ export const ColourPicker: React.FC<{ mode?: 'node' | 'edge' }> = ({ mode = 'nod
   return (
     <div className="flex flex-col gap-4">
       {mode === 'node' && (
-        <div className="grid grid-cols-2 rounded-xl overflow-hidden border border-white/10 bg-white/5 text-[11px]">
+        <div className="grid grid-cols-2 rounded-xl overflow-hidden border border-border bg-white/5 text-[11px]">
           {COLOR_TABS.map((tab) => (
             <button
               key={tab}
@@ -178,8 +178,8 @@ export const ColourPicker: React.FC<{ mode?: 'node' | 'edge' }> = ({ mode = 'nod
               onClick={() => setActiveTab(tab)}
               className={`py-2 text-sm font-semibold transition ${
                 activeTab === tab
-                  ? 'bg-iris text-void'
-                  : 'bg-graphite/80 text-cloud hover:bg-white/10'
+                  ? 'bg-accent text-white'
+                  : 'bg-panel text-text hover:bg-white/10'
               }`}
             >
               {tab === 'fill' ? 'Fill' : 'Stroke'}
@@ -189,7 +189,7 @@ export const ColourPicker: React.FC<{ mode?: 'node' | 'edge' }> = ({ mode = 'nod
       )}
 
       {mode === 'edge' && (
-        <label className="block text-[10px] font-sora uppercase tracking-[0.18em] text-fog mb-[-8px]">
+        <label className="block text-[10px] font-sora uppercase tracking-[0.18em] text-text-muted mb-[-8px]">
           Line Colour
         </label>
       )}
@@ -202,7 +202,7 @@ export const ColourPicker: React.FC<{ mode?: 'node' | 'edge' }> = ({ mode = 'nod
             onClick={() => handleSwatchSelect(color)}
             className={`h-7 w-7 rounded-xl transition-transform duration-150 ${
               isSelectedSwatch(color)
-                ? 'ring-2 ring-offset-1 ring-iris'
+                ? 'ring-2 ring-offset-1 ring-accent'
                 : 'hover:scale-110'
             }`}
             style={{ backgroundColor: color }}
@@ -212,11 +212,11 @@ export const ColourPicker: React.FC<{ mode?: 'node' | 'edge' }> = ({ mode = 'nod
       </div>
 
       <div className="flex items-end gap-3">
-        <div className="rounded-2xl bg-linear-to-br from-iris/70 via-white/10 to-amber-400 p-px">
+        <div className="rounded-2xl bg-linear-to-br from-accent/70 via-white/10 to-accent/40 p-px">
           <button
             type="button"
             onClick={openColorInput}
-            className="min-w-23 rounded-2xl bg-graphite/80 px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-cloud transition hover:border-white/20"
+            className="min-w-23 rounded-2xl bg-panel px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-text transition hover:border-white/20"
           >
             Custom
           </button>
@@ -230,20 +230,20 @@ export const ColourPicker: React.FC<{ mode?: 'node' | 'edge' }> = ({ mode = 'nod
           className="sr-only"
         />
 
-        <div className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
-          <label className="block text-[10px] font-sora uppercase tracking-[0.18em] text-fog">Hex</label>
+        <div className="flex-1 rounded-2xl border border-border bg-white/5 px-3 py-2">
+          <label className="block text-[10px] font-sora uppercase tracking-[0.18em] text-text-muted">Hex</label>
           <input
             type="text"
             value={activeHex}
             onChange={(event) => handleHexChange(event.target.value)}
-            className="mt-1 w-full bg-transparent text-[13px] font-mono text-cloud outline-none placeholder:text-fog"
+            className="mt-1 w-full bg-transparent text-[13px] font-mono text-text outline-none placeholder:text-text-muted"
             placeholder="#000000"
           />
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-        <div className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-fog">
+      <div className="rounded-2xl border border-border bg-white/5 p-3">
+        <div className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-text-muted">
           <span>Opacity</span>
           <span>{activeOpacity}%</span>
         </div>
@@ -254,7 +254,7 @@ export const ColourPicker: React.FC<{ mode?: 'node' | 'edge' }> = ({ mode = 'nod
           step={1}
           value={activeOpacity}
           onChange={(event) => handleOpacityChange(Number(event.target.value))}
-          className="w-full accent-iris"
+          className="w-full accent-accent"
         />
       </div>
     </div>

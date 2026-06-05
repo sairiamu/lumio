@@ -6,34 +6,50 @@
   --font-sans: "Inter", sans-serif;
   --font-sora: "Sora", sans-serif;
 
-  --color-iris: var(--iris);
-  --color-iris-light: var(--iris-light);
-  --color-mint: var(--mint);
-  --color-ember: var(--ember);
-  --color-cloud: var(--cloud);
-  --color-fog: var(--fog);
-  --color-void: var(--void);
-  --color-ash: var(--ash);
-  --color-graphite: var(--graphite);
-  --color-steel: var(--steel);
+  --color-bg: var(--bg);
+  --color-canvas: var(--canvas);
+  --color-panel: var(--panel);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-light: var(--accent-light);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-grid: var(--grid-color);
+
+  /* Legacy aliases for transition period if needed */
+  --color-void: var(--bg);
+  --color-ash: var(--canvas);
+  --color-graphite: var(--panel);
+  --color-iris: var(--accent);
+  --color-cloud: var(--text);
+  --color-fog: var(--text-muted);
+  --color-mint: var(--success);
+  --color-ember: var(--danger);
 }
 
 :root {
-  --void: #0F1117;
-  --ash: #1C1E26;
-  --graphite: #252830;
-  --steel: #3A3D4A;
-  --iris: #6366F1;
-  --iris-light: #6366F166;
-  --mint: #34D399;
-  --ember: #F87171;
-  --cloud: #E2E8F0;
-  --fog: #94A3B8;
+  /* Slate Studio (Default) */
+  --bg: #0F1117;
+  --canvas: #1C1E26;
+  --panel: rgba(37,40,48,0.65);
+  --border: rgba(255,255,255,0.08);
+  --text: #E2E8F0;
+  --text-muted: #94A3B8;
+  --accent: #6366F1;
+  --accent-light: rgba(99,102,241,0.2);
+  --success: #34D399;
+  --danger: #F87171;
+  --grid-color: rgba(255,255,255,0.04);
+
+  /* Clay colors remain consistent across themes as they are element-specific */
   --clay-blue: #7EB8F7;
   --clay-purple: #B48EF7;
   --clay-green: #6EDBB4;
   --clay-peach: #F7A97E;
   --clay-pink: #F78EBF;
+  --clay-text: #0F1117;
 }
 
 html, body, #root {
@@ -41,17 +57,17 @@ html, body, #root {
   padding: 0;
   height: 100%;
   width: 100%;
-  background-color: var(--void);
-  color: var(--cloud);
+  background-color: var(--bg);
+  color: var(--text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   overflow: hidden;
 }
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--panel);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 

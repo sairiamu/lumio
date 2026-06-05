@@ -14,8 +14,8 @@ export const CardNode: React.FC<NodeProps<NodeData>> = (props) => {
         isVisible={props.selected}
         minWidth={120}
         minHeight={80}
-        handleStyle={{ width: 10, height: 10, backgroundColor: 'var(--iris)', borderRadius: '50%' }}
-        lineStyle={{ borderColor: 'var(--iris)', borderWidth: 1 }}
+        handleStyle={{ width: 10, height: 10, backgroundColor: 'var(--accent)', borderRadius: '50%' }}
+        lineStyle={{ borderColor: 'var(--accent)', borderWidth: 1 }}
       />
     </BaseNode>
   );

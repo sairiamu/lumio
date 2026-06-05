@@ -170,31 +170,31 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
   return (
     <div
       ref={ref}
-      className="absolute z-50 p-2 bg-white/5 backdrop-blur-xl border border-white/8 rounded-xl shadow-2xl w-44 text-sm"
+      className="absolute z-50 p-2 glass-panel w-44 text-sm text-text"
       style={{ left: clampedPos.left, top: clampedPos.top }}
       role="menu"
     >
       {targetNodeId ? (
         <div className="flex flex-col">
-          <button className="text-left px-3 py-2 hover:bg-white/3 rounded" onClick={handleDuplicate}>Duplicate Node</button>
-          <button className="text-left px-3 py-2 hover:bg-white/3 rounded" onClick={handleEditProperties}>Edit Properties</button>
-          <button className="text-left px-3 py-2 hover:bg-white/3 rounded" onClick={handleOpenColour}>Change Colour</button>
+          <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleDuplicate}>Duplicate Node</button>
+          <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleEditProperties}>Edit Properties</button>
+          <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleOpenColour}>Change Colour</button>
           {showColourPicker && (
             <div className="px-3 py-2">
-              <input type="color" value={tempColour} onChange={(e) => setTempColour(e.target.value)} className="w-full h-8 p-0 m-0" />
+              <input type="color" value={tempColour} onChange={(e) => setTempColour(e.target.value)} className="w-full h-8 p-0 m-0 cursor-pointer" />
               <div className="flex gap-2 mt-2">
-                <button className="flex-1 py-1 bg-iris rounded" onClick={applyColour}>Apply</button>
-                <button className="flex-1 py-1 bg-white/10 rounded" onClick={() => setShowColourPicker(false)}>Cancel</button>
+                <button className="flex-1 py-1 bg-accent text-white rounded transition-colors hover:opacity-90" onClick={applyColour}>Apply</button>
+                <button className="flex-1 py-1 bg-white/10 text-text rounded transition-colors hover:bg-white/20" onClick={() => setShowColourPicker(false)}>Cancel</button>
               </div>
             </div>
           )}
-          <button className="text-left px-3 py-2 rounded mt-1" onClick={handleDelete} style={{ color: '#F87171' }}>Delete Node</button>
+          <button className="text-left px-3 py-2 rounded mt-1 text-danger hover:bg-danger/10 transition-colors" onClick={handleDelete}>Delete Node</button>
         </div>
       ) : (
         <div className="flex flex-col">
-          <button className="text-left px-3 py-2 hover:bg-white/3 rounded" onClick={handlePaste} disabled={!hasPaste}>Paste</button>
-          <button className="text-left px-3 py-2 hover:bg-white/3 rounded" onClick={handleSelectAll}>Select All</button>
-          <button className="text-left px-3 py-2 hover:bg-white/3 rounded" onClick={handleFitView}>Fit View</button>
+          <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors disabled:opacity-30" onClick={handlePaste} disabled={!hasPaste}>Paste</button>
+          <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleSelectAll}>Select All</button>
+          <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleFitView}>Fit View</button>
         </div>
       )}
     </div>

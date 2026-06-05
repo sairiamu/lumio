@@ -43,7 +43,7 @@ export const ToolBar: React.FC = () => {
         ))}
       </div>
 
-      <div className="pt-4 border-t border-white/10 w-full flex flex-col items-center">
+      <div className="pt-4 border-t border-border w-full flex flex-col items-center">
         <ToolButton
           icon={Download}
           label="Export"

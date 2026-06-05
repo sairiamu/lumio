@@ -32,7 +32,7 @@ export const EdgePropertiesPanel: React.FC = () => {
 
       {/* THICKNESS ROW */}
       <div className="flex flex-col gap-3">
-        <label className="text-[10px] font-sora uppercase tracking-[0.18em] text-fog font-semibold">Thickness</label>
+        <label className="text-[10px] font-sora uppercase tracking-[0.18em] text-text-muted font-semibold">Thickness</label>
         <div className="grid grid-cols-3 gap-2">
           {[
             { label: 'Thin', value: 1 },
@@ -44,8 +44,8 @@ export const EdgePropertiesPanel: React.FC = () => {
               onClick={() => updateEdgeData(selectedEdge.id, { strokeWidth: t.value })}
               className={`py-2.5 text-[11px] font-bold rounded-xl transition-all duration-200 border ${
                 strokeWidth === t.value
-                  ? 'bg-iris border-iris text-void shadow-[0_0_12px_rgba(99,102,241,0.4)]'
-                  : 'bg-white/5 border-white/5 text-cloud hover:bg-white/10 hover:border-white/10'
+                  ? 'bg-accent border-accent text-white shadow-lg'
+                  : 'bg-white/5 border-border text-text hover:bg-white/10'
               }`}
             >
               {t.label}
@@ -56,7 +56,7 @@ export const EdgePropertiesPanel: React.FC = () => {
 
       {/* STYLE ROW */}
       <div className="flex flex-col gap-3">
-        <label className="text-[10px] font-sora uppercase tracking-[0.18em] text-fog font-semibold">Line Style</label>
+        <label className="text-[10px] font-sora uppercase tracking-[0.18em] text-text-muted font-semibold">Line Style</label>
         <div className="grid grid-cols-3 gap-2">
           {[
             { label: 'Solid', value: 'solid', icon: <Minus className="w-4 h-4" /> },
@@ -68,11 +68,11 @@ export const EdgePropertiesPanel: React.FC = () => {
               onClick={() => updateEdgeData(selectedEdge.id, { strokeStyle: s.value as any })}
               className={`py-3 flex flex-col items-center gap-2 rounded-xl transition-all duration-200 border ${
                 strokeStyle === s.value
-                  ? 'bg-iris border-iris text-void shadow-[0_0_12px_rgba(99,102,241,0.4)]'
-                  : 'bg-white/5 border-white/5 text-cloud hover:bg-white/10 hover:border-white/10'
+                  ? 'bg-accent border-accent text-white shadow-lg'
+                  : 'bg-white/5 border-border text-text hover:bg-white/10'
               }`}
             >
-              <div className={strokeStyle === s.value ? 'text-void' : 'text-iris'}>
+              <div className={strokeStyle === s.value ? 'text-white' : 'text-accent'}>
                 {s.icon}
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider">{s.label}</span>
@@ -83,7 +83,7 @@ export const EdgePropertiesPanel: React.FC = () => {
 
       {/* PATH TYPE ROW */}
       <div className="flex flex-col gap-3">
-        <label className="text-[10px] font-sora uppercase tracking-[0.18em] text-fog font-semibold">Path Type</label>
+        <label className="text-[10px] font-sora uppercase tracking-[0.18em] text-text-muted font-semibold">Path Type</label>
         <div className="grid grid-cols-4 gap-1.5">
           {[
             { label: 'Bez', value: 'default', icon: <Spline className="w-3.5 h-3.5" /> },
@@ -96,12 +96,12 @@ export const EdgePropertiesPanel: React.FC = () => {
               onClick={() => updateEdgeData(selectedEdge.id, { pathType: p.value as any })}
               className={`py-2 flex flex-col items-center gap-1 rounded-lg transition-all border ${
                 pathType === p.value
-                  ? 'bg-iris border-iris text-void'
-                  : 'bg-white/5 border-white/5 text-cloud hover:bg-white/10'
+                  ? 'bg-accent border-accent text-white'
+                  : 'bg-white/5 border-border text-text hover:bg-white/10'
               }`}
               title={p.label}
             >
-              <div className={pathType === p.value ? 'text-void' : 'text-iris'}>{p.icon}</div>
+              <div className={pathType === p.value ? 'text-white' : 'text-accent'}>{p.icon}</div>
               <span className="text-[9px] font-bold uppercase">{p.label}</span>
             </button>
           ))}
@@ -110,10 +110,10 @@ export const EdgePropertiesPanel: React.FC = () => {
 
       {/* JOINTERS / MARKERS */}
       <div className="flex flex-col gap-3">
-        <label className="text-[10px] font-sora uppercase tracking-[0.18em] text-fog font-semibold">Jointers (Start / End)</label>
+        <label className="text-[10px] font-sora uppercase tracking-[0.18em] text-text-muted font-semibold">Jointers (Start / End)</label>
         <div className="flex gap-4">
           <div className="flex-1 flex flex-col gap-2">
-            <span className="text-[9px] text-fog/60 uppercase text-center">Start</span>
+            <span className="text-[9px] text-text-muted/60 uppercase text-center">Start</span>
             <div className="grid grid-cols-3 gap-1">
               {[
                 { value: 'none', icon: <Square className="w-3 h-3 opacity-20" /> },
@@ -124,7 +124,7 @@ export const EdgePropertiesPanel: React.FC = () => {
                   key={m.value}
                   onClick={() => updateEdgeData(selectedEdge.id, { lineStart: m.value as any })}
                   className={`py-2 flex justify-center rounded-lg border transition ${
-                    lineStart === m.value ? 'bg-iris border-iris text-void' : 'bg-white/5 border-white/5 text-iris'
+                    lineStart === m.value ? 'bg-accent border-accent text-white' : 'bg-white/5 border-border text-accent'
                   }`}
                 >
                   {m.icon}
@@ -134,7 +134,7 @@ export const EdgePropertiesPanel: React.FC = () => {
           </div>
 
           <div className="flex-1 flex flex-col gap-2">
-            <span className="text-[9px] text-fog/60 uppercase text-center">End</span>
+            <span className="text-[9px] text-text-muted/60 uppercase text-center">End</span>
             <div className="grid grid-cols-3 gap-1">
               {[
                 { value: 'none', icon: <Square className="w-3 h-3 opacity-20" /> },
@@ -145,7 +145,7 @@ export const EdgePropertiesPanel: React.FC = () => {
                   key={m.value}
                   onClick={() => updateEdgeData(selectedEdge.id, { lineEnd: m.value as any })}
                   className={`py-2 flex justify-center rounded-lg border transition ${
-                    lineEnd === m.value ? 'bg-iris border-iris text-void' : 'bg-white/5 border-white/5 text-iris'
+                    lineEnd === m.value ? 'bg-accent border-accent text-white' : 'bg-white/5 border-border text-accent'
                   }`}
                 >
                   {m.icon}

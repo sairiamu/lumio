@@ -47,7 +47,7 @@ export const CustomEdge: React.FC<EdgeProps> = ({
     selectedNodeIds.includes(source) ||
     selectedNodeIds.includes(target);
 
-  const strokeColor = data.strokeColor || '#94A3B8';
+  const strokeColor = data.strokeColor || 'var(--text-muted)';
   const strokeWidth = data.strokeWidth || 2;
   const dashArray =
     data.strokeStyle === 'dashed' ? '8 4' :
