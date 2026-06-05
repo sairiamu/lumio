@@ -3,6 +3,7 @@ import { DiagramCanvas } from './DiagramCanvas';
 import { FreehandCanvas } from './FreehandCanvas';
 import { CanvasControls } from './CanvasControls';
 import { ExportModal } from '../modals/ExportModal';
+import { ShareModal } from '../modals/ShareModal';
 import { ShapeLibrary } from '../panels/ShapeLibrary';
 import { useCanvasStore } from '../../store/canvasStore';
 
@@ -22,6 +23,7 @@ export const CanvasWrapper: React.FC = () => {
       <ShapeLibrary />
 
       <ExportModal />
+      <ShareModal />
     </div>
   );
 };

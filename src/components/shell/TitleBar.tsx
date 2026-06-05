@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Minus, Square, X, Hexagon, Palette, FileText, FolderOpen, Save, Clock, ChevronDown } from 'lucide-react';
+import { Minus, Square, X, Hexagon, Palette, FileText, FolderOpen, Save, Clock, ChevronDown, Share2 } from 'lucide-react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { confirm } from '@tauri-apps/plugin-dialog';
 import { useCanvasStore } from '../../store/canvasStore';
@@ -11,6 +11,8 @@ export const TitleBar: React.FC = () => {
     isDirty,
     setThemePickerOpen,
     isThemePickerOpen,
+    isShareModalOpen,
+    setShareModalOpen,
     recentProjects
   } = useCanvasStore();
   const { saveProject, loadProject } = useFileIO();
@@ -135,6 +137,13 @@ export const TitleBar: React.FC = () => {
       </div>
 
       <div className="flex items-center -mr-2">
+        <button
+          onClick={() => setShareModalOpen(!isShareModalOpen)}
+          className={`p-2 hover:bg-white/10 transition-colors mr-1 rounded-lg ${isShareModalOpen ? 'text-accent' : 'text-text-muted'}`}
+          aria-label="Share Project"
+        >
+          <Share2 className="w-4 h-4" />
+        </button>
         <button
           onClick={() => setThemePickerOpen(!isThemePickerOpen)}
           className={`p-2 hover:bg-white/10 transition-colors mr-2 rounded-lg ${isThemePickerOpen ? 'text-accent' : 'text-text-muted'}`}

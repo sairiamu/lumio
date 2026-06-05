@@ -46,6 +46,8 @@ interface CanvasStore extends CanvasState {
   setZoomLevel: (zoom: number) => void;
   isExportModalOpen: boolean;
   setExportModalOpen: (open: boolean) => void;
+  isShareModalOpen: boolean;
+  setShareModalOpen: (open: boolean) => void;
   isThemePickerOpen: boolean;
   setThemePickerOpen: (open: boolean) => void;
   isPanelOpen: boolean;
@@ -114,6 +116,7 @@ export const useCanvasStore = create<CanvasStore>()(
   isGridEnabled: true,
   zoomLevel: 1,
   isExportModalOpen: false,
+  isShareModalOpen: false,
   isThemePickerOpen: false,
   isPanelOpen: false,
   isShapeLibraryOpen: false,
@@ -144,6 +147,7 @@ export const useCanvasStore = create<CanvasStore>()(
     set({ edges, isDirty: true });
   },
   setExportModalOpen: (isExportModalOpen) => set({ isExportModalOpen }),
+  setShareModalOpen: (isShareModalOpen) => set({ isShareModalOpen }),
   setThemePickerOpen: (isThemePickerOpen) => set({ isThemePickerOpen }),
   setIsPanelOpen: (isPanelOpen) => set({ isPanelOpen }),
   togglePanelOpen: () => set((state) => ({ isPanelOpen: !state.isPanelOpen })),

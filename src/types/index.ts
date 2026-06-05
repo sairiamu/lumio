@@ -60,6 +60,7 @@ export interface CanvasState {
   isGridEnabled: boolean;
   zoomLevel: number;
   isExportModalOpen: boolean;
+  isShareModalOpen: boolean;
   isShapeLibraryOpen: boolean;
   pendingNodeType: string | null;
   pendingNodeTitle: string | null;
