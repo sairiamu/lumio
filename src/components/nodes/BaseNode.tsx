@@ -111,7 +111,22 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
       <Handle type="target" position={Position.Left} className="w-1.5 h-1.5 !bg-success border-none" />
       <Handle type="source" position={Position.Right} className="w-1.5 h-1.5 !bg-success border-none" />
 
-      <div className={`p-4 text-text flex flex-col ${contentClassName}`} style={contentStyle} ref={editRef}>
+      <div
+        className={`text-text ${contentClassName}`}
+        style={{
+          width: '100%',
+          height: '100%',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '8px',
+          boxSizing: 'border-box',
+          ...contentStyle
+        }}
+        ref={editRef}
+      >
         {isEditing ? (
           <div className="flex flex-col gap-2 min-w-[160px]" onKeyDown={handleKeyDown}>
             <input
@@ -158,26 +173,57 @@ export const BaseNode: React.FC<BaseNodeProps> = ({
         ) : (
           <>
             {!hideHeader && (
-              <div className="font-mono font-bold text-[14px] leading-tight mb-2 border-b border-border pb-1">
+              <p
+                className="font-mono font-bold text-[14px] text-center m-0 w-full"
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                  lineHeight: 1.3,
+                  maxHeight: '100%',
+                  overflow: 'hidden',
+                }}
+              >
                 {data.title || 'Untitled'}
-              </div>
+              </p>
             )}
 
             {data.parameters && data.parameters.length > 0 && (
-              <div className="flex flex-col gap-1 mb-2">
+              <div className="flex flex-col gap-1 w-full overflow-hidden">
                 {data.parameters.map((param, i) => (
-                  <div key={i} className="flex text-[10px] font-mono items-baseline">
-                    <span className="font-bold opacity-60 mr-1.5 uppercase tracking-tighter">{param.key}:</span>
+                  <p
+                    key={i}
+                    className="text-[10px] font-mono text-center m-0 w-full"
+                    style={{
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word',
+                      whiteSpace: 'pre-wrap',
+                      lineHeight: 1.3,
+                      maxHeight: '100%',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <span className="font-bold opacity-60 mr-1 uppercase tracking-tighter">{param.key}:</span>
                     <span className="font-medium">{param.value}</span>
-                  </div>
+                  </p>
                 ))}
               </div>
             )}
 
             {data.description && (
-              <div className="font-sans text-[11px] opacity-75 leading-snug italic">
+              <p
+                className="font-sans text-[11px] opacity-75 italic text-center m-0 w-full"
+                style={{
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                  lineHeight: 1.3,
+                  maxHeight: '100%',
+                  overflow: 'hidden',
+                }}
+              >
                 {data.description}
-              </div>
+              </p>
             )}
             {children}
           </>

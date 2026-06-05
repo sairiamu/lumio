@@ -14,13 +14,29 @@ export const UniversalNode: React.FC<NodeProps<NodeData>> = (props) => {
       {...props}
       clayColor={props.data.clayColor || 'var(--accent-light)'}
       className="rounded-[20px] flex items-center justify-center min-w-[80px] min-h-[80px]"
-      contentClassName="items-center justify-center"
+      contentClassName="!p-0"
       hideHeader={true}
     >
-      <div className="flex flex-col items-center justify-center gap-2" style={{ color: 'var(--text)' }}>
-        <IconComponent size={28} color="currentColor" />
-        <div className="text-[12px] font-bold text-center leading-tight">
-          {props.data.title || shapeType}
+      <div className="w-full h-full flex flex-col" style={{ color: 'var(--text)' }}>
+        <div className="h-[60%] flex items-center justify-center">
+          <IconComponent size={32} color="currentColor" />
+        </div>
+        <div className="h-[40%] overflow-hidden px-1 flex items-center justify-center">
+          <p
+            className="m-0 text-center w-full"
+            style={{
+              fontSize: 'clamp(9px, 1.5vw, 13px)',
+              fontWeight: 'bold',
+              lineHeight: 1.2,
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word',
+              whiteSpace: 'pre-wrap',
+              maxHeight: '100%',
+              overflow: 'hidden',
+            }}
+          >
+            {props.data.title || shapeType}
+          </p>
         </div>
       </div>
       <NodeResizer
