@@ -80,15 +80,15 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   canvasMode: 'diagram',
   currentTool: 'select',
   shapeStyle: {
-    fill: '#7EB8F7', // Default clay-blue
-    stroke: '#3A3D4A',
+    fill: 'var(--accent)', // Default clay-blue
+    stroke: 'var(--border)',
     strokeWidth: 2,
     fontSize: 13,
     fontFamily: 'JetBrains Mono',
     opacity: 1,
   },
   freehandStrokes: [],
-  penColor: '#E2E8F0',
+  penColor: 'var(--text)',
   penWidth: 3,
   isGridEnabled: true,
   zoomLevel: 1,

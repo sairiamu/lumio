@@ -30,7 +30,7 @@ export interface NodeData extends Record<string, unknown> {
   title: string;
   parameters: NodeParameter[];
   description: string;
-  color?: string;
+  clayColor?: string;
   strokeColor?: string;
   label?: string;
 }

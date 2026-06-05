@@ -125,11 +125,7 @@ const DiagramCanvasInner: React.FC = () => {
           title: '',
           parameters: [],
           description: '',
-          color: currentTool === 'rect' ? '#7EB8F7' :
-                 currentTool === 'circle' ? '#B48EF7' :
-                 currentTool === 'diamond' ? '#F7A97E' :
-                 currentTool === 'card' ? '#6EDBB4' :
-                 currentTool === 'text' ? 'transparent' : '#7EB8F7'
+          clayColor: currentTool === 'text' ? 'transparent' : 'var(--accent-light)'
         },
       };
 
@@ -150,7 +146,7 @@ const DiagramCanvasInner: React.FC = () => {
           shapeType: pendingNodeType,
           parameters: [],
           description: '',
-          color: '#7EB8F7'
+          clayColor: 'var(--accent-light)'
         },
       };
 

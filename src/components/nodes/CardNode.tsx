@@ -7,7 +7,7 @@ export const CardNode: React.FC<NodeProps<NodeData>> = (props) => {
   return (
     <BaseNode
       {...props}
-      color={props.data.color}
+      clayColor={props.data.clayColor}
       className="rounded-lg min-w-[220px] shadow-xl"
     >
       <NodeResizer

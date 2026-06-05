@@ -12,14 +12,14 @@ export const UniversalNode: React.FC<NodeProps<NodeData>> = (props) => {
   return (
     <BaseNode
       {...props}
-      color={props.data.color || '#7EB8F7'}
+      clayColor={props.data.clayColor || 'var(--accent-light)'}
       className="rounded-[20px] flex items-center justify-center min-w-[80px] min-h-[80px]"
       contentClassName="items-center justify-center"
       hideHeader={true}
     >
-      <div className="flex flex-col items-center justify-center gap-2">
-        <IconComponent size={28} className="text-[var(--clay-text)]" />
-        <div className="text-[12px] font-bold text-[var(--clay-text)] text-center leading-tight">
+      <div className="flex flex-col items-center justify-center gap-2" style={{ color: 'var(--text)' }}>
+        <IconComponent size={28} color="currentColor" />
+        <div className="text-[12px] font-bold text-center leading-tight">
           {props.data.title || shapeType}
         </div>
       </div>

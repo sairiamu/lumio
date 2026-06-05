@@ -19,7 +19,7 @@ export const CircleNode: React.FC<NodeProps<NodeData>> = (props) => {
   return (
     <BaseNode
       {...props}
-      color={props.data.color}
+      clayColor={props.data.clayColor}
       className="rounded-full w-[160px] h-[160px] flex items-center justify-center text-center"
       contentClassName="w-full"
     >

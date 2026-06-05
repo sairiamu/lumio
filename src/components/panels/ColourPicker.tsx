@@ -80,7 +80,7 @@ export const ColourPicker: React.FC<{ mode?: 'node' | 'edge' }> = ({ mode = 'nod
     [edges, selectedEdgeIds]
   );
 
-  const fillValue = mode === 'node' ? (selectedNode?.data.color ?? '#7EB8F7') : 'transparent';
+  const fillValue = mode === 'node' ? (selectedNode?.data.clayColor ?? '#7EB8F7') : 'transparent';
   const strokeValue = mode === 'node'
     ? (selectedNode?.data.strokeColor ?? 'rgba(255,255,255,0.2)')
     : (selectedEdge?.data?.strokeColor ?? '#94A3B8');
@@ -109,7 +109,7 @@ export const ColourPicker: React.FC<{ mode?: 'node' | 'edge' }> = ({ mode = 'nod
     const formatted = formatColorValue(nextHex, nextOpacity);
     if (mode === 'node' && selectedNode) {
       if (activeTab === 'fill') {
-        updateNodeData(selectedNode.id, { color: formatted });
+        updateNodeData(selectedNode.id, { clayColor: formatted });
       } else {
         updateNodeData(selectedNode.id, { strokeColor: formatted });
       }

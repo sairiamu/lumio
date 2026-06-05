@@ -10,7 +10,7 @@ export const DiamondNode: React.FC<NodeProps<NodeData>> = (props) => {
   return (
     <BaseNode
       {...props}
-      color={props.data.color}
+      clayColor={props.data.clayColor}
       className="w-[180px] h-[180px] rotate-45 flex items-center justify-center text-center"
       contentClassName="-rotate-45 p-6"
       contentStyle={{ width: inner, height: inner }}

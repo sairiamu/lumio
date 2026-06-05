@@ -17,7 +17,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
   const [clampedPos, setClampedPos] = useState({ left: x, top: y });
   const [hasPaste, setHasPaste] = useState(false);
   const [showColourPicker, setShowColourPicker] = useState(false);
-  const [tempColour, setTempColour] = useState('#ffffff');
+  const [tempColour, setTempColour] = useState('var(--accent-light)');
 
   useEffect(() => {
     if (!visible) return;
@@ -111,13 +111,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
   const handleOpenColour = () => {
     if (!targetNodeId) return;
     const node = nodes.find((n) => n.id === targetNodeId);
-    setTempColour((node?.data?.color as string) || '#ffffff');
+    setTempColour((node?.data?.clayColor as string) || 'var(--accent-light)');
     setShowColourPicker(true);
   };
 
   const applyColour = () => {
     if (!targetNodeId) return;
-    updateNodeData(targetNodeId, { color: tempColour });
+    updateNodeData(targetNodeId, { clayColor: tempColour });
     setShowColourPicker(false);
     close();
   };

@@ -7,7 +7,7 @@ export const TextNode: React.FC<NodeProps<NodeData>> = (props) => {
   return (
     <BaseNode
       {...props}
-      color="transparent"
+      clayColor="transparent"
       className="!shadow-none !border-none"
       style={{ backgroundColor: 'transparent' }}
     >

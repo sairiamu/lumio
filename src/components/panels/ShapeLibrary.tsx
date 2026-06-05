@@ -131,15 +131,15 @@ export const ShapeLibrary: React.FC = () => {
     <div
       className="fixed left-16 top-1/2 -translate-y-1/2 w-[280px] h-[400px] z-50 glass-panel flex flex-col overflow-hidden animate-in fade-in slide-in-from-left-4 duration-200"
       style={{
-        backgroundColor: 'rgba(37, 40, 48, 0.8)',
-        backdropFilter: 'blur(20px) saturate(180%)',
+        backgroundColor: 'var(--panel)',
+        backdropFilter: 'blur(24px) saturate(180%)',
       }}
     >
-      <div className="p-4 border-b border-white/10 flex items-center justify-between">
-        <h2 className="text-cloud font-semibold text-sm tracking-wide">SHAPE LIBRARY</h2>
+      <div className="p-4 border-b border-border flex items-center justify-between">
+        <h2 className="text-text font-semibold text-sm tracking-wide">SHAPE LIBRARY</h2>
         <button
           onClick={() => setIsShapeLibraryOpen(false)}
-          className="text-fog hover:text-cloud transition-colors"
+          className="text-text-muted hover:text-text transition-colors"
         >
           <Lucide.X size={16} />
         </button>
@@ -151,7 +151,7 @@ export const ShapeLibrary: React.FC = () => {
             <div key={category.name} className="flex flex-col gap-2">
               <button
                 onClick={() => toggleCategory(category.name)}
-                className="flex items-center gap-2 text-[10px] font-bold text-fog tracking-widest hover:text-cloud transition-colors text-left uppercase"
+                className="flex items-center gap-2 text-[10px] font-bold text-text-muted tracking-widest hover:text-text transition-colors text-left uppercase"
               >
                 {expandedCategories.includes(category.name) ? (
                   <ChevronDown size={12} />
@@ -170,14 +170,15 @@ export const ShapeLibrary: React.FC = () => {
                         key={shape.name}
                         onClick={() => handleShapeSelect(shape)}
                         title={shape.name}
-                        className="group flex flex-col items-center justify-center gap-1 w-[56px] h-[56px] clay-shape rounded-xl transition-all hover:scale-105 active:scale-95 border-2 border-transparent hover:border-iris"
+                        className="group flex flex-col items-center justify-center gap-1 w-[56px] h-[56px] clay-shape rounded-xl transition-all hover:scale-105 active:scale-95 border border-border hover:border-accent hover:bg-accent-light"
                         style={{
-                          backgroundColor: 'var(--graphite)',
+                          backgroundColor: 'var(--canvas)',
                           boxShadow: '4px 4px 0px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.1)',
+                          color: 'var(--text)'
                         }}
                       >
-                        <Icon size={20} className="text-cloud group-hover:text-iris transition-colors" />
-                        <span className="text-[9px] text-fog group-hover:text-cloud transition-colors truncate w-full text-center px-1">
+                        <Icon size={20} color="currentColor" className="group-hover:text-accent transition-colors" />
+                        <span className="text-[9px] text-text-muted group-hover:text-text transition-colors truncate w-full text-center px-1">
                           {shape.name}
                         </span>
                       </button>

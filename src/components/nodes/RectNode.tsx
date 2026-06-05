@@ -7,7 +7,7 @@ export const RectNode: React.FC<NodeProps<NodeData>> = (props) => {
   return (
     <BaseNode
       {...props}
-      color={props.data.color}
+      clayColor={props.data.clayColor}
       className="rounded-[16px] min-w-[180px]"
     >
       <NodeResizer
