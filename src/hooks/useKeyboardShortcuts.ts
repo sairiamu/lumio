@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import { useCanvasStore } from '../store/canvasStore';
 import { useFileIO } from './useFileIO';
+import { useExport } from './useExport';
 
 export const useKeyboardShortcuts = () => {
   const { deleteElements, zoomIn, zoomOut, setViewport } = useReactFlow();
@@ -39,6 +40,7 @@ export const useKeyboardShortcuts = () => {
   } = useCanvasStore();
 
   const { saveProject } = useFileIO();
+  const { handleCopyToClipboard: copyCanvas } = useExport();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -67,6 +69,13 @@ export const useKeyboardShortcuts = () => {
         if (e.shiftKey && e.key.toLowerCase() === 'g') {
           e.preventDefault();
           ungroupSelectedNodes();
+          return;
+        }
+
+        // Handle Ctrl+Shift+C for copy canvas image
+        if (e.shiftKey && e.key.toLowerCase() === 'c') {
+          e.preventDefault();
+          copyCanvas();
           return;
         }
 

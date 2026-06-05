@@ -1,7 +1,8 @@
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { useCanvasStore } from '../store/canvasStore';
-import { exportPNG, exportSVG, showToast } from '../utils/exportUtils';
+import { exportPNG, exportSVG, exportPDF, copyCanvasToClipboard, showToast } from '../utils/exportUtils';
+import { getDefaultSavePath } from '../utils/projectDir';
 import { useFileIO } from './useFileIO';
 
 export const useExport = () => {
@@ -12,7 +13,7 @@ export const useExport = () => {
     try {
       const bytes = await exportSVG();
       const path = await save({
-        defaultPath: `vibeplan-${Date.now()}.svg`,
+        defaultPath: await getDefaultSavePath(`vibeplan-${Date.now()}`, 'svg'),
         filters: [{ name: 'SVG File', extensions: ['svg'] }]
       });
 
@@ -29,7 +30,7 @@ export const useExport = () => {
     try {
       const binary = await exportPNG();
       const path = await save({
-        defaultPath: `vibeplan-${Date.now()}.png`,
+        defaultPath: await getDefaultSavePath(`vibeplan-${Date.now()}`, 'png'),
         filters: [{ name: 'PNG Image', extensions: ['png'] }]
       });
 
@@ -42,6 +43,33 @@ export const useExport = () => {
     }
   };
 
+  const handlePDFExport = async () => {
+    try {
+      const bytes = await exportPDF();
+      const path = await save({
+        defaultPath: await getDefaultSavePath(`vibeplan-${Date.now()}`, 'pdf'),
+        filters: [{ name: 'PDF Document', extensions: ['pdf'] }]
+      });
+
+      if (!path || Array.isArray(path)) return;
+      await writeFile(path, bytes);
+      showToast('PDF export saved', 'success');
+    } catch (err) {
+      console.error('Failed to save PDF:', err);
+      showToast('PDF export failed', 'error');
+    }
+  };
+
+  const handleCopyToClipboard = async () => {
+    try {
+      await copyCanvasToClipboard();
+      showToast('Canvas copied to clipboard', 'success');
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+      showToast('Clipboard copy failed', 'error');
+    }
+  };
+
   const exportAsJSON = async () => {
     await saveProject(state.projectName);
   };
@@ -50,5 +78,5 @@ export const useExport = () => {
     await loadProject();
   };
 
-  return { exportAsSVG, handlePNGExport, exportAsJSON, importProject };
+  return { exportAsSVG, handlePNGExport, handlePDFExport, handleCopyToClipboard, exportAsJSON, importProject };
 };

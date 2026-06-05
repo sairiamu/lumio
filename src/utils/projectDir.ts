@@ -11,7 +11,7 @@ export async function ensureProjectsDir(): Promise<string> {
   return projectsPath
 }
 
-export async function getDefaultSavePath(projectName: string): Promise<string> {
+export async function getDefaultSavePath(projectName: string, extension: string = 'vibeplan.json'): Promise<string> {
   const dir = await ensureProjectsDir()
-  return await join(dir, `${projectName}.vibeplan.json`)
+  return await join(dir, `${projectName}.${extension}`)
 }

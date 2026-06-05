@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Download, FileJson, Image, FileCode, Upload } from 'lucide-react';
+import { X, Download, FileJson, Image, FileCode, Upload, FileText, ClipboardCopy } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useExport } from '../../hooks/useExport';
 
@@ -7,8 +7,8 @@ export interface ExportModalProps {}
 
 const ExportModalInner: React.FC = () => {
   const { setExportModalOpen } = useCanvasStore();
-  const [activeTab, setActiveTab] = useState<'svg' | 'png' | 'json'>('svg');
-  const { exportAsSVG, handlePNGExport, exportAsJSON, importProject } = useExport();
+  const [activeTab, setActiveTab] = useState<'svg' | 'png' | 'pdf' | 'json'>('svg');
+  const { exportAsSVG, handlePNGExport, handlePDFExport, handleCopyToClipboard, exportAsJSON, importProject } = useExport();
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
@@ -47,6 +47,15 @@ const ExportModalInner: React.FC = () => {
           >
             <Image className="w-4 h-4" />
             PNG
+          </button>
+          <button
+            onClick={() => setActiveTab('pdf')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-all cursor-pointer ${
+              activeTab === 'pdf' ? 'bg-accent text-white shadow-lg' : 'hover:bg-white/5 text-text-muted'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            PDF
           </button>
           <button
             onClick={() => setActiveTab('json')}
@@ -89,6 +98,19 @@ const ExportModalInner: React.FC = () => {
                 </button>
               </div>
             )}
+            {activeTab === 'pdf' && (
+              <div className="space-y-4">
+                <p className="text-text-muted text-sm">
+                  Document format. Great for sharing a fixed layout or printing.
+                </p>
+                <button
+                  onClick={handlePDFExport}
+                  className="w-full bg-accent hover:opacity-90 text-white font-bold py-3 rounded-xl shadow-lg transition-all transform active:scale-[0.98] cursor-pointer"
+                >
+                  Export PDF
+                </button>
+              </div>
+            )}
             {activeTab === 'json' && (
               <div className="space-y-4">
                 <p className="text-text-muted text-sm">
@@ -112,6 +134,17 @@ const ExportModalInner: React.FC = () => {
                 </div>
               </div>
             )}
+          </div>
+
+          <div className="pt-2 border-t border-white/5">
+            <button
+              onClick={handleCopyToClipboard}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-text font-medium transition-all active:scale-[0.98] cursor-pointer"
+            >
+              <ClipboardCopy className="w-4 h-4" />
+              Copy to Clipboard
+              <span className="text-[10px] opacity-40 ml-1">Ctrl+Shift+C</span>
+            </button>
           </div>
         </div>
 

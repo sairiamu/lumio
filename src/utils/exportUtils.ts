@@ -1,4 +1,5 @@
 import { toPng, toSvg } from 'html-to-image';
+import { jsPDF } from 'jspdf';
 import { useCanvasStore } from '../store/canvasStore';
 
 export async function exportPNG(): Promise<Uint8Array> {
@@ -83,54 +84,72 @@ export function buildProjectJSON(): string {
   return JSON.stringify(project, null, 2);
 }
 
-export function showToast(message: string, type: 'success' | 'error'): void {
-  const containerId = 'vibeplan-toast-container';
-  let container = document.getElementById(containerId) as HTMLDivElement | null;
+export async function exportPDF(): Promise<Uint8Array> {
+  const node = document.querySelector('.react-flow__viewport') as HTMLElement;
+  if (!node) throw new Error('Canvas not found');
 
-  if (!container) {
-    container = document.createElement('div');
-    container.id = containerId;
-    container.style.position = 'fixed';
-    container.style.bottom = '24px';
-    container.style.left = '50%';
-    container.style.transform = 'translateX(-50%)';
-    container.style.display = 'flex';
-    container.style.flexDirection = 'column';
-    container.style.alignItems = 'center';
-    container.style.gap = '8px';
-    container.style.zIndex = '9999';
-    container.style.pointerEvents = 'none';
-    document.body.appendChild(container);
-  }
-
-  const toast = document.createElement('div');
-  toast.textContent = message;
-  toast.style.padding = '12px 18px';
-  toast.style.borderRadius = '999px';
-  toast.style.fontFamily = 'Inter, sans-serif';
-  toast.style.fontSize = '14px';
-  toast.style.color = '#FFFFFF';
-  toast.style.maxWidth = '90vw';
-  toast.style.boxShadow = '0 14px 30px rgba(0, 0, 0, 0.15)';
-  toast.style.opacity = '0';
-  toast.style.transition = 'opacity 200ms ease-in-out';
-  toast.style.pointerEvents = 'auto';
-  toast.style.backgroundColor = type === 'success' ? '#22c55e' : '#ef4444';
-  toast.style.textAlign = 'center';
-
-  container.appendChild(toast);
-
-  requestAnimationFrame(() => {
-    toast.style.opacity = '1';
+  // Ensure SVG elements have dimensions for capture
+  const svgEls = node.querySelectorAll('svg');
+  svgEls.forEach((svg) => {
+    if (!svg.getAttribute('width')) {
+      const box = svg.getBoundingClientRect();
+      svg.setAttribute('width', String(box.width));
+      svg.setAttribute('height', String(box.height));
+    }
   });
 
-  window.setTimeout(() => {
-    toast.style.opacity = '0';
-    window.setTimeout(() => {
-      toast.remove();
-      if (container && container.children.length === 0) {
-        container.remove();
-      }
-    }, 200);
-  }, 2000);
+  const dataUrl = await toPng(node, {
+    pixelRatio: 2,
+    backgroundColor: '#1C1E26',
+    includeQueryParams: true,
+    skipFonts: false,
+  });
+
+  const bounds = node.getBoundingClientRect();
+  const w = bounds.width;
+  const h = bounds.height;
+  const orientation = w > h ? 'landscape' : 'portrait';
+
+  const pdf = new jsPDF({
+    orientation,
+    unit: 'px',
+    format: [w, h],
+    hotfixes: ['px_scaling'],
+  });
+
+  pdf.addImage(dataUrl, 'PNG', 0, 0, w, h);
+  return pdf.output('uint8array');
+}
+
+export async function copyCanvasToClipboard(): Promise<void> {
+  const node = document.querySelector('.react-flow__viewport') as HTMLElement;
+  if (!node) throw new Error('Canvas not found');
+
+  // Ensure SVG elements have dimensions for capture
+  const svgEls = node.querySelectorAll('svg');
+  svgEls.forEach((svg) => {
+    if (!svg.getAttribute('width')) {
+      const box = svg.getBoundingClientRect();
+      svg.setAttribute('width', String(box.width));
+      svg.setAttribute('height', String(box.height));
+    }
+  });
+
+  const dataUrl = await toPng(node, {
+    pixelRatio: 2,
+    backgroundColor: '#1C1E26',
+    includeQueryParams: true,
+    skipFonts: false,
+  });
+
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+
+  await navigator.clipboard.write([
+    new ClipboardItem({ 'image/png': blob })
+  ]);
+}
+
+export function showToast(message: string, type: 'success' | 'error' | 'info'): void {
+  useCanvasStore.getState().addToast(message, type);
 }

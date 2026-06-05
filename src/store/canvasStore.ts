@@ -17,6 +17,12 @@ import { CanvasState, CanvasMode, ToolType, ShapeStyle, Stroke, NodeData, EdgeDa
 import { ThemeName } from '../themes/themes';
 import { Template } from '../data/templates';
 
+export interface ToastMessage {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
+
 interface HistorySnapshot {
   nodes: Node<NodeData>[];
   edges: Edge<EdgeData>[];
@@ -105,6 +111,9 @@ interface CanvasStore extends CanvasState {
   setIsSearchOpen: (open: boolean) => void;
   groupSelectedNodes: () => void;
   ungroupSelectedNodes: () => void;
+  toasts: ToastMessage[];
+  addToast: (message: string, type: 'success' | 'error' | 'info') => void;
+  removeToast: (id: string) => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -577,6 +586,22 @@ export const useCanvasStore = create<CanvasStore>()(
   },
 
   setIsSearchOpen: (isSearchOpen) => set({ isSearchOpen }),
+
+  toasts: [],
+  addToast: (message, type) => {
+    const id = Math.random().toString(36).substring(2, 9);
+    set((state) => ({
+      toasts: [...state.toasts, { id, message, type }]
+    }));
+    setTimeout(() => {
+      get().removeToast(id);
+    }, 2500);
+  },
+  removeToast: (id) => {
+    set((state) => ({
+      toasts: state.toasts.filter((t) => t.id !== id)
+    }));
+  },
 
   groupSelectedNodes: () => {
     const { nodes, selectedNodeIds, pushHistory } = get();

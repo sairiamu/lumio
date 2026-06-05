@@ -9,6 +9,7 @@ import { PropertiesPanel } from './components/panels/PropertiesPanel';
 import { StatusBar } from './components/shell/StatusBar';
 import { ThemePicker } from './components/modals/ThemePicker';
 import { TemplateModal } from './components/modals/TemplateModal';
+import { ToastContainer } from './components/ui/Toast';
 import { useCanvasStore } from './store/canvasStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTheme } from './hooks/useTheme';
@@ -87,6 +88,7 @@ const App: React.FC = () => {
       <ThemePicker />
       <TemplateModal />
       {!isPresentationMode && <PenToolbar />}
+      <ToastContainer />
 
       {/* Visual Debug Indicator */}
       {!isPresentationMode && (
