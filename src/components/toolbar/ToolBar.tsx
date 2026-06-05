@@ -9,7 +9,8 @@ import {
   Pencil,
   Eraser,
   Download,
-  LayoutGrid
+  LayoutGrid,
+  Layout
 } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { ToolButton } from './ToolButton';
@@ -21,7 +22,8 @@ export const ToolBar: React.FC = () => {
     setCurrentTool,
     setExportModalOpen,
     isShapeLibraryOpen,
-    setIsShapeLibraryOpen
+    setIsShapeLibraryOpen,
+    setTemplateModalOpen
   } = useCanvasStore();
 
   const tools: { type: ToolType; icon: any; label: string; shortcut: string }[] = [
@@ -63,7 +65,13 @@ export const ToolBar: React.FC = () => {
         </div>
       </div>
 
-      <div className="pt-4 border-t border-border w-full flex flex-col items-center">
+      <div className="pt-4 border-t border-border w-full flex flex-col items-center gap-2">
+        <ToolButton
+          icon={Layout}
+          label="Templates"
+          isActive={false}
+          onClick={() => setTemplateModalOpen(true)}
+        />
         <ToolButton
           icon={Download}
           label="Export"

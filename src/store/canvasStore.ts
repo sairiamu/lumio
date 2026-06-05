@@ -15,6 +15,7 @@ import {
 } from '@xyflow/react';
 import { CanvasState, CanvasMode, ToolType, ShapeStyle, Stroke, NodeData, EdgeData } from '../types';
 import { ThemeName } from '../themes/themes';
+import { Template } from '../data/templates';
 
 interface HistorySnapshot {
   nodes: Node<NodeData>[];
@@ -83,6 +84,11 @@ interface CanvasStore extends CanvasState {
   selectAll: () => void;
   currentTheme: ThemeName;
   setTheme: (theme: ThemeName) => void;
+  isTemplateModalOpen: boolean;
+  setTemplateModalOpen: (open: boolean) => void;
+  customTemplates: Template[];
+  addCustomTemplate: (template: Template) => void;
+  deleteCustomTemplate: (id: string) => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -132,6 +138,26 @@ export const useCanvasStore = create<CanvasStore>()(
   future: [],
   clipboard: null,
   currentTheme: (localStorage.getItem('vibeplan-theme') as ThemeName) || 'slate',
+  isTemplateModalOpen: false,
+  customTemplates: JSON.parse(localStorage.getItem('vibeplan-custom-templates') || '[]'),
+
+  setTemplateModalOpen: (isTemplateModalOpen) => set({ isTemplateModalOpen }),
+
+  addCustomTemplate: (template) => {
+    set((state) => {
+      const newTemplates = [...state.customTemplates, template];
+      localStorage.setItem('vibeplan-custom-templates', JSON.stringify(newTemplates));
+      return { customTemplates: newTemplates };
+    });
+  },
+
+  deleteCustomTemplate: (id) => {
+    set((state) => {
+      const newTemplates = state.customTemplates.filter((t) => t.id !== id);
+      localStorage.setItem('vibeplan-custom-templates', JSON.stringify(newTemplates));
+      return { customTemplates: newTemplates };
+    });
+  },
 
   setProjectName: (projectName) => set({ projectName }),
   setProjectPath: (projectPath) => set({ projectPath }),

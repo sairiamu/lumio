@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Minus, Square, X, Hexagon, Palette, FileText, FolderOpen, Save, Clock, ChevronDown, Share2 } from 'lucide-react';
+import { Minus, Square, X, Hexagon, Palette, FileText, FolderOpen, Save, Clock, ChevronDown, Share2, Layout } from 'lucide-react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { confirm } from '@tauri-apps/plugin-dialog';
 import { useCanvasStore } from '../../store/canvasStore';
@@ -13,7 +13,8 @@ export const TitleBar: React.FC = () => {
     isThemePickerOpen,
     isShareModalOpen,
     setShareModalOpen,
-    recentProjects
+    recentProjects,
+    setTemplateModalOpen
   } = useCanvasStore();
   const { saveProject, loadProject } = useFileIO();
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
@@ -83,6 +84,16 @@ export const TitleBar: React.FC = () => {
               >
                 <FolderOpen className="w-4 h-4 text-accent" />
                 Open Project
+              </button>
+              <button
+                onClick={() => {
+                  setTemplateModalOpen(true);
+                  setIsFileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2 text-xs text-text hover:bg-white/10 transition-colors"
+              >
+                <Layout className="w-4 h-4 text-accent" />
+                Templates
               </button>
               <button
                 onClick={() => {

@@ -7,6 +7,7 @@ import { CanvasWrapper } from './components/canvas/CanvasWrapper';
 import { PropertiesPanel } from './components/panels/PropertiesPanel';
 import { StatusBar } from './components/shell/StatusBar';
 import { ThemePicker } from './components/modals/ThemePicker';
+import { TemplateModal } from './components/modals/TemplateModal';
 import { useCanvasStore } from './store/canvasStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTheme } from './hooks/useTheme';
@@ -57,6 +58,7 @@ const App: React.FC = () => {
 
       <StatusBar />
       <ThemePicker />
+      <TemplateModal />
       <PenToolbar />
 
       {/* Visual Debug Indicator */}

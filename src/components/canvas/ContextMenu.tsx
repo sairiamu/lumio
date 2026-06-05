@@ -176,6 +176,23 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
     close();
   };
 
+  const handleSaveAsTemplate = () => {
+    const name = window.prompt('Enter template name:');
+    if (name) {
+      const newTemplate = {
+        id: `custom_${Date.now()}`,
+        name,
+        description: 'Custom user template',
+        category: 'Custom',
+        thumbnail: '⭐',
+        nodes: JSON.parse(JSON.stringify(nodes)),
+        edges: JSON.parse(JSON.stringify(edges)),
+      };
+      useCanvasStore.getState().addCustomTemplate(newTemplate);
+    }
+    close();
+  };
+
   if (!visible) return null;
 
   return (
@@ -214,6 +231,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors disabled:opacity-30" onClick={handlePaste} disabled={!hasPaste}>Paste</button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleSelectAll}>Select All</button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleFitView}>Fit View</button>
+          <div className="my-1 border-t border-border" />
+          <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors text-accent font-medium" onClick={handleSaveAsTemplate}>Save as Template</button>
         </div>
       )}
     </div>
