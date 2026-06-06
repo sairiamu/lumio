@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import {
   ReactFlow,
   Background,
@@ -143,6 +143,7 @@ const DiagramCanvasInner: React.FC = () => {
   const [ctxTargetNodeId, setCtxTargetNodeId] = useState<string | null>(null);
 
   const [showFlash, setShowFlash] = useState(false);
+  const lastStepRef = useRef<number>(-1);
 
   useEffect(() => {
     if (isPresentationMode && currentStep !== -1) {
@@ -153,17 +154,23 @@ const DiagramCanvasInner: React.FC = () => {
       setPulsingNodeId(nodeId);
       const pulseTimer = setTimeout(() => setPulsingNodeId(null), 2000);
 
-      const node = nodes.find(n => n.id === nodeId);
-      if (node && node.data?.content) {
-        setExpandedNodeId(nodeId);
-      } else {
-        setExpandedNodeId(null);
+      // Only auto-expand when moving to a NEW step
+      if (currentStep !== lastStepRef.current) {
+        const node = nodes.find(n => n.id === nodeId);
+        if (node && node.data?.content) {
+          setExpandedNodeId(nodeId);
+        } else {
+          setExpandedNodeId(null);
+        }
+        lastStepRef.current = currentStep;
       }
 
       return () => {
         clearTimeout(timer);
         clearTimeout(pulseTimer);
       };
+    } else if (!isPresentationMode || currentStep === -1) {
+      lastStepRef.current = -1;
     }
   }, [currentStep, isPresentationMode, stepNodes, nodes, setExpandedNodeId, setPulsingNodeId]);
 
