@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Minus, Square, X, Hexagon, Palette, FileText, FolderOpen,
+  Minus, X, Palette, FolderOpen,
   Save, Clock, ChevronDown, Share2, Layout, Monitor, Search, Grid3X3, HelpCircle,
-  Maximize2, Minimize2
+  Maximize2, Minimize2, RefreshCcw
 } from 'lucide-react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useFileIO } from '../../hooks/useFileIO';
+import { useUpdater } from '../../hooks/useUpdater';
 
 // Call once outside component to get stable reference
 const appWindow = getCurrentWindow();
@@ -29,8 +30,11 @@ export const TitleBar: React.FC = () => {
     isGridEnabled
   } = useCanvasStore();
   const { saveProject, loadProject } = useFileIO();
+  const updater = useUpdater();
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
+  const [isHelpMenuOpen, setIsHelpMenuOpen] = useState(false);
   const fileMenuRef = useRef<HTMLDivElement>(null);
+  const helpMenuRef = useRef<HTMLDivElement>(null);
   const [isMaximized, setIsMaximized] = useState(false);
 
   useEffect(() => {
@@ -47,6 +51,9 @@ export const TitleBar: React.FC = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (fileMenuRef.current && !fileMenuRef.current.contains(event.target as Node)) {
         setIsFileMenuOpen(false);
+      }
+      if (helpMenuRef.current && !helpMenuRef.current.contains(event.target as Node)) {
+        setIsHelpMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -87,7 +94,7 @@ export const TitleBar: React.FC = () => {
   };
 
   return (
-    <div className="h-10 glass-panel border-none rounded-none flex items-center justify-between select-none z-50 shrink-0 overflow-hidden">
+    <div className="h-10 glass-panel border-none rounded-none flex items-center justify-between select-none z-[150] shrink-0">
       {/* Drag Region */}
       <div
         data-tauri-drag-region
@@ -113,7 +120,7 @@ export const TitleBar: React.FC = () => {
             </button>
 
             {isFileMenuOpen && (
-              <div className="absolute top-full left-0 mt-1 w-64 glass-panel border-white/10 shadow-2xl rounded-lg overflow-hidden py-1 z-[60] animate-in fade-in slide-in-from-top-1 duration-200">
+              <div className="absolute top-full left-0 mt-1 w-64 glass-panel border-white/10 shadow-2xl rounded-lg overflow-hidden py-1 z-[110] animate-in fade-in slide-in-from-top-1 duration-200">
                 <button
                   onClick={() => {
                     loadProject();
@@ -216,13 +223,42 @@ export const TitleBar: React.FC = () => {
         >
           <Monitor className="w-4 h-4" />
         </button>
-        <button
-          onClick={() => setHelpModalOpen(!isHelpModalOpen)}
-          className={`p-2 hover:bg-white/10 transition-colors rounded-lg ${isHelpModalOpen ? 'text-accent' : 'text-text-muted'} mr-1`}
-          title="Help (F1)"
-        >
-          <HelpCircle className="w-4 h-4" />
-        </button>
+
+        <div className="relative" ref={helpMenuRef}>
+          <button
+            onClick={() => setIsHelpMenuOpen(!isHelpMenuOpen)}
+            className={`p-2 hover:bg-white/10 transition-colors rounded-lg ${isHelpMenuOpen || isHelpModalOpen ? 'text-accent' : 'text-text-muted'} mr-1`}
+            title="Help & Updates"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </button>
+
+          {isHelpMenuOpen && (
+            <div className="absolute top-full right-0 mt-1 w-48 glass-panel border-white/10 shadow-2xl rounded-lg overflow-hidden py-1 z-[110] animate-in fade-in slide-in-from-top-1 duration-200">
+              <button
+                onClick={() => {
+                  setHelpModalOpen(true);
+                  setIsHelpMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2 text-xs text-text hover:bg-white/10 transition-colors"
+              >
+                <HelpCircle className="w-4 h-4 text-accent" />
+                Help Center
+              </button>
+              <button
+                onClick={() => {
+                  updater.checkForUpdates();
+                  setIsHelpMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2 text-xs text-text hover:bg-white/10 transition-colors"
+              >
+                <RefreshCcw className="w-4 h-4 text-accent" />
+                Check for Updates
+              </button>
+            </div>
+          )}
+        </div>
+
         <button
           onClick={() => setShareModalOpen(!isShareModalOpen)}
           className={`p-2 hover:bg-white/10 transition-colors rounded-lg ${isShareModalOpen ? 'text-accent' : 'text-text-muted'} mr-1`}

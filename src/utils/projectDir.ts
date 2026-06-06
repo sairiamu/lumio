@@ -1,4 +1,4 @@
-import { BaseDirectory, mkdir, exists } from '@tauri-apps/plugin-fs'
+import { mkdir, exists } from '@tauri-apps/plugin-fs'
 import { homeDir, join } from '@tauri-apps/api/path'
 
 export async function ensureProjectsDir(): Promise<string> {

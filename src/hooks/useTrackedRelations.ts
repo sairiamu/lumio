@@ -3,10 +3,14 @@ import { useCanvasStore } from '../store/canvasStore';
 export const useTrackedRelations = () => {
   const trackedNodeId = useCanvasStore((s) => s.trackedNodeId);
   const edges = useCanvasStore((s) => s.edges);
-  const nodes = useCanvasStore((s) => s.nodes);
 
   if (!trackedNodeId) {
-    return { glowNodeIds: [], glowEdgeIds: [], edgeColourMap: {}, trackedNodeId: null };
+    return {
+      glowNodeIds: [] as string[],
+      glowEdgeIds: [] as string[],
+      edgeColourMap: {} as Record<string, string>,
+      trackedNodeId: null as string | null
+    };
   }
 
   // find all edges connected to tracked node

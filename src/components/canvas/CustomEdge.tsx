@@ -1,12 +1,12 @@
 import React from 'react';
 import { EdgeProps, getBezierPath, getSmoothStepPath, getStraightPath } from '@xyflow/react';
-import { useCanvasStore } from '../../store/canvasStore';
 import { useTrackedRelations } from '../../hooks/useTrackedRelations';
+import { EdgeData } from '../../types';
 
 export const CustomEdge: React.FC<EdgeProps> = ({
   id,
-  source,
-  target,
+  source: _source,
+  target: _target,
   sourceX,
   sourceY,
   targetX,
@@ -17,9 +17,10 @@ export const CustomEdge: React.FC<EdgeProps> = ({
   markerEnd,
   markerStart,
   data = {},
-  selected,
+  selected: _selected,
 }) => {
-  const pathType = data?.pathType || 'default';
+  const edgeData = data as EdgeData;
+  const pathType = edgeData?.pathType || 'default';
 
   let edgePath = '';
   const pathParams = {
@@ -39,18 +40,15 @@ export const CustomEdge: React.FC<EdgeProps> = ({
     [edgePath] = getBezierPath(pathParams);
   }
 
-  const selectedNodeIds = useCanvasStore((s) => s.selectedNodeIds);
-  const selectedEdgeIds = useCanvasStore((s) => s.selectedEdgeIds);
-
   const { glowEdgeIds, edgeColourMap } = useTrackedRelations();
   const isTrackedGlowing = glowEdgeIds.includes(id);
   const glowColor = edgeColourMap[id] || 'var(--accent)';
 
-  const strokeColor = data.strokeColor || 'var(--text-muted)';
-  const strokeWidth = data.strokeWidth || 2;
+  const strokeColor: string = edgeData?.strokeColor || 'var(--text-muted)';
+  const strokeWidth: number = edgeData?.strokeWidth || 2;
   const dashArray =
-    data.strokeStyle === 'dashed' ? '8 4' :
-    data.strokeStyle === 'dotted' ? '2 4' :
+    edgeData?.strokeStyle === 'dashed' ? '8 4' :
+    edgeData?.strokeStyle === 'dotted' ? '2 4' :
     undefined;
 
   return (

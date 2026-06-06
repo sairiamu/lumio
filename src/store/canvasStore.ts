@@ -635,11 +635,15 @@ export const useCanvasStore = create<CanvasStore>()(
     const height = maxY - minY + 40;
     const groupId = `group_${Date.now()}`;
 
-    const groupNode: Node = {
+    const groupNode: Node<NodeData> = {
       id: groupId,
       type: 'group',
       position: { x: minX - 20, y: minY - 20 },
-      data: { title: 'New Group', parameters: [], description: '' },
+      data: {
+        title: 'Group',
+        parameters: [],
+        description: '',
+      },
       style: { width, height },
     };
 

@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
+import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { NodeData } from '../../types';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useTrackedRelations } from '../../hooks/useTrackedRelations';
 
-interface BaseNodeProps extends NodeProps<NodeData> {
+interface BaseNodeProps extends NodeProps<Node<NodeData>> {
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
@@ -27,8 +27,9 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
     hideHeader = false,
     children
   } = props;
+  const typedData = data as NodeData;
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<NodeData>(data);
+  const [editData, setEditData] = useState<NodeData>(data as NodeData);
   const { nodes, setNodes, isPresentationMode, stepNodes, currentStep, searchQuery, searchResults } = useCanvasStore();
   const editRef = useRef<HTMLDivElement>(null);
   const { glowNodeIds, trackedNodeId } = useTrackedRelations();
@@ -57,17 +58,15 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
   const titleSize = Math.max(11, Math.min(17, 14 * scale));
   const bodySize = Math.max(9, Math.min(12, 10 * scale));
 
-  const hasParams = data.parameters && data.parameters.length > 0;
-  const hasDesc = !!data.description;
+  const hasParams = typedData.parameters && typedData.parameters.length > 0;
+  const hasDesc = !!typedData.description;
   const showDivider = !hideHeader && (hasParams || hasDesc);
-
-  const [editingParamIndex, setEditingParamIndex] = useState<number | null>(null);
 
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsEditing(true);
-    setEditData(data);
-  }, [data]);
+    setEditData(typedData);
+  }, [typedData]);
 
   const handleCommit = useCallback(() => {
     if (!isEditing) return;
@@ -85,7 +84,7 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isEditing && editRef.current && !editRef.current.contains(event.target as Node)) {
+      if (isEditing && editRef.current && !editRef.current.contains(event.target as globalThis.Node)) {
         handleCommit();
       }
     };
@@ -102,7 +101,7 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
     }
     if (e.key === 'Escape') {
       setIsEditing(false);
-      setEditData(data);
+      setEditData(typedData);
     }
   };
 
@@ -131,8 +130,8 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
       onDoubleClick={handleDoubleClick}
       className={`clay-shape relative ${selected ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg' : ''} ${className}`}
       style={{
-        backgroundColor: data.clayColor || clayColor,
-        border: isMatch ? '2px solid var(--success)' : (data.strokeColor ? `1.5px solid ${data.strokeColor}` : '1.5px solid var(--border)'),
+        backgroundColor: typedData.clayColor || clayColor,
+        border: isMatch ? '2px solid var(--success)' : (typedData.strokeColor ? `1.5px solid ${typedData.strokeColor}` : '1.5px solid var(--border)'),
         boxShadow: isCurrentStep
           ? '0 0 0 3px var(--accent), 0 0 32px 8px var(--accent-light)'
           : isTracked
@@ -251,7 +250,7 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden'
               }}>
-                {data.title || 'Untitled'}
+                {typedData.title || 'Untitled'}
               </div>
             )}
 
@@ -261,7 +260,7 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
 
             {hasParams && !hideHeader && (
               <div style={{ flexShrink: 0, overflow: 'hidden' }}>
-                {data.parameters?.slice(0, 3).map((param, i) => (
+                {typedData.parameters?.slice(0, 3).map((param, i) => (
                   <div
                     key={i}
                     style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}
@@ -270,8 +269,8 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
                     <span style={{ fontSize: '10px', color: 'var(--text)', fontWeight: 500, fontFamily: 'JetBrains Mono', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{param.value}</span>
                   </div>
                 ))}
-                {data.parameters && data.parameters.length > 3 && (
-                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', textAlign: 'right' }}>+{data.parameters.length - 3} more</div>
+                {typedData.parameters && typedData.parameters.length > 3 && (
+                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', textAlign: 'right' }}>+{typedData.parameters.length - 3} more</div>
                 )}
               </div>
             )}
@@ -290,7 +289,7 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
                 WebkitBoxOrient: 'vertical',
                 wordBreak: 'break-word'
               }}>
-                {data.description}
+                {typedData.description}
               </div>
             )}
             {children}

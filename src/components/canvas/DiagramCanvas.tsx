@@ -5,7 +5,9 @@ import {
   BackgroundVariant,
   useReactFlow,
   MarkerType,
-  MiniMap
+  MiniMap,
+  NodeTypes,
+  Edge
 } from '@xyflow/react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { RectNode } from '../nodes/RectNode';
@@ -50,10 +52,8 @@ const DiagramCanvasInner: React.FC = () => {
     setCurrentTool,
     setNodes,
     setSelectedNodeIds,
-    setSelectedEdgeIds,
     setIsPanelOpen,
     deselectAll,
-    shapeStyle,
     currentTheme,
     pushHistory,
     setTrackedNodeId,
@@ -76,9 +76,9 @@ const DiagramCanvasInner: React.FC = () => {
           undefined,
       },
       markerStart: edge.data?.lineStart === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } :
-                  edge.data?.lineStart === 'circle' ? { type: MarkerType.Circle, color: edge.data?.strokeColor || 'var(--text-muted)' } : undefined,
+                  edge.data?.lineStart === 'circle' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } : undefined,
       markerEnd: edge.data?.lineEnd === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } :
-                edge.data?.lineEnd === 'circle' ? { type: MarkerType.Circle, color: edge.data?.strokeColor || 'var(--text-muted)' } : undefined,
+                edge.data?.lineEnd === 'circle' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } : undefined,
       animated: edge.data?.animated || false,
     }));
   }, [edges]);
@@ -116,7 +116,7 @@ const DiagramCanvasInner: React.FC = () => {
     setCtxVisible(true);
   }, [nodes, setNodes, setSelectedNodeIds]);
 
-  const onPaneContextMenu = useCallback((event: React.MouseEvent) => {
+  const onPaneContextMenu = useCallback((event: React.MouseEvent | MouseEvent) => {
     event.preventDefault();
     setCtxX(event.clientX);
     setCtxY(event.clientY);
@@ -183,7 +183,7 @@ const DiagramCanvasInner: React.FC = () => {
     }
   }, [setIsPanelOpen]);
 
-  const onEdgeClick = useCallback((_: React.MouseEvent, edge: any) => {
+  const onEdgeClick = useCallback((_: React.MouseEvent, _clickedEdge: Edge) => {
     setIsPanelOpen(true);
   }, [setIsPanelOpen]);
 
@@ -240,7 +240,7 @@ const DiagramCanvasInner: React.FC = () => {
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
         onSelectionDragStart={onSelectionDragStart}
-        nodeTypes={nodeTypes}
+        nodeTypes={nodeTypes as NodeTypes}
         edgeTypes={edgeTypes}
         onPaneClick={onPaneClick}
         style={rfStyle}

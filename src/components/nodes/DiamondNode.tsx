@@ -1,15 +1,16 @@
 import React from 'react';
-import { NodeProps, NodeResizer } from '@xyflow/react';
+import { NodeProps, NodeResizer, Node } from '@xyflow/react';
 import { BaseNode } from './BaseNode';
 import { NodeData } from '../../types';
 
-export const DiamondNode: React.FC<NodeProps<NodeData>> = (props) => {
-  const showParams = (props.width ?? 0) > 140;
+export const DiamondNode: React.FC<NodeProps<Node<NodeData>>> = (props) => {
+  const data = props.data as NodeData;
+  const showParams = ((props.width as number) ?? 0) > 140;
 
   return (
     <BaseNode
       {...props}
-      clayColor={props.data.clayColor}
+      clayColor={data.clayColor}
       className="w-[180px] h-[180px] rotate-45 flex items-center justify-center text-center"
       contentClassName="-rotate-45"
       contentStyle={{
@@ -38,11 +39,11 @@ export const DiamondNode: React.FC<NodeProps<NodeData>> = (props) => {
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden'
         }}>
-          {props.data.title || 'Untitled'}
+          {data.title || 'Untitled'}
         </div>
       )}
       <NodeResizer
-        isVisible={props.selected}
+        isVisible={!!props.selected}
         minWidth={70}
         minHeight={70}
         handleStyle={{ width: 10, height: 10, backgroundColor: 'var(--accent)', borderRadius: '50%', boxShadow: 'none' }}

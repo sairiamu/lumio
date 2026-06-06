@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ReactFlow,
   Background,
   BackgroundVariant,
-  ReactFlowProvider
+  ReactFlowProvider,
+  NodeTypes
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { decodeShareURL } from '../utils/shareUtils';
@@ -68,7 +69,7 @@ const ShareViewerInner: React.FC = () => {
       <ReactFlow
         nodes={data.nodes}
         edges={data.edges}
-        nodeTypes={nodeTypes}
+        nodeTypes={nodeTypes as NodeTypes}
         edgeTypes={edgeTypes}
         nodesDraggable={false}
         nodesConnectable={false}

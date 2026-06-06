@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useCanvasStore } from '../store/canvasStore';
 import { useReactFlow } from '@xyflow/react';
-import { ToolType } from '../types';
+import { NodeData } from '../types';
 
 export const useCanvasEvents = () => {
   const { currentTool, nodes, setNodes, shapeStyle } = useCanvasStore();
@@ -20,9 +20,11 @@ export const useCanvasEvents = () => {
       type: currentTool,
       position,
       data: {
-        label: currentTool.charAt(0).toUpperCase() + currentTool.slice(1),
-        color: shapeStyle.fill
-      },
+        title: '',
+        parameters: [],
+        description: '',
+        clayColor: shapeStyle.fill,
+      } as NodeData,
     };
 
     setNodes([...nodes, newNode]);

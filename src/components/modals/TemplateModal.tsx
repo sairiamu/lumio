@@ -82,13 +82,6 @@ export const TemplateModal: React.FC = () => {
     ? allTemplates
     : allTemplates.filter(t => t.category === (activeCategory === 'Custom' ? 'Custom' : activeCategory));
 
-  // Custom filter logic for custom category since category might be anything in custom ones
-  const displayedTemplates = activeCategory === 'Custom'
-    ? customTemplates
-    : activeCategory === 'All'
-      ? allTemplates
-      : BUILT_IN_TEMPLATES.filter(t => t.category === activeCategory);
-
   const handleUseTemplate = (template: Template) => {
     if ((nodes.length > 0 || edges.length > 0) && isDirty) {
       if (!window.confirm('Replace current canvas? All unsaved changes will be lost.')) {
@@ -145,7 +138,7 @@ export const TemplateModal: React.FC = () => {
           {/* Grid */}
           <div className="flex-1 overflow-y-auto p-6 bg-black/10">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {displayedTemplates.map(template => {
+              {filteredTemplates.map(template => {
                 const IconComponent = IconMap[template.thumbnail] || Star;
                 return (
                   <div
@@ -200,7 +193,7 @@ export const TemplateModal: React.FC = () => {
                 );
               })}
 
-              {displayedTemplates.length === 0 && (
+              {filteredTemplates.length === 0 && (
                 <div className="col-span-full py-12 text-center text-text-muted">
                   No templates found in this category.
                 </div>

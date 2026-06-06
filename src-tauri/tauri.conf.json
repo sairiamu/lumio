@@ -24,6 +24,15 @@
       "csp": null
     }
   },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVEMjAzQTQwRTFDRjI3RjgKUldUNEo4L2hRRG9nWGZuRU1HNTg3ZFpUTVk3NEM2c3NmRy9zL2lyVlRQT1JEMlZQaUl6OXQ2VGQK",
+      "endpoints": [
+        "https://github.com/sairiamu/vibeplan/releases/latest/download/latest.json"
+      ],
+      "dialog": false
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",

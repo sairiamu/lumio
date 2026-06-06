@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useCommandList } from '../../data/commands';

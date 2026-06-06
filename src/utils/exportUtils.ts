@@ -118,7 +118,9 @@ export async function exportPDF(): Promise<Uint8Array> {
   });
 
   pdf.addImage(dataUrl, 'PNG', 0, 0, w, h);
-  return pdf.output('uint8array');
+  const dataUri = pdf.output('datauristring');
+  const base64 = dataUri.split(',')[1];
+  return Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 }
 
 export async function copyCanvasToClipboard(): Promise<void> {

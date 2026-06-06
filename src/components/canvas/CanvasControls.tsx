@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2, LayoutDashboard, Map, Square, Grip, Rows, Hash } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
-import { useReactFlow, useViewport } from '@xyflow/react';
+import { useReactFlow, useViewport, Node } from '@xyflow/react';
 import { autoLayout } from '../../utils/layoutUtils';
+import { NodeData } from '../../types';
 
 export interface CanvasControlsProps {}
 
@@ -33,7 +34,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (gridButtonRef.current && !gridButtonRef.current.contains(event.target as Node)) {
+      if (gridButtonRef.current && !gridButtonRef.current.contains(event.target as globalThis.Node)) {
         setShowGridOptions(false);
       }
     };
@@ -53,7 +54,7 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
   const handleAutoLayout = () => {
     pushHistory();
     const laid = autoLayout(nodes, edges);
-    setNodes(laid);
+    setNodes(laid as Node<NodeData>[]);
     setTimeout(() => fitView({ padding: 0.2, duration: 400 }), 50);
   };
 

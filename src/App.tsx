@@ -13,9 +13,11 @@ import { CommandPalette } from './components/modals/CommandPalette';
 import { SplashScreen } from './components/shell/SplashScreen';
 import HelpModal from './components/modals/HelpModal';
 import { ToastContainer } from './components/ui/Toast';
+import { UpdateBanner } from './components/shell/UpdateBanner';
 import { useCanvasStore } from './store/canvasStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTheme } from './hooks/useTheme';
+import { useUpdater } from './hooks/useUpdater';
 import { ensureProjectsDir } from './utils/projectDir';
 
 // Prevents splash from showing on hot reloads
@@ -32,6 +34,7 @@ const App: React.FC = () => {
   } = useCanvasStore();
 
   const [showSplash, setShowSplash] = useState(!hasShownSplash);
+  const updater = useUpdater();
 
   useTheme();
   useKeyboardShortcuts();
@@ -87,6 +90,16 @@ const App: React.FC = () => {
       style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}
     >
       {!isPresentationMode && <TitleBar />}
+      {!isPresentationMode && updater.updateAvailable && !updater.isDismissed && (
+        <UpdateBanner
+          updateAvailable={updater.updateAvailable}
+          updateInfo={updater.updateInfo}
+          isDownloading={updater.isDownloading}
+          downloadProgress={updater.downloadProgress}
+          installUpdate={updater.installUpdate}
+          onDismiss={() => updater.setIsDismissed(true)}
+        />
+      )}
 
       <div className="flex flex-1 relative overflow-hidden">
         {!isPresentationMode && <ToolBar />}

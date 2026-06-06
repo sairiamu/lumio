@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { NodeProps, NodeResizer } from '@xyflow/react';
 import { useCanvasStore } from '../../store/canvasStore';
+import { NodeData } from '../../types';
 
-export const GroupNode: React.FC<NodeProps> = ({ id, data, selected }) => {
+export const GroupNode: React.FC<NodeProps> = (props) => {
+  const { id, selected } = props;
+  const data = props.data as NodeData;
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(data.title || 'Group');
+  const [title, setTitle] = useState<string>(data.title || 'Group');
   const { nodes, setNodes, searchQuery, searchResults } = useCanvasStore();
 
   const isSearchActive = searchQuery.length > 0;
@@ -83,7 +86,7 @@ export const GroupNode: React.FC<NodeProps> = ({ id, data, selected }) => {
       </button>
 
       <NodeResizer
-        isVisible={selected}
+        isVisible={!!selected}
         minWidth={100}
         minHeight={100}
         handleStyle={{ width: 8, height: 8, backgroundColor: 'var(--accent)', borderRadius: '2px' }}

@@ -10,6 +10,7 @@ import { useCanvasStore } from '../store/canvasStore';
 import { useFileIO } from '../hooks/useFileIO';
 import { useExport } from '../hooks/useExport';
 import { useReactFlow } from '@xyflow/react';
+import { useUpdater } from '../hooks/useUpdater';
 
 export interface Command {
   id: string;
@@ -24,8 +25,9 @@ export interface Command {
 export const useCommandList = () => {
   const store = useCanvasStore();
   const { saveProject, loadProject } = useFileIO();
-  const { exportAsSVG, handlePNGExport, handlePDFExport, handleCopyToClipboard } = useExport();
+  const { exportAsSVG, handlePNGExport, handlePDFExport } = useExport();
   const { fitView, zoomIn, zoomOut, setViewport, deleteElements } = useReactFlow();
+  const updater = useUpdater();
 
   const commands: Command[] = [
     // FILE
@@ -333,8 +335,8 @@ export const useCommandList = () => {
       category: 'view',
       action: () => {
         const theme = store.currentTheme;
-        if (theme === 'dark' || theme === 'slate' || theme === 'zinc') {
-          store.setTheme('glass');
+        if (theme === 'slate') {
+          store.setTheme('arctic');
         } else {
           store.setTheme('slate');
         }
@@ -358,6 +360,14 @@ export const useCommandList = () => {
       action: () => {
         store.setCanvasMode(store.canvasMode === 'freehand' ? 'diagram' : 'freehand');
       }
+    },
+    {
+      id: 'check-for-updates',
+      label: 'Check for Updates',
+      description: 'Manually check for software updates',
+      icon: RefreshCcw,
+      category: 'view',
+      action: () => { updater.checkForUpdates(); }
     },
   ];
 

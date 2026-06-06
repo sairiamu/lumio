@@ -100,10 +100,9 @@ const splashStyles = `
 
 interface SplashScreenProps {
   onAnimationEnd?: () => void;
-  isReady?: boolean;
 }
 
-export const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationEnd, isReady }) => {
+export const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationEnd }) => {
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {

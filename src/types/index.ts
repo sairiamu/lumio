@@ -41,12 +41,26 @@ export interface ShapeCategory {
 }
 
 export interface NodeData extends Record<string, unknown> {
-  title: string;
-  parameters: NodeParameter[];
-  description: string;
-  clayColor?: string;
-  strokeColor?: string;
-  label?: string;
+  title: string
+  parameters: NodeParameter[]
+  description: string
+  clayColor?: string
+  strokeColor?: string
+  strokeWidth?: number
+  strokeStyle?: 'solid' | 'dashed' | 'dotted'
+  shapeType?: string
+  label?: string
+  fontSize?: number
+  fontFamily?: string
+  textAlign?: 'left' | 'center' | 'right'
+  opacity?: number
+  clayColorOverride?: string
+}
+
+export const defaultNodeData: NodeData = {
+  title: '',
+  parameters: [],
+  description: '',
 }
 
 export interface EdgeData extends Record<string, unknown> {
@@ -57,7 +71,7 @@ export interface EdgeData extends Record<string, unknown> {
   animated: boolean;
   lineEnd: 'none' | 'arrow' | 'circle'; // Arrowheads/Jointers
   lineStart: 'none' | 'arrow' | 'circle';
-  pathType: 'default' | 'smooth' | 'step' | 'straight';
+  pathType: 'default' | 'smooth' | 'step' | 'straight' | 'smoothstep';
 }
 
 export interface CanvasState {
