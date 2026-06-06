@@ -76,6 +76,9 @@ export interface EdgeData extends Record<string, unknown> {
   lineEnd: 'none' | 'arrow' | 'circle'; // Arrowheads/Jointers
   lineStart: 'none' | 'arrow' | 'circle';
   pathType: 'default' | 'smooth' | 'step' | 'straight' | 'smoothstep';
+  animationType?: 'none' | 'flow' | 'pulse' | 'dash-march' | 'signal';
+  animationSpeed?: 'slow' | 'normal' | 'fast';
+  animationColor?: string;
 }
 
 export interface CanvasState {
@@ -115,4 +118,6 @@ export interface CanvasState {
   searchQuery: string;
   searchResults: string[];
   expandedNodeId: string | null;
+  animationsEnabled: boolean;
+  pulsingNodeId: string | null;
 }

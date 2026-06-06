@@ -131,6 +131,10 @@ interface CanvasStore extends CanvasState {
   isAppReady: boolean;
   setIsAppReady: (ready: boolean) => void;
   setExpandedNodeId: (id: string | null) => void;
+  animationsEnabled: boolean;
+  toggleAnimations: () => void;
+  pulsingNodeId: string | null;
+  setPulsingNodeId: (id: string | null) => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -191,6 +195,8 @@ export const useCanvasStore = create<CanvasStore>()(
       searchResults: [],
       isSearchOpen: false,
       expandedNodeId: null,
+      animationsEnabled: true,
+      pulsingNodeId: null,
       past: [],
       future: [],
       clipboard: null,
@@ -385,6 +391,8 @@ export const useCanvasStore = create<CanvasStore>()(
             lineEnd: 'arrow',
             lineStart: 'none',
             pathType: 'default',
+            animationType: 'none',
+            animationSpeed: 'normal',
           }
         };
         set({
@@ -654,6 +662,8 @@ export const useCanvasStore = create<CanvasStore>()(
       setHelpModalOpen: (isHelpModalOpen) => set({ isHelpModalOpen }),
       setIsAppReady: (isAppReady) => set({ isAppReady }),
       setExpandedNodeId: (expandedNodeId) => set({ expandedNodeId }),
+      toggleAnimations: () => set((state) => ({ animationsEnabled: !state.animationsEnabled })),
+      setPulsingNodeId: (pulsingNodeId) => set({ pulsingNodeId }),
 
       groupSelectedNodes: () => {
         const { nodes, selectedNodeIds } = get();

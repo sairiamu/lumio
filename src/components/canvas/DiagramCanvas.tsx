@@ -65,6 +65,7 @@ const DiagramCanvasInner: React.FC = () => {
     isPresentationMode,
     stepNodes,
     currentStep,
+    setPulsingNodeId,
   } = useCanvasStore();
 
   const isDark = currentTheme !== 'arctic';
@@ -149,6 +150,9 @@ const DiagramCanvasInner: React.FC = () => {
       const timer = setTimeout(() => setShowFlash(false), 200);
 
       const nodeId = stepNodes[currentStep];
+      setPulsingNodeId(nodeId);
+      const pulseTimer = setTimeout(() => setPulsingNodeId(null), 2000);
+
       const node = nodes.find(n => n.id === nodeId);
       if (node && node.data?.content) {
         setExpandedNodeId(nodeId);
@@ -156,9 +160,12 @@ const DiagramCanvasInner: React.FC = () => {
         setExpandedNodeId(null);
       }
 
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(pulseTimer);
+      };
     }
-  }, [currentStep, isPresentationMode, stepNodes, nodes, setExpandedNodeId]);
+  }, [currentStep, isPresentationMode, stepNodes, nodes, setExpandedNodeId, setPulsingNodeId]);
 
   const closeContextMenu = useCallback(() => {
     setCtxVisible(false);
@@ -367,6 +374,25 @@ const DiagramCanvasInner: React.FC = () => {
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
+            <filter id="signal-glow">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <style>
+              {`
+                @keyframes marchDash {
+                  from { stroke-dashoffset: 48; }
+                  to { stroke-dashoffset: 0; }
+                }
+                @keyframes pulseEdge {
+                  0%, 100% { opacity: 1; }
+                  50% { opacity: 0.2; }
+                }
+              `}
+            </style>
           </defs>
         </svg>
       </ReactFlow>

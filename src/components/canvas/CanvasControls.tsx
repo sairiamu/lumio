@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2, LayoutDashboard, Map, Square, Grip, Rows, Hash } from 'lucide-react';
+import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2, LayoutDashboard, Map, Square, Grip, Rows, Hash, Zap } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow, useViewport, Node } from '@xyflow/react';
 import { autoLayout } from '../../utils/layoutUtils';
@@ -22,7 +22,9 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
     setNodes,
     pushHistory,
     isMinimapOpen,
-    toggleMinimap
+    toggleMinimap,
+    animationsEnabled,
+    toggleAnimations
   } = useCanvasStore();
   const { zoomIn, zoomOut, fitView, setViewport, getViewport } = useReactFlow();
   const { zoom } = useViewport();
@@ -163,6 +165,15 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
         aria-label="Toggle Minimap"
       >
         <Map className="w-4 h-4" />
+      </button>
+
+      <button
+        onClick={toggleAnimations}
+        className={`glass-panel p-2.5 transition-all ${animationsEnabled ? 'text-accent shadow-lg ring-1 ring-accent/20' : 'text-text-muted hover:text-text'}`}
+        title="Toggle Animations"
+        aria-label="Toggle Animations"
+      >
+        <Zap className={`w-4 h-4 ${animationsEnabled ? 'fill-accent' : ''}`} />
       </button>
     </div>
   );

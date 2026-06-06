@@ -4,6 +4,14 @@ import { themes } from '../themes/themes';
 
 export const useTheme = () => {
   const currentThemeName = useCanvasStore((state) => state.currentTheme);
+  const animationsEnabled = useCanvasStore((state) => state.animationsEnabled);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--animation-state',
+      animationsEnabled ? 'running' : 'paused'
+    );
+  }, [animationsEnabled]);
 
   useEffect(() => {
     const theme = themes[currentThemeName];
