@@ -8,6 +8,9 @@ on:
 permissions:
   contents: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
 
   # ─── DESKTOP BUILDS ──────────────────────────────────────────
@@ -41,7 +44,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -97,7 +100,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -126,12 +129,18 @@ jobs:
         run: npm install
 
       - name: Init Tauri Android
-        run: npm run tauri android init
-
-      - name: Build Android APK
+        run: |
+          export PATH=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+          npm run tauri android init
         env:
           NDK_HOME: ${{ env.NDK_HOME }}
-        run: npm run tauri android build -- --apk
+
+      - name: Build Android APK
+        run: |
+          export PATH=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+          npm run tauri android build -- --apk
+        env:
+          NDK_HOME: ${{ env.NDK_HOME }}
 
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
@@ -157,7 +166,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install Rust iOS targets
         uses: dtolnay/rust-toolchain@stable
@@ -174,7 +183,7 @@ jobs:
         run: npm run tauri ios init
 
       - name: Build iOS IPA (unsigned)
-        run: npm run tauri ios build -- --no-signing
+        run: npm run tauri ios build -- --no-sign
 
       - name: Upload iOS build
         uses: actions/upload-artifact@v4
@@ -190,6 +199,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
       - name: Create latest.json update manifest
         run: |
