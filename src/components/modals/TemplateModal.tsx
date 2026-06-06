@@ -65,11 +65,11 @@ export const TemplateModal: React.FC = () => {
 
   // Handle first launch
   useEffect(() => {
-    const launched = localStorage.getItem('vibeplan-launched');
-    const helpSeen = localStorage.getItem('vibeplan-help-seen');
+    const launched = localStorage.getItem('lumio-launched');
+    const helpSeen = localStorage.getItem('lumio-help-seen');
     if (!launched && helpSeen === 'true' && !isHelpModalOpen) {
       setTemplateModalOpen(true);
-      localStorage.setItem('vibeplan-launched', 'true');
+      localStorage.setItem('lumio-launched', 'true');
     }
   }, [setTemplateModalOpen, isHelpModalOpen]);
 

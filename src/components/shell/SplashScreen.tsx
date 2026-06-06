@@ -132,11 +132,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationEnd }) =>
       <div className="logo-glow" style={{ animationDelay: '-2s', width: '250px', height: '250px', left: '55%', top: '55%' }} />
 
       <div className="logo-wrapper">
-        <img src="/vibeplan.svg" alt="VibePlan Logo" width="80" height="80" />
+        <img src="/lumio.svg" alt="Lumio Logo" width="80" height="80" />
       </div>
 
-      <h1 className="app-name">VibePlan</h1>
-      <p className="tagline">Visual Planning, Beautifully Done</p>
+      <h1 className="app-name">Lumio</h1>
+      <p className="tagline">Illuminate Your Ideas</p>
 
       <div className="progress-container">
         <div className="progress-bar" />

@@ -32,7 +32,7 @@ export const UpdateBanner: React.FC<UpdateBannerProps> = ({
 
       <div className="flex items-center gap-2 truncate flex-1 mr-4">
         <span className="text-[12px] font-medium font-sans">
-          ✦ VibePlan {updateInfo.version} is available — {updateInfo.notes.split('\n')[0]}
+          ✦ Lumio {updateInfo.version} is available — {updateInfo.notes.split('\n')[0]}
         </span>
       </div>
 

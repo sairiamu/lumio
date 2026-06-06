@@ -38,7 +38,7 @@ const ShareModalInner: React.FC = () => {
   const downloadQR = () => {
     if (canvasRef.current) {
       const link = document.createElement('a');
-      link.download = 'vibeplan-qr.png';
+      link.download = 'lumio-qr.png';
       link.href = canvasRef.current.toDataURL('image/png');
       link.click();
     }

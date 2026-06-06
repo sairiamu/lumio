@@ -177,16 +177,16 @@ export const useCanvasStore = create<CanvasStore>()(
   past: [],
   future: [],
   clipboard: null,
-  currentTheme: (localStorage.getItem('vibeplan-theme') as ThemeName) || 'slate',
+  currentTheme: (localStorage.getItem('lumio-theme') as ThemeName) || 'slate',
   isTemplateModalOpen: false,
-  customTemplates: JSON.parse(localStorage.getItem('vibeplan-custom-templates') || '[]'),
+  customTemplates: JSON.parse(localStorage.getItem('lumio-custom-templates') || '[]'),
 
   setTemplateModalOpen: (isTemplateModalOpen) => set({ isTemplateModalOpen }),
 
   addCustomTemplate: (template) => {
     set((state) => {
       const newTemplates = [...state.customTemplates, template];
-      localStorage.setItem('vibeplan-custom-templates', JSON.stringify(newTemplates));
+      localStorage.setItem('lumio-custom-templates', JSON.stringify(newTemplates));
       return { customTemplates: newTemplates };
     });
   },
@@ -194,7 +194,7 @@ export const useCanvasStore = create<CanvasStore>()(
   deleteCustomTemplate: (id) => {
     set((state) => {
       const newTemplates = state.customTemplates.filter((t) => t.id !== id);
-      localStorage.setItem('vibeplan-custom-templates', JSON.stringify(newTemplates));
+      localStorage.setItem('lumio-custom-templates', JSON.stringify(newTemplates));
       return { customTemplates: newTemplates };
     });
   },
@@ -205,7 +205,7 @@ export const useCanvasStore = create<CanvasStore>()(
   setAlignmentGuides: (alignmentGuides) => set({ alignmentGuides }),
 
   setTheme: (theme: ThemeName) => {
-    localStorage.setItem('vibeplan-theme', theme);
+    localStorage.setItem('lumio-theme', theme);
     set({ currentTheme: theme });
   },
 
@@ -700,7 +700,7 @@ export const useCanvasStore = create<CanvasStore>()(
   },
     }),
     {
-      name: 'vibeplan-storage',
+      name: 'lumio-storage',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         recentProjects: state.recentProjects,

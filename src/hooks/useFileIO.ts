@@ -12,7 +12,7 @@ export const useFileIO = () => {
       const defaultPath = await getDefaultSavePath(projectName);
       const path = await save({
         defaultPath,
-        filters: [{ name: 'VibePlan Project', extensions: ['json'] }]
+        filters: [{ name: 'Lumio Project', extensions: ['json'] }]
       });
 
       if (!path || Array.isArray(path)) return false;
@@ -20,7 +20,7 @@ export const useFileIO = () => {
       const jsonString = buildProjectJSON();
       await writeFile(path, new TextEncoder().encode(jsonString));
 
-      const name = path.split(/[\\/]/).pop()?.replace('.vibeplan.json', '') || projectName;
+      const name = path.split(/[\\/]/).pop()?.replace('.lumio.json', '') || projectName;
       store.setProjectName(name);
       store.setProjectPath(path);
       store.setIsDirty(false);
@@ -42,7 +42,7 @@ export const useFileIO = () => {
         const projectsPath = await ensureProjectsDir();
         const selected = await open({
           defaultPath: projectsPath,
-          filters: [{ name: 'VibePlan Project', extensions: ['json'] }],
+          filters: [{ name: 'Lumio Project', extensions: ['json'] }],
           multiple: false
         });
         if (!selected || Array.isArray(selected)) return false;
@@ -57,7 +57,7 @@ export const useFileIO = () => {
       if (json.freehandStrokes) store.setFreehandStrokes(json.freehandStrokes);
       if (json.shapeStyle) store.setShapeStyle(json.shapeStyle);
 
-      const name = path.split(/[\\/]/).pop()?.replace('.vibeplan.json', '') || 'Project';
+      const name = path.split(/[\\/]/).pop()?.replace('.lumio.json', '') || 'Project';
       store.setProjectName(name);
       store.setProjectPath(path);
       store.setIsDirty(false);

@@ -1,8 +1,8 @@
 {
-  "name": "vibeplan",
-  "description": "Visual Planning Tool",
+  "name": "lumio",
+  "description": "Illuminate Your Ideas — Visual Communication Platform",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.5.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

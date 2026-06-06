@@ -13,7 +13,7 @@ export const useExport = () => {
     try {
       const bytes = await exportSVG();
       const path = await save({
-        defaultPath: await getDefaultSavePath(`vibeplan-${Date.now()}`, 'svg'),
+        defaultPath: await getDefaultSavePath(`lumio-${Date.now()}`, 'svg'),
         filters: [{ name: 'SVG File', extensions: ['svg'] }]
       });
 
@@ -30,7 +30,7 @@ export const useExport = () => {
     try {
       const binary = await exportPNG();
       const path = await save({
-        defaultPath: await getDefaultSavePath(`vibeplan-${Date.now()}`, 'png'),
+        defaultPath: await getDefaultSavePath(`lumio-${Date.now()}`, 'png'),
         filters: [{ name: 'PNG Image', extensions: ['png'] }]
       });
 
@@ -47,7 +47,7 @@ export const useExport = () => {
     try {
       const bytes = await exportPDF();
       const path = await save({
-        defaultPath: await getDefaultSavePath(`vibeplan-${Date.now()}`, 'pdf'),
+        defaultPath: await getDefaultSavePath(`lumio-${Date.now()}`, 'pdf'),
         filters: [{ name: 'PDF Document', extensions: ['pdf'] }]
       });
 

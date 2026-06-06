@@ -1,7 +1,7 @@
 # Project Folder Structure
 
 ```
-vibeplan/
+lumio/
 ├── CONTEXT/                        # AI context files (this folder)
 │   ├── PROJECT_OVERVIEW.md
 │   ├── TECH_STACK.md

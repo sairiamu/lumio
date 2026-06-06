@@ -103,11 +103,11 @@ export const TitleBar: React.FC = () => {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 pointer-events-none">
             <img
-              src="/vibeplan.svg"
-              alt="VibePlan"
+              src="/lumio.svg"
+              alt="Lumio"
               style={{ width: 20, height: 20 }}
             />
-            <span className="font-sora font-bold text-sm tracking-tight text-text">VibePlan</span>
+            <span className="font-sora font-bold text-sm tracking-tight text-text">Lumio</span>
           </div>
 
           <div className="relative pointer-events-auto" ref={fileMenuRef}>
@@ -169,7 +169,7 @@ export const TitleBar: React.FC = () => {
                         className="w-full flex flex-col items-start px-4 py-2 text-xs text-text hover:bg-white/10 transition-colors group"
                       >
                         <span className="truncate w-full font-medium group-hover:text-accent">
-                          {path.split(/[\\/]/).pop()?.replace('.vibeplan.json', '')}
+                          {path.split(/[\\/]/).pop()?.replace('.lumio.json', '')}
                         </span>
                         <span className="text-[10px] text-text-muted truncate w-full">
                           {path}

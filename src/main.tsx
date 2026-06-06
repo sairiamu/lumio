@@ -5,7 +5,7 @@ import App from "./App";
 import { ShareViewer } from "./pages/ShareViewer";
 import "./index.css";
 
-console.log("VibePlan: Initializing...");
+console.log("Lumio: Initializing...");
 
 const Main: React.FC = () => {
   const isSharePage = window.location.hash.length > 50; // Simple heuristic for now
@@ -30,5 +30,5 @@ if (rootElement) {
     </React.StrictMode>
   );
 } else {
-  console.error("VibePlan: Root element not found");
+  console.error("Lumio: Root element not found");
 }

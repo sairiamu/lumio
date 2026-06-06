@@ -52,15 +52,15 @@ const HelpModal: React.FC = () => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const startup = localStorage.getItem('vibeplan-help-on-startup');
+    const startup = localStorage.getItem('lumio-help-on-startup');
     if (startup === 'false') {
       setDontShowAgain(true);
     }
   }, []);
 
   const handleClose = () => {
-    localStorage.setItem('vibeplan-help-seen', 'true');
-    localStorage.setItem('vibeplan-help-on-startup', dontShowAgain ? 'false' : 'true');
+    localStorage.setItem('lumio-help-seen', 'true');
+    localStorage.setItem('lumio-help-on-startup', dontShowAgain ? 'false' : 'true');
     setHelpModalOpen(false);
   };
 
@@ -92,7 +92,7 @@ const HelpModal: React.FC = () => {
               <HelpCircle size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-sora font-bold text-text">VibePlan Help Center</h2>
+              <h2 className="text-xl font-sora font-bold text-text">Lumio Help & Guide</h2>
               <p className="text-xs text-text-muted">Master the art of visual planning</p>
             </div>
           </div>
@@ -307,7 +307,7 @@ const HelpModal: React.FC = () => {
                   ))}
                 </div>
                 <p className="text-sm text-text-muted">
-                  VibePlan uses a unique hybrid of <strong>Glassmorphism</strong> for UI panels and <strong>Claymorphism</strong> for canvas nodes, providing depth and tactility.
+                  Lumio uses a unique hybrid of <strong>Glassmorphism</strong> for UI panels and <strong>Claymorphism</strong> for canvas nodes, providing depth and tactility.
                 </p>
                 <div className="bg-white/5 p-4 rounded-xl text-xs border border-border flex gap-2">
                   <Lightbulb size={14} className="text-accent shrink-0 mt-0.5" />
@@ -447,7 +447,7 @@ const HelpModal: React.FC = () => {
         <div className="p-6 border-t border-border flex items-center justify-between bg-white/2">
           <div className="flex items-center gap-6">
             <div className="text-[10px] text-text-muted">
-              VibePlan v1.0 &middot; Visual Planning Tool
+              Lumio v1.5 &middot; Visual Communication Platform
             </div>
             <label className="flex items-center gap-2 cursor-pointer group">
               <input

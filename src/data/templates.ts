@@ -322,7 +322,7 @@ export const BUILT_IN_TEMPLATES: Template[] = [
     category: 'Architecture',
     thumbnail: 'Terminal',
     nodes: [
-      { id: 'base', type: 'rect', position: { x: 400, y: 0 }, data: { title: 'Base URL', description: 'api.vibeplan.com/v1', parameters: [{ key: 'Auth', value: 'Bearer' }], clayColor: 'var(--clay-blue)' } },
+      { id: 'base', type: 'rect', position: { x: 400, y: 0 }, data: { title: 'Base URL', description: 'api.lumio.app/v1', parameters: [{ key: 'Auth', value: 'Bearer' }], clayColor: 'var(--clay-blue)' } },
       { id: 'auth', type: 'rect', position: { x: 400, y: 100 }, data: { title: 'Auth Header', description: 'X-API-Key or JWT', parameters: [{ key: 'Scope', value: 'Read/Write' }], clayColor: 'var(--clay-purple)' } },
       { id: 'get-users', type: 'rect', position: { x: 100, y: 250 }, data: { title: 'GET /users', description: 'List all users', parameters: [{ key: 'Page', value: '1' }], clayColor: 'var(--clay-green)' } },
       { id: 'post-users', type: 'rect', position: { x: 300, y: 250 }, data: { title: 'POST /users', description: 'Create new user', parameters: [{ key: 'Body', value: 'JSON' }], clayColor: 'var(--clay-blue)' } },

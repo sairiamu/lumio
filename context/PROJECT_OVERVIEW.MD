@@ -1,4 +1,5 @@
-# VibePlan – AI-Assisted Visual Planning Tool
+# Lumio — Illuminate Your Ideas
+Visual Communication & Presentation Platform for Educators and Teams
 
 ## What It Is
 A desktop-first visual planning and diagramming tool built with React + Vite + Tauri.

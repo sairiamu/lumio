@@ -1,4 +1,4 @@
-## What's New in VibePlan [VERSION]
+## What's New in Lumio [VERSION]
 
 ### New Features
 - 

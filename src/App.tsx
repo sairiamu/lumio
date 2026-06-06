@@ -18,7 +18,7 @@ import { useCanvasStore } from './store/canvasStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTheme } from './hooks/useTheme';
 import { useUpdater } from './hooks/useUpdater';
-import { ensureProjectsDir } from './utils/projectDir';
+import { ensureProjectsDir, checkOldProjectMigration } from './utils/projectDir';
 
 // Prevents splash from showing on hot reloads
 let hasShownSplash = false;
@@ -30,7 +30,8 @@ const App: React.FC = () => {
     isPresentationMode,
     togglePresentationMode,
     setIsAppReady,
-    setHelpModalOpen
+    setHelpModalOpen,
+    addToast
   } = useCanvasStore();
 
   const [showSplash, setShowSplash] = useState(!hasShownSplash);
@@ -44,6 +45,13 @@ const App: React.FC = () => {
       // 1. Ensure projects directory
       try {
         await ensureProjectsDir();
+        const hasCheckedMigration = localStorage.getItem('lumio-migration-checked');
+        if (!hasCheckedMigration) {
+          if (await checkOldProjectMigration()) {
+            addToast("Your projects folder has moved to ~/Lumio", "info");
+          }
+          localStorage.setItem('lumio-migration-checked', 'true');
+        }
       } catch (error) {
         console.error('Failed to initialize projects directory:', error);
       }
@@ -77,7 +85,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (!showSplash) {
-      const helpSeen = localStorage.getItem('vibeplan-help-seen');
+      const helpSeen = localStorage.getItem('lumio-help-seen');
       if (helpSeen !== 'true') {
         setHelpModalOpen(true);
       }
@@ -148,7 +156,7 @@ const App: React.FC = () => {
       {/* Visual Debug Indicator */}
       {!isPresentationMode && (
         <div className="absolute top-12 left-20 bg-accent px-2 py-1 rounded text-white text-[10px] z-100 shadow-lg pointer-events-none">
-          VibePlan
+          Lumio
         </div>
       )}
 

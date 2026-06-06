@@ -15,8 +15,8 @@ export function buildShareURL(): string {
   // Given the requirement, I'll follow it.
   const compressed = btoa(encodeURIComponent(json));
   // For desktop app use a custom protocol or localhost preview
-  // The requirement says vibeplan://share#...
-  return `vibeplan://share#${compressed}`;
+  // The requirement says lumio://share#...
+  return `lumio://share#${compressed}`;
 }
 
 export function decodeShareURL(hash: string): { nodes: Node<NodeData>[], edges: Edge<EdgeData>[] } | null {

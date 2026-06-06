@@ -1,4 +1,4 @@
-name: Release VibePlan
+name: Release Lumio
 
 on:
   push:
@@ -21,19 +21,19 @@ jobs:
         include:
           - platform: windows-latest
             target: x86_64-pc-windows-msvc
-            artifact: vibeplan_windows
+            artifact: lumio_windows
 
           - platform: macos-latest
             target: x86_64-apple-darwin
-            artifact: vibeplan_macos_intel
+            artifact: lumio_macos_intel
 
           - platform: macos-latest
             target: aarch64-apple-darwin
-            artifact: vibeplan_macos_arm
+            artifact: lumio_macos_arm
 
           - platform: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
-            artifact: vibeplan_linux
+            artifact: lumio_linux
 
     runs-on: ${{ matrix.platform }}
 
@@ -74,17 +74,17 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_KEY_PASSWORD }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'VibePlan ${{ github.ref_name }}'
+          releaseName: 'Lumio ${{ github.ref_name }}'
           releaseBody: |
-            ## VibePlan ${{ github.ref_name }}
+            ## Lumio ${{ github.ref_name }}
             
             ### Download
             | Platform | Installer |
             |----------|-----------|
-            | Windows  | vibeplan_x64.msi |
-            | macOS Intel | vibeplan_x64.dmg |
-            | macOS Apple Silicon | vibeplan_aarch64.dmg |
-            | Linux | vibeplan_amd64.deb |
+            | Windows  | lumio_x64.msi |
+            | macOS Intel | lumio_x64.dmg |
+            | macOS Apple Silicon | lumio_aarch64.dmg |
+            | Linux | lumio_amd64.deb |
           releaseDraft: false
           prerelease: false
           args: --target ${{ matrix.target }}
@@ -145,7 +145,7 @@ jobs:
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: vibeplan-android
+          name: lumio-android
           path: src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
 
       - name: Attach APK to Release
@@ -188,7 +188,7 @@ jobs:
       - name: Upload iOS build
         uses: actions/upload-artifact@v4
         with:
-          name: vibeplan-ios
+          name: lumio-ios
           path: src-tauri/gen/apple/build/arm64/*.ipa
 
   # ─── UPDATE MANIFEST ─────────────────────────────────────────
@@ -215,19 +215,19 @@ jobs:
             "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
             "platforms": {
               "windows-x86_64": {
-                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/vibeplan_x64.msi.zip",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/lumio_x64.msi.zip",
                 "signature": ""
               },
               "darwin-x86_64": {
-                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/vibeplan_x64.dmg",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/lumio_x64.dmg",
                 "signature": ""
               },
               "darwin-aarch64": {
-                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/vibeplan_aarch64.dmg",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/lumio_aarch64.dmg",
                 "signature": ""
               },
               "linux-x86_64": {
-                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/vibeplan_amd64.AppImage.tar.gz",
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/lumio_amd64.AppImage.tar.gz",
                 "signature": ""
               }
             }

@@ -52,7 +52,7 @@
     </g>
   </g>
 
-  <!-- Right: Text "VibePlan" -->
+  <!-- Right: Text "Lumio" -->
   <g transform="translate(620, 290)">
     <text font-family="Arial, sans-serif" font-weight="bold" font-size="70" kerning="3">
       <tspan x="0" y="0" fill="#e6eaee">Vibe</tspan>

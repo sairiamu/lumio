@@ -62,18 +62,18 @@ Three export options:
 - Uses XYFlow toSvg() for diagram layer
 - Embeds canvas freehand layer as base64 image within SVG
 - Preserves all fonts via font-face embedding
-- File name: vibeplan-export-[timestamp].svg
+- File name: lumio-export-[timestamp].svg
 
 ### HTML Export
 - Self-contained single .html file
 - Inline all CSS (Tailwind utilities extracted)
 - Embed fonts as base64 woff2
 - Output is static — not interactive, just visual
-- File name: vibeplan-export-[timestamp].html
+- File name: lumio-export-[timestamp].html
 
 ### JSON Export (Save Project)
 - Saves XYFlow nodes/edges + freehand strokes + style state
-- File name: [user-chosen-name].vibeplan.json
+- File name: [user-chosen-name].lumio.json
 - Load via File > Open in titlebar menu
 
 ## KEYBOARD SHORTCUTS

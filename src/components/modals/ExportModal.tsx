@@ -149,7 +149,7 @@ const ExportModalInner: React.FC = () => {
         </div>
 
         <div className="bg-white/5 px-6 py-4 text-[10px] text-text-muted/50 text-center uppercase tracking-widest border-t border-border">
-          VibePlan Export Engine v1.0
+          Lumio Export Engine v1.5
         </div>
       </div>
     </div>
