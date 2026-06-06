@@ -26,6 +26,20 @@ export interface NodeParameter {
   value: string;
 }
 
+export interface ShapeLibraryItem {
+  id: string;
+  label: string;
+  lucideIcon: string;
+  shapeType: string;
+}
+
+export interface ShapeCategory {
+  id: string;
+  label: string;
+  icon: string;
+  shapes: ShapeLibraryItem[];
+}
+
 export interface NodeData extends Record<string, unknown> {
   title: string;
   parameters: NodeParameter[];

@@ -1,103 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import * as Lucide from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-
-interface ShapeItem {
-  name: string;
-  iconName: string;
-}
-
-interface Category {
-  name: string;
-  shapes: ShapeItem[];
-}
-
-const CATEGORIES: Category[] = [
-  {
-    name: 'BASIC',
-    shapes: [
-      { name: 'Rectangle', iconName: 'Square' },
-      { name: 'Circle', iconName: 'Circle' },
-      { name: 'Diamond', iconName: 'Diamond' },
-      { name: 'Text', iconName: 'Type' },
-      { name: 'Card', iconName: 'CreditCard' },
-    ],
-  },
-  {
-    name: 'TECH & INFRASTRUCTURE',
-    shapes: [
-      { name: 'Database', iconName: 'Database' },
-      { name: 'Server', iconName: 'Server' },
-      { name: 'Cloud', iconName: 'Cloud' },
-      { name: 'API', iconName: 'Code' },
-      { name: 'Microservice', iconName: 'Layers' },
-      { name: 'Container', iconName: 'Box' },
-      { name: 'Queue', iconName: 'List' },
-      { name: 'Cache', iconName: 'Zap' },
-      { name: 'LoadBalancer', iconName: 'GitFork' },
-      { name: 'Firewall', iconName: 'Shield' },
-    ],
-  },
-  {
-    name: 'DEVICES & INTERFACES',
-    shapes: [
-      { name: 'Phone', iconName: 'Smartphone' },
-      { name: 'Tablet', iconName: 'Tablet' },
-      { name: 'Desktop', iconName: 'Monitor' },
-      { name: 'Browser', iconName: 'Globe' },
-      { name: 'Terminal', iconName: 'Terminal' },
-      { name: 'WebApp', iconName: 'AppWindow' },
-      { name: 'MobileApp', iconName: 'Smartphone' },
-      { name: 'Watch', iconName: 'Watch' },
-      { name: 'TV', iconName: 'Tv' },
-      { name: 'Router', iconName: 'Router' },
-    ],
-  },
-  {
-    name: 'PEOPLE & ROLES',
-    shapes: [
-      { name: 'User', iconName: 'User' },
-      { name: 'Admin', iconName: 'UserCheck' },
-      { name: 'Developer', iconName: 'UserCode' },
-      { name: 'Team', iconName: 'Users' },
-      { name: 'Bot', iconName: 'Bot' },
-      { name: 'Customer', iconName: 'UserPlus' },
-      { name: 'Manager', iconName: 'UserCog' },
-      { name: 'Support', iconName: 'LifeBuoy' },
-      { name: 'Guest', iconName: 'UserMinus' },
-    ],
-  },
-  {
-    name: 'DOCUMENT & DATA',
-    shapes: [
-      { name: 'Document', iconName: 'FileText' },
-      { name: 'Spreadsheet', iconName: 'Table' },
-      { name: 'Report', iconName: 'FileBarChart' },
-      { name: 'Email', iconName: 'Mail' },
-      { name: 'Folder', iconName: 'Folder' },
-      { name: 'Archive', iconName: 'Archive' },
-      { name: 'Certificate', iconName: 'Award' },
-      { name: 'Book', iconName: 'BookOpen' },
-      { name: 'Note', iconName: 'StickyNote' },
-    ],
-  },
-  {
-    name: 'ACTIONS & FLOW',
-    shapes: [
-      { name: 'Start', iconName: 'Play' },
-      { name: 'End', iconName: 'Square' },
-      { name: 'Decision', iconName: 'Diamond' },
-      { name: 'Process', iconName: 'Activity' },
-      { name: 'Loop', iconName: 'Repeat' },
-      { name: 'Merge', iconName: 'GitMerge' },
-      { name: 'Split', iconName: 'GitSplit' },
-      { name: 'Delay', iconName: 'Clock' },
-      { name: 'Trigger', iconName: 'Zap' },
-      { name: 'Webhook', iconName: 'Webhook' },
-    ],
-  },
-];
+import { SHAPE_LIBRARY } from '../../data/shapeLibrary';
+import { ShapeLibraryItem } from '../../types';
 
 export const ShapeLibrary: React.FC = () => {
   const {
@@ -108,86 +13,182 @@ export const ShapeLibrary: React.FC = () => {
     setPendingNodeTitle,
   } = useCanvasStore();
 
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(
-    CATEGORIES.map((c) => c.name)
-  );
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const totalShapes = useMemo(() => {
+    return SHAPE_LIBRARY.reduce((acc, cat) => acc + cat.shapes.length, 0);
+  }, []);
+
+  const filteredCategories = useMemo(() => {
+    let result = SHAPE_LIBRARY;
+
+    if (selectedCategoryId) {
+      result = result.filter(cat => cat.id === selectedCategoryId);
+    }
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.map(cat => ({
+        ...cat,
+        shapes: cat.shapes.filter(shape =>
+          shape.label.toLowerCase().includes(query) ||
+          cat.label.toLowerCase().includes(query)
+        )
+      })).filter(cat => cat.shapes.length > 0);
+    }
+
+    return result;
+  }, [searchQuery, selectedCategoryId]);
+
+  const searchResultsCount = useMemo(() => {
+    return filteredCategories.reduce((acc, cat) => acc + cat.shapes.length, 0);
+  }, [filteredCategories]);
 
   if (!isShapeLibraryOpen) return null;
 
-  const toggleCategory = (name: string) => {
-    setExpandedCategories((prev) =>
-      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
-    );
-  };
-
-  const handleShapeSelect = (shape: ShapeItem) => {
-    setPendingNodeType(shape.iconName);
-    setPendingNodeTitle(shape.name);
+  const handleShapeSelect = (shape: ShapeLibraryItem) => {
+    setPendingNodeType(shape.lucideIcon);
+    setPendingNodeTitle(shape.label);
     setCurrentTool('place');
     setIsShapeLibraryOpen(false);
   };
 
+  const handleCategoryClick = (id: string) => {
+    if (selectedCategoryId === id) {
+      setSelectedCategoryId(null);
+    } else {
+      setSelectedCategoryId(id);
+    }
+  };
+
   return (
     <div
-      className="fixed left-16 top-1/2 -translate-y-1/2 w-[280px] h-[400px] z-50 glass-panel flex flex-col overflow-hidden animate-in fade-in slide-in-from-left-4 duration-200"
+      className="fixed left-16 top-1/2 -translate-y-1/2 w-[300px] h-[500px] z-50 glass-panel flex flex-col overflow-hidden animate-in fade-in slide-in-from-left-4 duration-200"
       style={{
-        backgroundColor: 'var(--panel)',
+        backgroundColor: 'rgba(37, 40, 48, 0.85)',
         backdropFilter: 'blur(24px) saturate(180%)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        borderRadius: '16px',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
       }}
     >
-      <div className="p-4 border-b border-border flex items-center justify-between">
-        <h2 className="text-text font-semibold text-sm tracking-wide">SHAPE LIBRARY</h2>
+      {/* Header */}
+      <div className="p-3 border-b border-white/10 flex items-center justify-between bg-white/5">
+        <div className="flex items-center gap-2">
+          <h2 className="text-white font-semibold text-[11px] tracking-wider">SHAPE LIBRARY</h2>
+          <span className="px-1.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[9px] font-bold">
+            {totalShapes}
+          </span>
+        </div>
         <button
           onClick={() => setIsShapeLibraryOpen(false)}
-          className="text-text-muted hover:text-text transition-colors"
+          className="text-slate-400 hover:text-white transition-colors"
         >
-          <Lucide.X size={16} />
+          <Lucide.X size={14} />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-        <div className="flex flex-col gap-6">
-          {CATEGORIES.map((category) => (
-            <div key={category.name} className="flex flex-col gap-2">
-              <button
-                onClick={() => toggleCategory(category.name)}
-                className="flex items-center gap-2 text-[10px] font-bold text-text-muted tracking-widest hover:text-text transition-colors text-left uppercase"
-              >
-                {expandedCategories.includes(category.name) ? (
-                  <ChevronDown size={12} />
-                ) : (
-                  <ChevronRight size={12} />
-                )}
-                {category.name}
-              </button>
+      {/* Search Bar */}
+      <div className="p-2 border-b border-white/10 bg-white/5">
+        <div className="relative">
+          <Lucide.Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" size={12} />
+          <input
+            type="text"
+            placeholder="Search shapes..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-black/20 border border-white/10 rounded-md py-1.5 pl-8 pr-2 text-[11px] text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50 transition-all"
+          />
+        </div>
+        {searchQuery && (
+          <div className="mt-1 px-1 text-[9px] text-slate-400 italic">
+            {searchResultsCount} results for '{searchQuery}'
+          </div>
+        )}
+      </div>
 
-              {expandedCategories.includes(category.name) && (
-                <div className="grid grid-cols-4 gap-3">
+      <div className="flex flex-1 overflow-hidden">
+        {/* Category Sidebar */}
+        <div className="w-[44px] hover:w-[140px] transition-all duration-300 border-r border-white/10 bg-black/10 overflow-y-auto custom-scrollbar p-1.5 flex flex-col gap-1 z-20 group/sidebar">
+          <button
+            onClick={() => setSelectedCategoryId(null)}
+            className={`flex items-center gap-3 p-2 rounded-lg text-left transition-all ${
+              !selectedCategoryId ? 'bg-indigo-500/20 text-indigo-300' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
+            }`}
+          >
+            <Lucide.LayoutGrid size={16} className="shrink-0" />
+            <span className="text-[10px] font-medium truncate opacity-0 group-hover/sidebar:opacity-100 transition-opacity">All</span>
+          </button>
+
+          <div className="my-1 border-t border-white/5" />
+
+          {SHAPE_LIBRARY.map((category) => {
+            const Icon = (Lucide as any)[category.icon] || Lucide.Box;
+            return (
+              <button
+                key={category.id}
+                onClick={() => handleCategoryClick(category.id)}
+                title={category.label}
+                className={`flex items-center gap-3 p-2 rounded-lg text-left transition-all ${
+                  selectedCategoryId === category.id ? 'bg-indigo-500/20 text-indigo-300' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
+                }`}
+              >
+                <Icon size={16} className="shrink-0" />
+                <span className="text-[10px] font-medium truncate opacity-0 group-hover/sidebar:opacity-100 transition-opacity">{category.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Shapes Grid */}
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-y-auto custom-scrollbar p-2 bg-black/5"
+        >
+          <div className="flex flex-col gap-4">
+            {filteredCategories.map((category) => (
+              <div key={category.id} className="flex flex-col gap-2">
+                <div className="sticky top-0 z-10 flex items-center justify-between bg-slate-900/95 backdrop-blur-md py-1 px-2 -mx-2 border-y border-white/5">
+                  <span className="text-[9px] font-bold text-slate-400 tracking-wider uppercase">
+                    {category.label}
+                  </span>
+                  <span className="text-[9px] text-slate-500 font-bold bg-white/5 px-1.5 rounded">
+                    {category.shapes.length}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 justify-items-center">
                   {category.shapes.map((shape) => {
-                    const Icon = (Lucide as any)[shape.iconName] || Lucide.Box;
+                    const Icon = (Lucide as any)[shape.lucideIcon] || Lucide.Box;
                     return (
                       <button
-                        key={shape.name}
+                        key={shape.id}
                         onClick={() => handleShapeSelect(shape)}
-                        title={shape.name}
-                        className="group flex flex-col items-center justify-center gap-1 w-[56px] h-[56px] clay-shape rounded-xl transition-all hover:scale-105 active:scale-95 border border-border hover:border-accent hover:bg-accent-light"
-                        style={{
-                          backgroundColor: 'var(--canvas)',
-                          boxShadow: 'none',
-                          color: 'var(--text)'
-                        }}
+                        title={shape.label}
+                        className="group flex flex-col items-center justify-center gap-1 w-[52px] h-[52px] rounded-lg transition-all hover:bg-white/10 active:scale-90 border border-white/5 hover:border-indigo-500/40"
                       >
-                        <Icon size={20} color="currentColor" className="group-hover:text-accent transition-colors" />
-                        <span className="text-[9px] text-text-muted group-hover:text-text transition-colors truncate w-full text-center px-1">
-                          {shape.name}
+                        <div className="text-slate-400 group-hover:text-indigo-400 transition-colors">
+                          <Icon size={24} />
+                        </div>
+                        <span className="text-[10px] text-slate-500 group-hover:text-slate-200 transition-colors truncate w-full text-center px-0.5">
+                          {shape.label}
                         </span>
                       </button>
                     );
                   })}
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            ))}
+
+            {filteredCategories.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-full text-slate-500 py-20">
+                <Lucide.SearchX size={24} className="mb-2 opacity-20" />
+                <p className="text-[10px]">No shapes found</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
