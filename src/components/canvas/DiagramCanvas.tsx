@@ -400,7 +400,9 @@ const DiagramCanvasInner: React.FC = () => {
         <div className="absolute inset-0 bg-accent/10 z-[200] pointer-events-none transition-opacity duration-200" />
       )}
       <ContextMenu visible={ctxVisible} x={ctxX} y={ctxY} targetNodeId={ctxTargetNodeId} onClose={closeContextMenu} />
-      {expandedNodeId && <ExpandedNode nodeId={expandedNodeId} />}
+      {expandedNodeId && nodes.find(n => n.id === expandedNodeId)?.type !== 'card' && (
+        <ExpandedNode nodeId={expandedNodeId} />
+      )}
     </div>
   );
 };

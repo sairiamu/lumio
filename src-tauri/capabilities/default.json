@@ -19,6 +19,14 @@
     "dialog:allow-open",
     "core:path:default",
     {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [
+        { "path": "$HOME/**" },
+        { "path": "$DOCUMENTS/**" },
+        { "path": "$DOWNLOAD/**" }
+      ]
+    },
+    {
       "identifier": "fs:allow-read-file",
       "allow": [
         { "path": "$HOME/**" },

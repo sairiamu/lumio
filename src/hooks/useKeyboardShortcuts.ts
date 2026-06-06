@@ -5,7 +5,7 @@ import { useFileIO } from './useFileIO';
 import { useExport } from './useExport';
 
 export const useKeyboardShortcuts = () => {
-  const { deleteElements, zoomIn, zoomOut, setViewport } = useReactFlow();
+  const { deleteElements, zoomIn, zoomOut, setViewport, fitView } = useReactFlow();
   const {
     selectedNodeIds,
     selectedEdgeIds,
@@ -206,6 +206,15 @@ export const useKeyboardShortcuts = () => {
           break;
         case 'l':
           setIsShapeLibraryOpen(!isShapeLibraryOpen);
+          break;
+        case 'z':
+          if (selectedNodeIds.length === 1) {
+            e.preventDefault();
+            const node = nodes.find(n => n.id === selectedNodeIds[0]);
+            if (node) {
+              fitView({ nodes: [node], duration: 800, padding: 0.5 });
+            }
+          }
           break;
         case 'delete':
         case 'backspace':

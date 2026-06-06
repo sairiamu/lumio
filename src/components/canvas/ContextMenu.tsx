@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow } from '@xyflow/react';
-import { Waypoints, Presentation, Trash2, Group, Ungroup } from 'lucide-react';
+import { Waypoints, Presentation, Trash2, Group, Ungroup, ZoomIn } from 'lucide-react';
 
 interface ContextMenuProps {
   visible: boolean;
@@ -188,6 +188,15 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
     close();
   };
 
+  const handleZoomToNode = () => {
+    if (!targetNodeId) return;
+    const node = nodes.find(n => n.id === targetNodeId);
+    if (node) {
+      fitView({ nodes: [node], duration: 800, padding: 0.5 });
+    }
+    close();
+  };
+
   const handleSaveAsTemplate = () => {
     const name = window.prompt('Enter template name:');
     if (name) {
@@ -267,6 +276,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
           >
             <Presentation size={16} className="text-accent" />
             Add to Presentation
+          </button>
+          <button
+            className="flex items-center gap-2 text-left px-3 py-2 hover:bg-white/10 rounded transition-colors"
+            onClick={handleZoomToNode}
+          >
+            <ZoomIn size={16} className="text-accent" />
+            Zoom to Node <span className="ml-auto opacity-50 text-[10px]">Z</span>
           </button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleEditProperties}>Edit Properties</button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleOpenColour}>Change Colour</button>

@@ -46,6 +46,9 @@ export interface NodeData extends Record<string, unknown> {
   description: string
   content: string
   viewMode: 'compact' | 'expanded'
+  cardMode?: 'simple' | 'document' | 'mixed'
+  cardIcon?: string
+  accentColor?: string
   clayColor?: string
   strokeColor?: string
   strokeWidth?: number
