@@ -1,5 +1,6 @@
 {
   "name": "vibeplan",
+  "description": "Visual Planning Tool",
   "private": true,
   "version": "0.1.0",
   "type": "module",

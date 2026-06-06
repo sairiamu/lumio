@@ -447,7 +447,7 @@ const HelpModal: React.FC = () => {
         <div className="p-6 border-t border-border flex items-center justify-between bg-white/2">
           <div className="flex items-center gap-6">
             <div className="text-[10px] text-text-muted">
-              VibePlan v1.0 • Built with React, Tauri, and XYFlow
+              VibePlan v1.0 &middot; Visual Planning Tool
             </div>
             <label className="flex items-center gap-2 cursor-pointer group">
               <input
