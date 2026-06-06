@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Minus, Square, X, Hexagon, Palette, FileText, FolderOpen,
-  Save, Clock, ChevronDown, Share2, Layout, Monitor, Search, Grid3X3
+  Save, Clock, ChevronDown, Share2, Layout, Monitor, Search, Grid3X3, HelpCircle
 } from 'lucide-react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { confirm } from '@tauri-apps/plugin-dialog';
@@ -16,6 +16,8 @@ export const TitleBar: React.FC = () => {
     isThemePickerOpen,
     isShareModalOpen,
     setShareModalOpen,
+    isHelpModalOpen,
+    setHelpModalOpen,
     recentProjects,
     setTemplateModalOpen,
     togglePresentationMode,
@@ -181,6 +183,13 @@ export const TitleBar: React.FC = () => {
           title="Presentation Mode (F11)"
         >
           <Monitor className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => setHelpModalOpen(!isHelpModalOpen)}
+          className={`p-2 hover:bg-white/10 transition-colors mr-1 rounded-lg ${isHelpModalOpen ? 'text-accent' : 'text-text-muted'}`}
+          title="Help (F1)"
+        >
+          <HelpCircle className="w-4 h-4" />
         </button>
         <button
           onClick={() => setShareModalOpen(!isShareModalOpen)}

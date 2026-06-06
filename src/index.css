@@ -17,6 +17,7 @@
   --color-success: var(--success);
   --color-danger: var(--danger);
   --color-grid: var(--grid-color);
+  --color-steel: #3A3D4A;
 
   /* Legacy aliases for transition period if needed */
   --color-void: var(--bg);

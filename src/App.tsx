@@ -11,6 +11,7 @@ import { ThemePicker } from './components/modals/ThemePicker';
 import { TemplateModal } from './components/modals/TemplateModal';
 import { CommandPalette } from './components/modals/CommandPalette';
 import { SplashScreen } from './components/shell/SplashScreen';
+import HelpModal from './components/modals/HelpModal';
 import { ToastContainer } from './components/ui/Toast';
 import { useCanvasStore } from './store/canvasStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -26,7 +27,8 @@ const App: React.FC = () => {
     togglePanelOpen,
     isPresentationMode,
     togglePresentationMode,
-    setIsAppReady
+    setIsAppReady,
+    setHelpModalOpen
   } = useCanvasStore();
 
   const [showSplash, setShowSplash] = useState(!hasShownSplash);
@@ -69,6 +71,15 @@ const App: React.FC = () => {
     };
     handleFullscreen();
   }, [isPresentationMode]);
+
+  useEffect(() => {
+    if (!showSplash) {
+      const helpSeen = localStorage.getItem('vibeplan-help-seen');
+      if (helpSeen !== 'true') {
+        setHelpModalOpen(true);
+      }
+    }
+  }, [showSplash, setHelpModalOpen]);
 
   return (
     <div
@@ -115,6 +126,7 @@ const App: React.FC = () => {
 
       {!isPresentationMode && <StatusBar />}
       <ThemePicker />
+      <HelpModal />
       <TemplateModal />
       <CommandPalette />
       {!isPresentationMode && <PenToolbar />}

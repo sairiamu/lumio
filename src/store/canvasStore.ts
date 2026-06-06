@@ -116,6 +116,8 @@ interface CanvasStore extends CanvasState {
   toasts: ToastMessage[];
   addToast: (message: string, type: 'success' | 'error' | 'info') => void;
   removeToast: (id: string) => void;
+  isHelpModalOpen: boolean;
+  setHelpModalOpen: (open: boolean) => void;
   isAppReady: boolean;
   setIsAppReady: (ready: boolean) => void;
 }
@@ -612,6 +614,8 @@ export const useCanvasStore = create<CanvasStore>()(
     }));
   },
 
+  isHelpModalOpen: false,
+  setHelpModalOpen: (isHelpModalOpen) => set({ isHelpModalOpen }),
   isAppReady: false,
   setIsAppReady: (isAppReady) => set({ isAppReady }),
 

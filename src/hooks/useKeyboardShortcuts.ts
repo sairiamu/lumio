@@ -38,7 +38,9 @@ export const useKeyboardShortcuts = () => {
     isSearchOpen,
     setSearchQuery,
     toggleCommandPalette,
-    toggleGrid
+    toggleGrid,
+    isHelpModalOpen,
+    setHelpModalOpen
   } = useCanvasStore();
 
   const { saveProject } = useFileIO();
@@ -150,6 +152,10 @@ export const useKeyboardShortcuts = () => {
 
       // Single key shortcuts
       switch (e.key.toLowerCase()) {
+        case 'f1':
+          e.preventDefault();
+          setHelpModalOpen(!isHelpModalOpen);
+          break;
         case 'f11':
           e.preventDefault();
           togglePresentationMode();
@@ -263,6 +269,8 @@ export const useKeyboardShortcuts = () => {
     isSearchOpen,
     setSearchQuery,
     toggleCommandPalette,
-    toggleGrid
+    toggleGrid,
+    isHelpModalOpen,
+    setHelpModalOpen
   ]);
 };

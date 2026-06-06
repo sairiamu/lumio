@@ -56,7 +56,8 @@ export const TemplateModal: React.FC = () => {
     setProjectName,
     customTemplates,
     deleteCustomTemplate,
-    setIsDirty
+    setIsDirty,
+    isHelpModalOpen
   } = useCanvasStore();
 
   const { fitView } = useReactFlow();
@@ -65,11 +66,12 @@ export const TemplateModal: React.FC = () => {
   // Handle first launch
   useEffect(() => {
     const launched = localStorage.getItem('vibeplan-launched');
-    if (!launched) {
+    const helpSeen = localStorage.getItem('vibeplan-help-seen');
+    if (!launched && helpSeen === 'true' && !isHelpModalOpen) {
       setTemplateModalOpen(true);
       localStorage.setItem('vibeplan-launched', 'true');
     }
-  }, [setTemplateModalOpen]);
+  }, [setTemplateModalOpen, isHelpModalOpen]);
 
   if (!isTemplateModalOpen) return null;
 
