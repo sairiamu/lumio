@@ -9,7 +9,8 @@ export function usePresentationTimer() {
     currentStep,
     nextStep,
     presentationLoop,
-    setIsPresentationPlaying
+    setIsPresentationPlaying,
+    setIsPresentationFinished
   } = useCanvasStore();
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -38,6 +39,7 @@ export function usePresentationTimer() {
         const isLast = currentStep >= stepNodes.length - 1;
         if (isLast && !presentationLoop) {
           setIsPresentationPlaying(false);
+          setIsPresentationFinished(true);
           return;
         }
         nextStep();

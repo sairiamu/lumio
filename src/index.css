@@ -19,7 +19,7 @@
   --color-grid: var(--grid-color);
   --color-steel: #3A3D4A;
 
-  /* Legacy aliases for transition period if needed */
+  /* Legacy aliases */
   --color-void: var(--bg);
   --color-ash: var(--canvas);
   --color-graphite: var(--panel);
@@ -44,7 +44,7 @@
   --danger: #F87171;
   --grid-color: rgba(255,255,255,0.04);
 
-  /* Clay colors remain consistent across themes as they are element-specific */
+  /* Clay colors */
   --clay-blue: #7EB8F7;
   --clay-purple: #B48EF7;
   --clay-green: #6EDBB4;
@@ -106,7 +106,7 @@ html, body, #root {
   box-shadow: none;
 }
 
-/* Tailwind utility classes fallback (standard flexbox/spacing) */
+/* Tailwind utility classes fallback */
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .flex-1 { flex: 1 1 0%; }

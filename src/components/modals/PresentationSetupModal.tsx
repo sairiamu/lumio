@@ -8,9 +8,7 @@ export const PresentationSetupModal: React.FC = () => {
     setPresentationSetupOpen,
     stepNodes,
     presentationTimer,
-    setIsPresentationPlaying,
-    setStep,
-    togglePresentationMode
+    startPresentation,
   } = useCanvasStore();
 
   if (!isPresentationSetupOpen) return null;
@@ -18,15 +16,11 @@ export const PresentationSetupModal: React.FC = () => {
   const isEmpty = stepNodes.length === 0;
 
   const handleStartAuto = () => {
-    setStep(0);
-    setIsPresentationPlaying(true);
-    setPresentationSetupOpen(false);
+    startPresentation(true);
   };
 
   const handleManualOnly = () => {
-    setStep(0);
-    setIsPresentationPlaying(false);
-    setPresentationSetupOpen(false);
+    startPresentation(false);
   };
 
   return (

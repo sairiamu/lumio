@@ -30,7 +30,17 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
   const typedData = data as NodeData;
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<NodeData>(data as NodeData);
-  const { nodes, setNodes, isPresentationMode, stepNodes, currentStep, searchQuery, searchResults } = useCanvasStore();
+  const {
+    nodes,
+    setNodes,
+    isPresentationMode,
+    stepNodes,
+    currentStep,
+    searchQuery,
+    searchResults,
+    setExpandedNodeId,
+    expandedNodeId
+  } = useCanvasStore();
   const editRef = useRef<HTMLDivElement>(null);
   const { glowNodeIds, trackedNodeId } = useTrackedRelations();
 
@@ -125,9 +135,17 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
     setEditData({ ...editData, parameters: newParams });
   };
 
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    if (isPresentationMode) {
+      e.stopPropagation();
+      setExpandedNodeId(id);
+    }
+  }, [id, isPresentationMode, setExpandedNodeId]);
+
   return (
     <div
       onDoubleClick={handleDoubleClick}
+      onClick={handleClick}
       className={`clay-shape relative ${selected ? 'ring-2 ring-accent ring-offset-2 ring-offset-bg' : ''} ${className}`}
       style={{
         backgroundColor: typedData.clayColor || clayColor,
@@ -275,7 +293,25 @@ export const BaseNode: React.FC<BaseNodeProps> = (props) => {
               </div>
             )}
 
-            {hasDesc && !hideHeader && (
+            {(typedData.content && !hideHeader) ? (
+              <div style={{
+                flexGrow: 1,
+                overflow: 'hidden',
+                fontSize: bodySize,
+                fontFamily: 'Inter',
+                fontWeight: 400,
+                color: 'var(--text-muted)',
+                lineHeight: 1.4,
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                wordBreak: 'break-word',
+                fontStyle: 'italic',
+                opacity: 0.8
+              }}>
+                {typedData.content.substring(0, 40)}{typedData.content.length > 40 ? '...' : ''}
+              </div>
+            ) : hasDesc && !hideHeader && (
               <div style={{
                 flexGrow: 1,
                 overflow: 'hidden',

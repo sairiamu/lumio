@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import {
   ReactFlow,
   Background,
@@ -19,6 +19,7 @@ import { UniversalNode } from '../nodes/UniversalNode';
 import { GroupNode } from '../nodes/GroupNode';
 import { CustomEdge } from './CustomEdge';
 import ContextMenu from './ContextMenu';
+import { ExpandedNode } from './ExpandedNode';
 
 const nodeTypes = {
   rect: RectNode,
@@ -58,12 +59,18 @@ const DiagramCanvasInner: React.FC = () => {
     pushHistory,
     setTrackedNodeId,
     setAlignmentGuides,
-    isMinimapOpen
+    isMinimapOpen,
+    expandedNodeId,
+    setExpandedNodeId,
+    isPresentationMode,
+    stepNodes,
+    currentStep,
   } = useCanvasStore();
 
   const isDark = currentTheme !== 'arctic';
 
   const styledEdges = useMemo(() => {
+    const isDimmed = isPresentationMode && currentStep !== -1;
     return edges.map((edge) => ({
       ...edge,
       type: edge.data?.pathType === 'default' ? undefined : edge.data?.pathType,
@@ -74,6 +81,8 @@ const DiagramCanvasInner: React.FC = () => {
           edge.data?.strokeStyle === 'dashed' ? '8 4' :
           edge.data?.strokeStyle === 'dotted' ? '2 4' :
           undefined,
+        opacity: isDimmed ? 0.05 : 1,
+        transition: 'opacity 300ms ease-in-out',
       },
       markerStart: edge.data?.lineStart === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } :
                   edge.data?.lineStart === 'circle' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } : undefined,
@@ -81,7 +90,48 @@ const DiagramCanvasInner: React.FC = () => {
                 edge.data?.lineEnd === 'circle' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } : undefined,
       animated: edge.data?.animated || false,
     }));
-  }, [edges]);
+  }, [edges, isPresentationMode, currentStep]);
+
+  const styledNodes = useMemo(() => {
+    if (!isPresentationMode || currentStep === -1) return nodes;
+
+    const currentId = stepNodes[currentStep];
+    const prevId = currentStep > 0 ? stepNodes[currentStep - 1] : null;
+
+    return nodes.map((node) => {
+      if (node.id === currentId) {
+        return {
+          ...node,
+          style: {
+            ...node.style,
+            opacity: 1,
+            boxShadow: '0 0 30px 10px var(--accent-light)',
+            zIndex: 1000,
+            transition: 'box-shadow 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease-out, transform 0.3s ease-out',
+          },
+        };
+      } else if (node.id === prevId) {
+        return {
+          ...node,
+          style: {
+            ...node.style,
+            opacity: 0.2,
+            transform: 'scale(0.95)',
+            transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+          },
+        };
+      } else {
+        return {
+          ...node,
+          style: {
+            ...node.style,
+            opacity: 0.15,
+            transition: 'opacity 0.3s ease-in-out',
+          },
+        };
+      }
+    });
+  }, [nodes, isPresentationMode, currentStep, stepNodes]);
 
   const { screenToFlowPosition } = useReactFlow();
 
@@ -90,6 +140,25 @@ const DiagramCanvasInner: React.FC = () => {
   const [ctxX, setCtxX] = useState(0);
   const [ctxY, setCtxY] = useState(0);
   const [ctxTargetNodeId, setCtxTargetNodeId] = useState<string | null>(null);
+
+  const [showFlash, setShowFlash] = useState(false);
+
+  useEffect(() => {
+    if (isPresentationMode && currentStep !== -1) {
+      setShowFlash(true);
+      const timer = setTimeout(() => setShowFlash(false), 200);
+
+      const nodeId = stepNodes[currentStep];
+      const node = nodes.find(n => n.id === nodeId);
+      if (node && node.data?.content) {
+        setExpandedNodeId(nodeId);
+      } else {
+        setExpandedNodeId(null);
+      }
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, isPresentationMode, stepNodes, nodes, setExpandedNodeId]);
 
   const closeContextMenu = useCallback(() => {
     setCtxVisible(false);
@@ -227,7 +296,7 @@ const DiagramCanvasInner: React.FC = () => {
         </div>
       )}
       <ReactFlow
-        nodes={nodes}
+        nodes={styledNodes}
         edges={styledEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
@@ -240,7 +309,7 @@ const DiagramCanvasInner: React.FC = () => {
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
         onSelectionDragStart={onSelectionDragStart}
-        nodeTypes={nodeTypes as NodeTypes}
+        nodeTypes={nodeTypes as any}
         edgeTypes={edgeTypes}
         onPaneClick={onPaneClick}
         style={rfStyle}
@@ -301,7 +370,11 @@ const DiagramCanvasInner: React.FC = () => {
           </defs>
         </svg>
       </ReactFlow>
+      {showFlash && (
+        <div className="absolute inset-0 bg-accent/10 z-[200] pointer-events-none transition-opacity duration-200" />
+      )}
       <ContextMenu visible={ctxVisible} x={ctxX} y={ctxY} targetNodeId={ctxTargetNodeId} onClose={closeContextMenu} />
+      {expandedNodeId && <ExpandedNode nodeId={expandedNodeId} />}
     </div>
   );
 };

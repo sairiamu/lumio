@@ -9,6 +9,7 @@ import { PropertiesPanel } from './components/panels/PropertiesPanel';
 import { StatusBar } from './components/shell/StatusBar';
 import { ThemePicker } from './components/modals/ThemePicker';
 import { TemplateModal } from './components/modals/TemplateModal';
+import { PresentationSetupModal } from './components/modals/PresentationSetupModal';
 import { CommandPalette } from './components/modals/CommandPalette';
 import { SplashScreen } from './components/shell/SplashScreen';
 import HelpModal from './components/modals/HelpModal';
@@ -149,6 +150,7 @@ const App: React.FC = () => {
       <ThemePicker />
       <HelpModal />
       <TemplateModal />
+      <PresentationSetupModal />
       <CommandPalette />
       {!isPresentationMode && <PenToolbar />}
       <ToastContainer />

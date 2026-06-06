@@ -44,6 +44,8 @@ export interface NodeData extends Record<string, unknown> {
   title: string
   parameters: NodeParameter[]
   description: string
+  content: string
+  viewMode: 'compact' | 'expanded'
   clayColor?: string
   strokeColor?: string
   strokeWidth?: number
@@ -61,6 +63,8 @@ export const defaultNodeData: NodeData = {
   title: '',
   parameters: [],
   description: '',
+  content: '',
+  viewMode: 'compact',
 }
 
 export interface EdgeData extends Record<string, unknown> {
@@ -91,6 +95,7 @@ export interface CanvasState {
   zoomLevel: number;
   isExportModalOpen: boolean;
   isShareModalOpen: boolean;
+  isPresentationSetupOpen: boolean;
   isShapeLibraryOpen: boolean;
   pendingNodeType: string | null;
   pendingNodeTitle: string | null;
@@ -100,9 +105,14 @@ export interface CanvasState {
   isDirty: boolean;
   alignmentGuides: { x?: number; y?: number };
   isPresentationMode: boolean;
+  isPresentationFinished: boolean;
+  presentationTimer: number;
+  isPresentationPlaying: boolean;
+  presentationLoop: boolean;
   stepNodes: string[];
   currentStep: number;
   isMinimapOpen: boolean;
   searchQuery: string;
   searchResults: string[];
+  expandedNodeId: string | null;
 }

@@ -123,21 +123,23 @@ export const ExpandedNode: React.FC<ExpandedNodeProps> = ({ nodeId }) => {
 
         {/* Editor Toolbar */}
         {isEditing && (
-          <div className="flex items-center gap-1 px-4 py-2 bg-void/40 border-b border-border overflow-x-auto no-scrollbar">
-            <ToolbarButton icon={<Hash size={16} />} label="H1" onClick={() => insertSyntax('# ')} />
-            <ToolbarButton icon={<Hash size={14} />} label="H2" onClick={() => insertSyntax('## ')} />
-            <div className="w-px h-4 bg-border mx-1" />
-            <ToolbarButton icon={<Bold size={16} />} onClick={() => insertSyntax('**bold**')} />
-            <ToolbarButton icon={<Italic size={16} />} onClick={() => insertSyntax('*italic*')} />
-            <ToolbarButton icon={<Highlighter size={16} />} onClick={() => insertSyntax('==highlight==')} />
-            <div className="w-px h-4 bg-border mx-1" />
-            <ToolbarButton icon={<List size={16} />} onClick={() => insertSyntax('- ')} />
-            <ToolbarButton icon={<Quote size={16} />} onClick={() => insertSyntax('> ')} />
-            <ToolbarButton icon={<Code size={16} />} onClick={() => insertSyntax('`code`')} />
-            <ToolbarButton icon={<Minus size={16} />} onClick={() => insertSyntax('\n---\n')} />
-            <div className="w-px h-4 bg-border mx-1" />
-            <ToolbarButton icon={<ImageIcon size={16} />} onClick={() => insertSyntax('[img:https://]')} />
-            <ToolbarButton icon={<Smile size={16} />} onClick={() => insertSyntax('[icon:Box]')} />
+          <div className="flex justify-center py-3 bg-void/40 border-b border-border">
+            <div className="flex items-center gap-0.5 px-3 py-1.5 bg-graphite/90 backdrop-blur-2xl border border-white/10 rounded-full shadow-2xl">
+              <ToolbarButton icon={<Hash size={16} />} label="H1" onClick={() => insertSyntax('# ')} />
+              <ToolbarButton icon={<Hash size={14} />} label="H2" onClick={() => insertSyntax('## ')} />
+              <div className="w-px h-4 bg-white/10 mx-1.5" />
+              <ToolbarButton icon={<Bold size={16} />} onClick={() => insertSyntax('**bold**')} />
+              <ToolbarButton icon={<Italic size={16} />} onClick={() => insertSyntax('*italic*')} />
+              <ToolbarButton icon={<Highlighter size={16} />} onClick={() => insertSyntax('==highlight==')} />
+              <div className="w-px h-4 bg-white/10 mx-1.5" />
+              <ToolbarButton icon={<List size={16} />} onClick={() => insertSyntax('- ')} />
+              <ToolbarButton icon={<Quote size={16} />} onClick={() => insertSyntax('> ')} />
+              <ToolbarButton icon={<Code size={16} />} onClick={() => insertSyntax('`code`')} />
+              <ToolbarButton icon={<Minus size={16} />} onClick={() => insertSyntax('\n---\n')} />
+              <div className="w-px h-4 bg-white/10 mx-1.5" />
+              <ToolbarButton icon={<ImageIcon size={16} />} onClick={() => insertSyntax('[img:https://]')} />
+              <ToolbarButton icon={<Smile size={16} />} onClick={() => insertSyntax('[icon:Box]')} />
+            </div>
           </div>
         )}
 

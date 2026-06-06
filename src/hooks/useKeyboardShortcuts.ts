@@ -40,7 +40,9 @@ export const useKeyboardShortcuts = () => {
     toggleCommandPalette,
     toggleGrid,
     isHelpModalOpen,
-    setHelpModalOpen
+    setHelpModalOpen,
+    expandedNodeId,
+    setExpandedNodeId
   } = useCanvasStore();
 
   const { saveProject } = useFileIO();
@@ -195,7 +197,12 @@ export const useKeyboardShortcuts = () => {
           setCurrentTool('draw');
           break;
         case 'e':
-          setCurrentTool('eraser');
+          if (selectedNodeIds.length === 1) {
+            e.preventDefault();
+            setExpandedNodeId(expandedNodeId === selectedNodeIds[0] ? null : selectedNodeIds[0]);
+          } else {
+            setCurrentTool('eraser');
+          }
           break;
         case 'l':
           setIsShapeLibraryOpen(!isShapeLibraryOpen);
@@ -271,6 +278,8 @@ export const useKeyboardShortcuts = () => {
     toggleCommandPalette,
     toggleGrid,
     isHelpModalOpen,
-    setHelpModalOpen
+    setHelpModalOpen,
+    expandedNodeId,
+    setExpandedNodeId
   ]);
 };

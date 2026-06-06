@@ -6,6 +6,8 @@ import { FreehandCanvas } from './FreehandCanvas';
 import { CanvasControls } from './CanvasControls';
 import { AlignmentGuides } from './AlignmentGuides';
 import { NodeSearch } from './NodeSearch';
+import { PresentationControls } from '../shell/PresentationControls';
+import { PresentationFinishedOverlay } from '../shell/PresentationFinishedOverlay';
 import { ExportModal } from '../modals/ExportModal';
 import { ShareModal } from '../modals/ShareModal';
 import { ShapeLibrary } from '../panels/ShapeLibrary';
@@ -19,8 +21,8 @@ export const CanvasWrapper: React.FC = () => {
     if (isPresentationMode && currentStep !== -1 && stepNodes[currentStep]) {
       fitView({
         nodes: [{ id: stepNodes[currentStep] }],
-        padding: 0.5,
-        duration: 500,
+        padding: 0.3,
+        duration: 600,
       });
     }
   }, [currentStep, isPresentationMode, stepNodes, fitView]);
@@ -41,32 +43,9 @@ export const CanvasWrapper: React.FC = () => {
 
       <ShapeLibrary />
 
-      {isPresentationMode && stepNodes.length > 0 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 glass-panel p-2 px-4 shadow-2xl border border-white/10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <button
-            onClick={prevStep}
-            disabled={currentStep <= 0}
-            className="p-2 hover:bg-white/10 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5 text-white" />
-          </button>
+      <PresentationControls />
 
-          <div className="flex flex-col items-center min-w-[120px]">
-            <span className="text-[10px] uppercase tracking-widest text-white/50 font-bold">Step</span>
-            <span className="text-sm font-mono text-white font-medium">
-              {currentStep + 1} <span className="text-white/30 mx-1">/</span> {stepNodes.length}
-            </span>
-          </div>
-
-          <button
-            onClick={nextStep}
-            disabled={currentStep >= stepNodes.length - 1}
-            className="p-2 hover:bg-white/10 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronRight className="w-5 h-5 text-white" />
-          </button>
-        </div>
-      )}
+      <PresentationFinishedOverlay />
 
       <ExportModal />
       <ShareModal />

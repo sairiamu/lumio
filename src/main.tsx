@@ -8,7 +8,7 @@ import "./index.css";
 console.log("Lumio: Initializing...");
 
 const Main: React.FC = () => {
-  const isSharePage = window.location.hash.length > 50; // Simple heuristic for now
+  const isSharePage = window.location.hash.length > 50;
 
   if (isSharePage) {
     return <ShareViewer />;
@@ -29,6 +29,4 @@ if (rootElement) {
       <Main />
     </React.StrictMode>
   );
-} else {
-  console.error("Lumio: Root element not found");
 }

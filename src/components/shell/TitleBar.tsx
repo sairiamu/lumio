@@ -25,6 +25,7 @@ export const TitleBar: React.FC = () => {
     recentProjects,
     setTemplateModalOpen,
     togglePresentationMode,
+    isPresentationMode,
     toggleCommandPalette,
     toggleGrid,
     isGridEnabled
@@ -218,7 +219,7 @@ export const TitleBar: React.FC = () => {
       <div className="flex items-center h-full">
         <button
           onClick={togglePresentationMode}
-          className="p-2 hover:bg-white/10 transition-colors rounded-lg text-text-muted hover:text-accent mr-1"
+          className={`p-2 hover:bg-white/10 transition-colors rounded-lg ${isPresentationMode ? 'text-accent bg-accent/10' : 'text-text-muted hover:text-accent'} mr-1`}
           title="Presentation Mode (F11)"
         >
           <Monitor className="w-4 h-4" />

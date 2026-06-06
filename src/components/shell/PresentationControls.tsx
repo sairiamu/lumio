@@ -28,13 +28,14 @@ export const PresentationControls: React.FC = () => {
     presentationLoop,
     togglePresentationLoop,
     exitStepMode,
-    togglePresentationMode
+    togglePresentationMode,
+    isPresentationFinished
   } = useCanvasStore();
 
   const { progress } = usePresentationTimer();
   const [isCustomTimer, setIsCustomTimer] = useState(false);
 
-  if (!isPresentationMode || stepNodes.length === 0) return null;
+  if (!isPresentationMode || stepNodes.length === 0 || isPresentationFinished) return null;
 
   const presets = [3, 5, 10, 30];
 
@@ -79,8 +80,7 @@ export const PresentationControls: React.FC = () => {
 
           <button
             onClick={nextStep}
-            disabled={currentStep >= stepNodes.length - 1}
-            className="p-2 hover:bg-white/5 rounded-full transition-colors text-text-muted hover:text-text disabled:opacity-30"
+            className="p-2 hover:bg-white/5 rounded-full transition-colors text-text-muted hover:text-text"
             title="Next"
           >
             <ChevronRight size={20} />
