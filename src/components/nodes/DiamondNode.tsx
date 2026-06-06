@@ -4,6 +4,8 @@ import { BaseNode } from './BaseNode';
 import { NodeData } from '../../types';
 
 export const DiamondNode: React.FC<NodeProps<NodeData>> = (props) => {
+  const showParams = (props.width ?? 0) > 140;
+
   return (
     <BaseNode
       {...props}
@@ -11,13 +13,34 @@ export const DiamondNode: React.FC<NodeProps<NodeData>> = (props) => {
       className="w-[180px] h-[180px] rotate-45 flex items-center justify-center text-center"
       contentClassName="-rotate-45"
       contentStyle={{
-        width: 'calc(100% * 0.7)',
-        height: 'calc(100% * 0.7)',
+        width: '70%',
+        height: '70%',
+        margin: 'auto',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flexDirection: 'column',
+        overflow: 'hidden',
       }}
+      hideHeader={!showParams}
     >
+      {!showParams && (
+        <div style={{
+          flexShrink: 0,
+          fontSize: 'clamp(11px, 4%, 15px)',
+          fontFamily: "'Sora', sans-serif",
+          fontWeight: 700,
+          color: 'var(--text)',
+          textAlign: 'center',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          lineHeight: 1.2,
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden'
+        }}>
+          {props.data.title || 'Untitled'}
+        </div>
+      )}
       <NodeResizer
         isVisible={props.selected}
         minWidth={70}

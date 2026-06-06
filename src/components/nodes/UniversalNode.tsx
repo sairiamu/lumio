@@ -13,25 +13,30 @@ export const UniversalNode: React.FC<NodeProps<NodeData>> = (props) => {
     <BaseNode
       {...props}
       clayColor={props.data.clayColor || 'var(--accent-light)'}
-      className="rounded-[20px] flex items-center justify-center min-w-[80px] min-h-[80px]"
+      className="rounded-[20px] flex items-center justify-center min-w-[80px] min-h-[80px] group"
       contentClassName="!p-0"
       hideHeader={true}
     >
       <div className="w-full h-full flex flex-col" style={{ color: 'var(--text)' }}>
-        <div className="h-[60%] flex items-center justify-center">
-          <IconComponent size={32} color="currentColor" />
+        <div className="h-[45%] flex items-center justify-center pt-2">
+          <IconComponent
+            size={Math.max(20, Math.min(32, (props.width ?? 80) * 0.3))}
+            color="currentColor"
+          />
         </div>
-        <div className="h-[40%] overflow-hidden px-1 flex items-center justify-center">
+        <div className="h-[55%] overflow-hidden px-2 flex items-start justify-center">
           <p
             className="m-0 text-center w-full"
             style={{
-              fontSize: 'clamp(9px, 1.5vw, 13px)',
-              fontWeight: 'bold',
+              fontSize: 'clamp(9px, 3%, 13px)',
+              fontWeight: 700,
+              fontFamily: "'Sora', sans-serif",
               lineHeight: 1.2,
               wordBreak: 'break-word',
               overflowWrap: 'break-word',
-              whiteSpace: 'pre-wrap',
-              maxHeight: '100%',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
             }}
           >
@@ -39,6 +44,15 @@ export const UniversalNode: React.FC<NodeProps<NodeData>> = (props) => {
           </p>
         </div>
       </div>
+
+      {/* Tooltip on hover */}
+      <div className="absolute invisible group-hover:visible bg-graphite/90 backdrop-blur-md border border-white/10 p-2 rounded-lg shadow-xl -bottom-12 left-1/2 -translate-x-1/2 z-[100] min-w-[120px] pointer-events-none">
+        <p className="text-[11px] font-bold text-white m-0">{props.data.title || shapeType}</p>
+        {props.data.description && (
+          <p className="text-[9px] text-fog m-0 mt-1 line-clamp-2">{props.data.description}</p>
+        )}
+      </div>
+
       <NodeResizer
         isVisible={props.selected}
         minWidth={60}
