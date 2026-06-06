@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { TitleBar } from './components/shell/TitleBar';
@@ -10,26 +10,54 @@ import { StatusBar } from './components/shell/StatusBar';
 import { ThemePicker } from './components/modals/ThemePicker';
 import { TemplateModal } from './components/modals/TemplateModal';
 import { CommandPalette } from './components/modals/CommandPalette';
+import { SplashScreen } from './components/shell/SplashScreen';
 import { ToastContainer } from './components/ui/Toast';
 import { useCanvasStore } from './store/canvasStore';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTheme } from './hooks/useTheme';
 import { ensureProjectsDir } from './utils/projectDir';
 
+// Prevents splash from showing on hot reloads
+let hasShownSplash = false;
+
 const App: React.FC = () => {
   const {
     isPanelOpen,
     togglePanelOpen,
     isPresentationMode,
-    togglePresentationMode
+    togglePresentationMode,
+    setIsAppReady
   } = useCanvasStore();
+
+  const [showSplash, setShowSplash] = useState(!hasShownSplash);
 
   useTheme();
   useKeyboardShortcuts();
 
   useEffect(() => {
-    ensureProjectsDir().catch(console.error);
-  }, []);
+    const initApp = async () => {
+      // 1. Ensure projects directory
+      try {
+        await ensureProjectsDir();
+      } catch (error) {
+        console.error('Failed to initialize projects directory:', error);
+      }
+
+      // 2. Signal app is ready (setup complete)
+      setIsAppReady(true);
+      hasShownSplash = true;
+
+      // 3. Show window (prevent white flash)
+      try {
+        const win = getCurrentWindow();
+        await win.show();
+      } catch (error) {
+        console.error('Failed to show window:', error);
+      }
+    };
+
+    initApp();
+  }, [setIsAppReady]);
 
   useEffect(() => {
     const handleFullscreen = async () => {
@@ -98,6 +126,8 @@ const App: React.FC = () => {
           VibePlan
         </div>
       )}
+
+      {showSplash && <SplashScreen onAnimationEnd={() => setShowSplash(false)} />}
     </div>
   );
 };

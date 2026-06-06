@@ -116,6 +116,8 @@ interface CanvasStore extends CanvasState {
   toasts: ToastMessage[];
   addToast: (message: string, type: 'success' | 'error' | 'info') => void;
   removeToast: (id: string) => void;
+  isAppReady: boolean;
+  setIsAppReady: (ready: boolean) => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -609,6 +611,9 @@ export const useCanvasStore = create<CanvasStore>()(
       toasts: state.toasts.filter((t) => t.id !== id)
     }));
   },
+
+  isAppReady: false,
+  setIsAppReady: (isAppReady) => set({ isAppReady }),
 
   groupSelectedNodes: () => {
     const { nodes, selectedNodeIds, pushHistory } = get();
