@@ -1,5 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { X, Layout, Trash2, Server, GitBranch, Database, GraduationCap, Columns, Star, LucideIcon } from 'lucide-react';
+import {
+  X,
+  Layout,
+  Trash2,
+  Server,
+  GitBranch,
+  Database,
+  GraduationCap,
+  Columns,
+  Star,
+  Boxes,
+  Smartphone,
+  GitPullRequest,
+  Table,
+  Cloud,
+  Presentation,
+  Terminal,
+  Users,
+  Map,
+  ShieldAlert,
+  LucideIcon
+} from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { BUILT_IN_TEMPLATES, Template } from '../../data/templates';
 import { useReactFlow } from '@xyflow/react';
@@ -10,7 +31,17 @@ const IconMap: Record<string, LucideIcon> = {
   Database,
   GraduationCap,
   Columns,
-  Star
+  Star,
+  Boxes,
+  Smartphone,
+  GitPullRequest,
+  Table,
+  Cloud,
+  Presentation,
+  Terminal,
+  Users,
+  Map,
+  ShieldAlert,
 };
 
 export const TemplateModal: React.FC = () => {
@@ -42,7 +73,7 @@ export const TemplateModal: React.FC = () => {
 
   if (!isTemplateModalOpen) return null;
 
-  const categories = ['All', 'Architecture', 'Flow', 'Data', 'Education', 'Custom'];
+  const categories = ['All', 'Architecture', 'Mobile', 'DevOps', 'Database', 'Cloud', 'Business', 'Education', 'Custom'];
 
   const allTemplates = [...BUILT_IN_TEMPLATES, ...customTemplates];
   const filteredTemplates = activeCategory === 'All'
@@ -119,11 +150,25 @@ export const TemplateModal: React.FC = () => {
                     key={template.id}
                     className="group relative glass-panel bg-white/5 border-border hover:border-accent/50 transition-all duration-300 rounded-xl p-4 flex flex-col items-center text-center cursor-default"
                   >
-                    <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300 text-accent">
-                      <IconComponent size={48} strokeWidth={1.5} />
+                    <div className="absolute top-2 right-2 flex gap-1 items-center">
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-accent/20 text-accent border border-accent/30">
+                        {template.nodes.length} nodes
+                      </span>
                     </div>
-                    <h3 className="font-bold text-text mb-1 truncate w-full px-2">{template.name}</h3>
-                    <p className="text-xs text-text-muted line-clamp-2 mb-4 h-8">
+
+                    <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300 text-accent">
+                      <IconComponent size={44} strokeWidth={1.5} />
+                    </div>
+
+                    <h3 className="font-bold text-text mb-0.5 truncate w-full px-2">{template.name}</h3>
+
+                    <div className="mb-3">
+                      <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md bg-white/5 text-text-muted border border-border">
+                        {template.category}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-text-muted line-clamp-2 mb-4 h-8 leading-relaxed">
                       {template.description}
                     </p>
 
