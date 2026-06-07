@@ -44,8 +44,8 @@ export interface NodeData extends Record<string, unknown> {
   title: string
   parameters: NodeParameter[]
   description: string
-  content: string
-  viewMode: 'compact' | 'expanded'
+  content?: string
+  viewMode?: 'compact' | 'expanded'
   cardMode?: 'simple' | 'document' | 'mixed'
   cardIcon?: string
   accentColor?: string
