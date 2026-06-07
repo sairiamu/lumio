@@ -127,16 +127,6 @@ const App: React.FC = () => {
             </button>
           )}
 
-          {isPresentationMode && (
-            <button
-              type="button"
-              onClick={togglePresentationMode}
-              className="absolute bottom-6 right-6 z-50 p-3 rounded-full glass-panel text-white/70 hover:text-white hover:bg-white/10 transition-all shadow-xl"
-              title="Exit Presentation Mode"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          )}
         </main>
 
         <div

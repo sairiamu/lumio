@@ -6,7 +6,7 @@ import { FreehandCanvas } from './FreehandCanvas';
 import { CanvasControls } from './CanvasControls';
 import { AlignmentGuides } from './AlignmentGuides';
 import { NodeSearch } from './NodeSearch';
-import { PresentationControls } from '../shell/PresentationControls';
+import { PresentationMode } from '../presentation/PresentationMode';
 import { PresentationFinishedOverlay } from '../shell/PresentationFinishedOverlay';
 import { ExportModal } from '../modals/ExportModal';
 import { ShareModal } from '../modals/ShareModal';
@@ -43,7 +43,7 @@ export const CanvasWrapper: React.FC = () => {
 
       <ShapeLibrary />
 
-      <PresentationControls />
+      <PresentationMode />
 
       <PresentationFinishedOverlay />
 
