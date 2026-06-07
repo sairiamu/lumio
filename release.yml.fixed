@@ -1,0 +1,281 @@
+name: Release Lumio
+
+on:
+  push:
+    tags:
+      - 'v*'  # triggers on v1.0.0, v1.2.3 etc
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+
+  # ─── DESKTOP BUILDS ──────────────────────────────────────────
+  build-desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: lumio_windows
+
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+            artifact: lumio_macos_intel
+
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+            artifact: lumio_macos_arm
+
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            artifact: lumio_linux
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libssl-dev \
+            pkg-config
+
+      - name: Install macOS dependencies
+        if: startsWith(matrix.platform, 'macos')
+        run: |
+          brew install webkit2gtk libappindicator3 || true
+
+      - name: Install frontend deps
+        run: npm install
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Lumio ${{ github.ref_name }}'
+          releaseBody: |
+            ## Lumio ${{ github.ref_name }}
+            
+            ### Download
+            | Platform | Installer |
+            |----------|-----------|
+            | Windows  | lumio_x64.msi |
+            | macOS Intel | lumio_x64.dmg |
+            | macOS Apple Silicon | lumio_aarch64.dmg |
+            | Linux | lumio_amd64.deb |
+          releaseDraft: false
+          prerelease: false
+          args: --target ${{ matrix.target }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumio-${{ matrix.artifact }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/lumio*
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.msi
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.dmg
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.deb
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.AppImage
+          retention-days: 30
+          if-no-files-found: warn
+
+  # ─── ANDROID BUILD ───────────────────────────────────────────
+  build-android:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK and CMake
+        run: |
+          sdkmanager "ndk;26.1.10909125" "cmake;3.22.1"
+          echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> $GITHUB_ENV
+
+      - name: Install Rust Android targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: |
+            aarch64-linux-android
+            armv7-linux-androideabi
+            x86_64-linux-android
+            i686-linux-android
+
+      - name: Install frontend deps
+        run: npm install
+
+      - name: Init Tauri Android
+        run: |
+          export PATH=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+          npm run tauri android init
+        env:
+          NDK_HOME: ${{ env.NDK_HOME }}
+
+      - name: Build Android APK
+        run: |
+          export PATH=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+          npm run tauri android build -- --apk
+        env:
+          NDK_HOME: ${{ env.NDK_HOME }}
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumio-android
+          path: src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Attach APK to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ─── iOS BUILD ───────────────────────────────────────────────
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Rust iOS targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: |
+            aarch64-apple-ios
+            aarch64-apple-ios-sim
+            x86_64-apple-ios
+
+      - name: Install frontend deps
+        run: npm install
+
+      - name: Init Tauri iOS
+        run: npm run tauri ios init
+
+      - name: Build iOS IPA (unsigned)
+        run: npm run tauri ios build -- --no-sign
+
+      - name: Upload iOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: lumio-ios
+          path: src-tauri/gen/apple/build/arm64/*.ipa
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Attach IPA to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: src-tauri/gen/apple/build/arm64/*.ipa
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ─── UPDATE MANIFEST ─────────────────────────────────────────
+  publish-update-manifest:
+    needs: [build-desktop, build-android, build-ios]
+    runs-on: ubuntu-22.04
+    if: success()
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Create latest.json update manifest
+        run: |
+          VERSION="${{ github.ref_name }}"
+          cat > latest.json << EOF
+          {
+            "version": "${VERSION}",
+            "notes": "See release notes on GitHub",
+            "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "platforms": {
+              "windows-x86_64": {
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/lumio_x64.msi.zip",
+                "signature": ""
+              },
+              "darwin-x86_64": {
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/lumio_x64.dmg",
+                "signature": ""
+              },
+              "darwin-aarch64": {
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/lumio_aarch64.dmg",
+                "signature": ""
+              },
+              "linux-x86_64": {
+                "url": "https://github.com/${{ github.repository }}/releases/download/${VERSION}/lumio_amd64.AppImage.tar.gz",
+                "signature": ""
+              }
+            }
+          }
+          EOF
+
+      - name: Upload update manifest to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: latest.json
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
