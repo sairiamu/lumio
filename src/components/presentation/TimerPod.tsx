@@ -28,7 +28,7 @@ export const TimerPod: React.FC = () => {
       />
 
       {/* Glassmorphism Circle */}
-      <div className="absolute inset-0 bg-panel backdrop-blur-xl border border-border rounded-full shadow-2xl z-0" />
+      <div className="absolute inset-0 glass-panel rounded-full z-0" />
 
       {/* Inner Content Container */}
       <div className="relative z-10 flex flex-col items-center justify-center">
@@ -69,7 +69,7 @@ export const TimerPod: React.FC = () => {
       </svg>
 
       {/* Tooltip */}
-      <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/80 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+      <div className="absolute -top-10 left-1/2 -translate-x-1/2 glass-panel text-text text-[10px] px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-border shadow-xl">
         Auto-advance: {presentationTimer}s
       </div>
 

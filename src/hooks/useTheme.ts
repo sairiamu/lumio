@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useCanvasStore } from '../store/canvasStore';
 import { themes } from '../themes/themes';
 
 export const useTheme = () => {
   const currentThemeName = useCanvasStore((state) => state.currentTheme);
   const animationsEnabled = useCanvasStore((state) => state.animationsEnabled);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     document.documentElement.style.setProperty(
@@ -14,21 +15,34 @@ export const useTheme = () => {
   }, [animationsEnabled]);
 
   useEffect(() => {
-    const theme = themes[currentThemeName];
+    const theme = themes.find(t => t.id === currentThemeName);
     if (!theme) return;
 
-    const root = document.documentElement;
-    root.style.setProperty('--bg', theme.background);
-    root.style.setProperty('--canvas', theme.canvas);
-    root.style.setProperty('--panel', theme.panel);
-    root.style.setProperty('--border', theme.border);
-    root.style.setProperty('--text', theme.text);
-    root.style.setProperty('--text-muted', theme.textMuted);
-    root.style.setProperty('--accent', theme.accent);
-    root.style.setProperty('--accent-light', theme.accentLight);
-    root.style.setProperty('--node-default-bg', theme.accentLight);
-    root.style.setProperty('--success', theme.success);
-    root.style.setProperty('--danger', theme.danger);
-    root.style.setProperty('--grid-color', theme.gridColor);
+    if (isFirstRender.current) {
+      document.documentElement.setAttribute('data-theme', currentThemeName);
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Theme transition animation
+    let overlay = document.getElementById('theme-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'theme-overlay';
+      document.body.appendChild(overlay);
+    }
+
+    overlay.style.backgroundColor = theme.colors.bg;
+    overlay.classList.add('active');
+
+    const timeout = setTimeout(() => {
+      document.documentElement.setAttribute('data-theme', currentThemeName);
+
+      setTimeout(() => {
+        overlay?.classList.remove('active');
+      }, 175);
+    }, 175);
+
+    return () => clearTimeout(timeout);
   }, [currentThemeName]);
 };

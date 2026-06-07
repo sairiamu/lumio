@@ -5,7 +5,7 @@ export const SlideCounterPod: React.FC = () => {
   const { currentStep, stepNodes } = useCanvasStore();
 
   return (
-    <div className="flex items-center gap-3 bg-panel backdrop-blur-xl border border-border rounded-[50px] py-1.5 px-4 shadow-2xl">
+    <div className="glass-panel flex items-center gap-3 rounded-[50px] py-1.5 px-4 shadow-2xl pointer-events-auto">
       <span className="text-[10px] font-inter font-bold text-text-muted uppercase tracking-widest">
         Slide
       </span>

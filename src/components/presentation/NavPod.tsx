@@ -17,10 +17,10 @@ export const NavPod: React.FC = () => {
   const totalSteps = stepNodes.length;
 
   return (
-    <div className="flex items-center gap-1 bg-panel backdrop-blur-xl border border-border rounded-[50px] p-2 px-4 shadow-2xl">
+    <div className="glass-panel flex items-center gap-1 rounded-[50px] p-2 px-4 shadow-2xl pointer-events-auto">
       <button
         onClick={() => setStep(0)}
-        className="w-9 h-9 flex items-center justify-center rounded-full transition-all text-text-muted hover:bg-white/5 hover:text-text active:scale-92"
+        className="w-9 h-9 flex items-center justify-center rounded-full transition-all text-text-muted hover:bg-white/10 hover:text-text active:scale-92"
         title="First Slide"
       >
         <SkipBack size={18} />
@@ -28,7 +28,7 @@ export const NavPod: React.FC = () => {
       <button
         onClick={prevStep}
         disabled={currentStep <= 0}
-        className="w-9 h-9 flex items-center justify-center rounded-full transition-all text-text-muted hover:bg-white/5 hover:text-text active:scale-92 disabled:opacity-30 disabled:pointer-events-none"
+        className="w-9 h-9 flex items-center justify-center rounded-full transition-all text-text-muted hover:bg-white/10 hover:text-text active:scale-92 disabled:opacity-30 disabled:pointer-events-none"
         title="Previous"
       >
         <ChevronLeft size={20} />
@@ -40,23 +40,23 @@ export const NavPod: React.FC = () => {
       >
         <div className="absolute inset-0 bg-accent rounded-full shadow-lg shadow-accent/40 group-hover:brightness-110 transition-all" />
         {isPresentationPlaying ? (
-          <Pause size={20} className="relative text-white fill-white" />
+          <Pause size={20} className="relative fill-current text-white" />
         ) : (
-          <Play size={20} className="relative text-white fill-white ml-0.5" />
+          <Play size={20} className="relative fill-current ml-0.5 text-white" />
         )}
       </button>
 
       <button
         onClick={nextStep}
         disabled={currentStep >= totalSteps - 1 && !presentationLoop}
-        className="w-9 h-9 flex items-center justify-center rounded-full transition-all text-text-muted hover:bg-white/5 hover:text-text active:scale-92 disabled:opacity-30 disabled:pointer-events-none"
+        className="w-9 h-9 flex items-center justify-center rounded-full transition-all text-text-muted hover:bg-white/10 hover:text-text active:scale-92 disabled:opacity-30 disabled:pointer-events-none"
         title="Next"
       >
         <ChevronRight size={20} />
       </button>
       <button
         onClick={() => setStep(totalSteps - 1)}
-        className="w-9 h-9 flex items-center justify-center rounded-full transition-all text-text-muted hover:bg-white/5 hover:text-text active:scale-92"
+        className="w-9 h-9 flex items-center justify-center rounded-full transition-all text-text-muted hover:bg-white/10 hover:text-text active:scale-92"
         title="Last Slide"
       >
         <SkipForward size={18} />

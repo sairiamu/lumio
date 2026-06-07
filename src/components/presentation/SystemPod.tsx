@@ -8,7 +8,13 @@ interface SystemPodProps {
 }
 
 export const SystemPod: React.FC<SystemPodProps> = ({ onHideAll }) => {
-  const { presentationLoop, togglePresentationLoop, togglePresentationMode, setIsPresentationPlaying, exitStepMode } = useCanvasStore();
+  const {
+    presentationLoop,
+    togglePresentationLoop,
+    togglePresentationMode,
+    setIsPresentationPlaying,
+    exitStepMode
+  } = useCanvasStore();
   const [exitConfirm, setExitConfirm] = useState(false);
 
   useEffect(() => {
@@ -36,11 +42,11 @@ export const SystemPod: React.FC<SystemPodProps> = ({ onHideAll }) => {
   };
 
   return (
-    <div className="flex items-center gap-1 bg-panel backdrop-blur-xl border border-border rounded-[50px] p-2 px-3 shadow-2xl">
+    <div className="glass-panel flex items-center gap-1 rounded-[50px] p-2 px-3 shadow-2xl pointer-events-auto">
       <button
         onClick={togglePresentationLoop}
         className={`p-2 rounded-full transition-colors ${
-          presentationLoop ? 'text-accent bg-accent/10' : 'text-text-muted hover:bg-white/5 hover:text-text'
+          presentationLoop ? 'text-accent bg-accent/10' : 'text-text-muted hover:bg-white/10 hover:text-text'
         }`}
         title="Loop Presentation"
       >
@@ -49,7 +55,7 @@ export const SystemPod: React.FC<SystemPodProps> = ({ onHideAll }) => {
 
       <button
         onClick={onHideAll}
-        className="p-2 text-text-muted hover:bg-white/5 hover:text-text rounded-full transition-colors"
+        className="p-2 text-text-muted hover:bg-white/10 hover:text-text rounded-full transition-colors"
         title="Hide Interface"
       >
         <EyeOff size={18} />

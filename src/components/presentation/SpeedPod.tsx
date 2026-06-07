@@ -13,7 +13,7 @@ export const SpeedPod: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center gap-1 bg-panel backdrop-blur-xl border border-border rounded-[50px] p-2 transition-all duration-300 shadow-2xl">
+    <div className="glass-panel flex items-center gap-1 rounded-[50px] p-2 transition-all duration-300 shadow-2xl pointer-events-auto">
       {presets.map((s) => (
         <button
           key={s}
@@ -24,7 +24,7 @@ export const SpeedPod: React.FC = () => {
           className={`w-10 h-8 flex items-center justify-center rounded-full text-[11px] font-bold transition-all ${
             presentationTimer === s && !isCustom
               ? 'bg-accent text-white shadow-lg shadow-accent/40'
-              : 'text-text-muted hover:bg-white/5 hover:text-text'
+              : 'text-text-muted hover:bg-white/10 hover:text-text'
           }`}
         >
           {s}s
@@ -38,7 +38,7 @@ export const SpeedPod: React.FC = () => {
             className={`w-full h-8 flex items-center justify-center rounded-full text-[11px] font-bold transition-all ${
               !presets.includes(presentationTimer)
                 ? 'bg-accent text-white shadow-lg shadow-accent/40'
-                : 'text-text-muted hover:bg-white/5 hover:text-text'
+                : 'text-text-muted hover:bg-white/10 hover:text-text'
             }`}
           >
             Custom

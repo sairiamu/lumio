@@ -10,8 +10,10 @@ export const FocusTogglePod: React.FC<FocusTogglePodProps> = ({ isFocusMode, onT
   return (
     <button
       onClick={onToggle}
-      className={`flex items-center gap-2 bg-panel backdrop-blur-xl border border-border rounded-[50px] p-3 shadow-2xl transition-all duration-300 group ${
-        isFocusMode ? 'text-accent border-accent/30' : 'text-text-muted hover:text-text'
+      className={`glass-panel flex items-center gap-2 rounded-[50px] p-3 shadow-2xl transition-all duration-300 group pointer-events-auto ${
+        isFocusMode
+          ? 'bg-accent text-white'
+          : 'text-text-muted hover:text-text'
       }`}
       title={isFocusMode ? "Show Controls" : "Focus on Timer"}
     >

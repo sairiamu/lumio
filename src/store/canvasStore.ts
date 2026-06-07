@@ -200,7 +200,7 @@ export const useCanvasStore = create<CanvasStore>()(
       past: [],
       future: [],
       clipboard: null,
-      currentTheme: (localStorage.getItem('lumio-theme') as ThemeName) || 'slate',
+      currentTheme: (localStorage.getItem('lumio_theme') as ThemeName) || (localStorage.getItem('lumio-theme') as ThemeName) || 'lumio-dark',
       isTemplateModalOpen: false,
       customTemplates: JSON.parse(localStorage.getItem('lumio-custom-templates') || '[]'),
       isHelpModalOpen: false,
@@ -231,7 +231,7 @@ export const useCanvasStore = create<CanvasStore>()(
       setAlignmentGuides: (alignmentGuides) => set({ alignmentGuides }),
 
       setTheme: (theme: ThemeName) => {
-        localStorage.setItem('lumio-theme', theme);
+        localStorage.setItem('lumio_theme', theme);
         set({ currentTheme: theme });
       },
 
