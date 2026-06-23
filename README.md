@@ -1,6 +1,8 @@
 # 💡 Lumio — Illuminate Your Ideas
 
-**Lumio** is a desktop-first visual communication and diagramming platform designed for educators, developers, and teams. Built with the speed of **Vite**, the power of **React**, and the native performance of **Tauri**, Lumio provides a beautiful, glassmorphism-inspired interface for creating system architectures, app flows, and visual plans.
+![Lumio Banner](./assets/lumio-1.jpeg)
+
+**Lumio** is a desktop-first visual communication and diagramming platform designed for educators, developers, and teams. Built with the speed of **Vite**, the power of **React 19**, and the native performance of **Tauri v2**, Lumio provides a beautiful, glassmorphism-inspired interface for creating system architectures, app flows, and visual plans.
 
 ---
 
@@ -40,20 +42,24 @@ If you want to contribute or build from source, follow these steps:
 ## ✨ Key Features
 
 ### 📐 Diagram Mode (Powered by XYFlow)
+![Diagram Mode](./assets/lumio-2.jpeg)
 *   **Custom Nodes:** Create Rectangles, Circles, Diamonds, and Rich Cards with a single click.
 *   **Intuitive Connections:** Drag-and-drop handles to create labeled edges (Bezier, Straight, or Step).
 *   **Smart Canvas:** Supports grid snapping, box selection, and keyboard shortcuts for a seamless flow.
 
 ### ✍️ Freehand Mode
+![Freehand Mode](./assets/lumio-3.jpeg)
 *   **Overlay Layer:** Draw directly over your diagrams with a pressure-sensitive pen tool.
 *   **Versatile Tools:** Includes pen, straight lines, and an eraser for quick annotations.
 
 ### 🎨 Beautiful Design System
+![Properties Panel](./assets/lumio-4.jpeg)
 *   **Glassmorphism Panels:** Modern, translucent UI that stays out of your way.
 *   **Claymorphism Shapes:** Unique 3D-styled nodes that make your diagrams pop.
 *   **Properties Panel:** Fine-tune colors (presets + hex), opacity, border-radius, and typography (Inter, JetBrains Mono, Sora).
 
 ### 📤 Versatile Exporting
+![Exporting](./assets/lumio-5.jpeg)
 *   **SVG:** Scalable vector graphics with embedded freehand layers and fonts.
 *   **HTML:** Self-contained, single-file exports for sharing in any browser.
 *   **JSON:** Save and load your project state to continue working later.
@@ -80,10 +86,11 @@ The project is organized into clear modules for frontend logic, native shell, an
 ```text
 lumio/
 ├── .github/workflows/      # CI/CD pipelines (Desktop, Android, iOS)
-├── assets/                 # Project images, screenshots, and visual resources
+├── assets/                 # Project images, screenshots (e.g., lumio-1.jpeg)
 ├── context/                # 💡 Deep technical context & AI-assisted docs
 │   ├── PROJECT_OVERVIEW.md # Mission & Philosophy
 │   ├── TECH_STACK.md       # Detailed library choices
+│   ├── DESIGN_SYSTEMS.MD   # Glassmorphism & Claymorphism rules
 │   └── ... (see /context for more)
 ├── src-tauri/              # Rust-based native backend & window configuration
 ├── src/                    # React frontend source code
@@ -98,6 +105,7 @@ lumio/
 ---
 
 ## 🤖 CI/CD Pipeline
+![CI/CD Workflow](./assets/lumio-6.jpeg)
 
 Lumio uses **GitHub Actions** for automated testing and multi-platform distribution:
 
