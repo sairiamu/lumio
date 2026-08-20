@@ -12,3 +12,13 @@ Not a task. Read-only context so Stage 6's data model doesn't need revisiting la
   works), not something requiring the UI to reconstruct state via imperative calls.
 - Nothing here should influence Stage 6–8 scope. This file exists purely so a future agent
   doesn't have to reverse-engineer these constraints from scratch.
+
+  # Future: KiCad / Agentic Circuit Design — Read-Only, Not Actionable
+
+- Stage 6's `(componentId, pinName) → (componentId, pinName)` wire model should export
+  cleanly to a generic netlist format later without redesign. If Stage 6 implementation
+  finds this doesn't hold, flag it then — don't preemptively build export code now.
+- Future "agentic" editing implies external (AI) programmatic edits to circuit state —
+  Zustand + persist (as `circuitStore.ts` already does per Stage 6) is sufficient; no
+  special API surface needed now.
+- Nothing here changes Stage 6-8 scope.

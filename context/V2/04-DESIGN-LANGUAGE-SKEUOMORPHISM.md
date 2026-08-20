@@ -1,32 +1,22 @@
-# Stage 4 — Design Language: Skeuomorphism
+# Stage 4 — Design Spec: Skeuomorphism (Doc Only, No Code)
 
-## Why This Stage Exists
-The current design system (`context/DESIGN_SYSTEMS.MD`) defines Glassmorphism (UI chrome)
-+ Claymorphism (canvas shapes). The product direction is shifting toward skeuomorphism —
-this matters most for the Arduino components (Stage 6+), where realistic-looking components
-(actual LED glow, breadboard texture, resistor color bands) make the tool legible and are
-also what Wokwi-style tools rely on for interpretability at a glance.
+## Read First
+- `context/DESIGN_SYSTEMS.MD` — current Glassmorphism (chrome) + Claymorphism (canvas
+  shapes) spec. This stage decides what replaces or coexists with it.
+- Output of Stage 3 (`light`/`dark` theme shape in `src/themes/themes.ts`).
 
 ## Task
-Produce an updated design spec (as a doc, `context/DESIGN_SYSTEMS.MD` v2 section or a new
-file — agent's call) covering:
-- Token set for `light` and `dark` themes only (per Stage 3).
-- Skeuomorphic treatment rules for circuit components: realistic shadows/highlights that
-  imply physical material (plastic, metal leads, silicon), not flat/glass.
-- What, if anything, stays glassmorphic (e.g. modals, panels) vs what goes skeuomorphic
-  (circuit components) vs what goes flat/minimal (general UI chrome). Product intent is
-  "consistent elements" — meaning one coherent language, not three fighting styles, so this
-  spec must resolve that tension explicitly, not leave it ambiguous.
-- Icon/typography rules carry over from v1 unless there's a specific reason to change them.
+Write an updated design spec (append to `context/DESIGN_SYSTEMS.MD` or new file — agent's
+choice) covering:
+- Final `light`/`dark` color tokens (replacing Stage 3's placeholders).
+- Skeuomorphic treatment for circuit components (Stage 6+): realistic material shadows/
+  highlights (plastic, metal, silicon) — this is what makes LED/resistor/breadboard
+  components read clearly at a glance, matching how Wokwi's own components look.
+- Scope boundary: skeuomorphism applies to the Electrical/circuit canvas components only.
+  Elemental Sketch (existing diagram/freehand canvas) keeps its current glass+clay look
+  unchanged. General app chrome (TitleBar, Dashboard, modals) — agent should propose
+  whether it stays glass or simplifies, and flag that specific choice back before Stage 5+
+  visual work depends on it.
 
 ## Deliverable
-This stage produces a DESIGN SPEC, not component code. Stages 5+ implement against it.
-
-## Open Questions (important — ask before implementing Stage 6+ visuals)
-- Does "skeuomorphism" apply app-wide (replacing glass+clay everywhere), or specifically to
-  the Electrical/Arduino canvas, with Elemental Sketch keeping its existing glass+clay look?
-  This is the single highest-leverage decision in the whole V2 redesign — get it confirmed
-  before any component work starts.
-- Any reference images/products the skeuomorphic direction should be benchmarked against
-  (e.g. Wokwi's own component style, real Fritzing-style breadboard rendering, something
-  else)?
+A doc, not components. Stage 6 implements circuit component visuals against this.

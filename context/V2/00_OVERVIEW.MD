@@ -1,42 +1,29 @@
-# LUMIO V2 — Overview & Rules for the Coding Agent
+# LUMIO V2 — Overview
 
-## What V2 Is
-LUMIO is evolving from a single-purpose diagram tool into a project-type-aware app.
-On creating a new project, the user picks one of:
-1. **Elemental Sketch** — the existing Diagram + Freehand canvas (renamed, not rebuilt)
-2. **Electrical (Arduino Design)** — new: offline Arduino circuit design + simulation
+## Vision
+New project flow: user picks Elemental Sketch (existing diagram/freehand tool) or
+Electrical (new Arduino design + offline simulation). Login is a simple gate → Dashboard
+for now; email auth + cloud project storage comes later, not in this V2 scope.
 
-A future third type ("KiCad / agentic circuit design") is planned but OUT OF SCOPE for all
-V2 stage files. Do not build toward it. Only avoid data-model decisions that would make it
-impossible later (see 09-FUTURE-NOTES.md).
-
-## Rules for the Agent
-- Read ONLY `00-OVERVIEW.md` + the single stage file you are assigned. Do not read ahead
-  into later stage files and infer unstated requirements from them.
-- The existing `context/*.MD` files (v1) are still accurate for the current app UNLESS a V2
-  stage file explicitly says otherwise. V2 files override v1 on conflict.
-- If a stage file has an "Open Questions" section, STOP and ask the human before writing
-  code that depends on the unresolved item. Do not guess.
-- Follow `context/CODING_RULES.MD` exactly (strict TS, no `any`, 150-line component cap,
-  hooks/utils for logic, aria-labels, named constants).
-- Every stage ships independently buildable and running — never leave the app in a broken
-  state between stages.
-- Do not touch Clerk. It's an installed dependency with no active integration in the
-  codebase today. Auth/login for V2 is being treated as local-first for now (see 01).
+## Agent Rules
+- Read ONLY this file + your assigned stage file. Do not read ahead into later stages.
+- Reference real files by exact path as given in each stage file. If a path doesn't exist,
+  stop and say so — don't invent a different location.
+- `context/CODING_RULES.MD` applies to all new code (strict TS, no `any`, 150-line
+  component cap, hooks/utils split, aria-labels).
+- Stage files override `context/*.MD` (v1) on conflict; otherwise v1 docs still apply.
+- "Open Questions" in a stage file = stop and ask before implementing that part.
+- Each stage must leave the app building and running. No partial/broken states.
 
 ## Stage Order
-| # | File | What it does |
-|---|------|---------------|
-| 1 | 01-APP-SHELL-DASHBOARD.md | Launch screen / project hub, replaces boot-to-canvas |
-| 2 | 02-PROJECT-TYPE-SELECTION.md | New-project flow, Elemental Sketch vs Electrical |
-| 3 | 03-THEME-SIMPLIFICATION.md | Collapse 10 themes → Dark + Light only |
-| 4 | 04-DESIGN-LANGUAGE-SKEUOMORPHISM.md | New shared visual language spec |
-| 5 | 05-ELEMENTAL-SKETCH-RENAME.md | Wire existing canvas into the new project-type shell |
-| 6 | 06-ARDUINO-MODE-FOUNDATIONS.md | Circuit canvas shell, static components, no sim |
-| 7 | 07-ARDUINO-SIMULATION-ENGINE.md | Real digital/analog simulation (avr8js) |
-| 8 | 08-ARDUINO-OFFLINE-COMPILE.md | .ino → .hex offline compile pipeline |
-| 9 | 09-FUTURE-NOTES.md | Non-actionable — data-model notes for later KiCad stage |
+1. `01-LOGIN-DASHBOARD.md` — login gate → Dashboard screen
+2. `02-PROJECT-TYPE-SELECTION.md` — new-project type picker
+3. `03-THEME-SIMPLIFICATION.md` — 10 themes → Dark + Light
+4. `04-DESIGN-LANGUAGE-SKEUOMORPHISM.md` — design spec (doc only)
+5. `05-ELEMENTAL-SKETCH-RENAME.md` — route existing canvas under new shell
+6. `06-ARDUINO-MODE-FOUNDATIONS.md` — circuit canvas, no simulation
+7. `07-ARDUINO-SIMULATION-ENGINE.md` — avr8js simulation
+8. `08-ARDUINO-OFFLINE-COMPILE.md` — .ino → .hex via arduino-cli sidecar
+9. `09-FUTURE-NOTES.md` — read-only, for later KiCad stage
 
-Priority: stages 1–5 are scaffolding. Stage 6 is where "Arduino design" actually starts
-being visible to the user. Stages 1–5 should be done fast and kept minimal — don't gold-plate
-the dashboard before the Arduino feature exists.
+Priority: get to Stage 6 fast. Stages 1-5 are scaffolding, keep them minimal.

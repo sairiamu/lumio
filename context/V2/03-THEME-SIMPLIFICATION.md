@@ -1,31 +1,24 @@
-# Stage 3 — Theme System: Collapse to Dark + Light
+# Stage 3 — Themes: 10 → Dark + Light
 
-## Current State (verified in code)
-`src/themes/themes.ts` currently defines 10 themes (`lumio-dark`, `chalk`, `midnight`,
-`sage`, `aurora`, `slate`, `arctic`, `forest`, `sunset`, `candy`), each with its own
-`colors` object and some with legacy flat properties. `ThemePicker.tsx` renders all of them.
-This is a bigger surface than the old `context/DESIGN_SYSTEMS.MD` doc describes — that doc
-is stale on this point.
+## Read First
+- `src/themes/themes.ts` — currently defines 10 themes (`lumio-dark`, `chalk`, `midnight`,
+  `sage`, `aurora`, `slate`, `arctic`, `forest`, `sunset`, `candy`). This is more than
+  `context/DESIGN_SYSTEMS.MD` documents — trust the code, not that doc, on this point.
+- `src/components/modals/ThemePicker.tsx` — renders all 10 today, needs to become a
+  2-option toggle.
+- `src/hooks/useTheme.ts` — theme application logic, check how `currentTheme` propagates.
+- Run `grep -rn "currentTheme\|themes\[" src/` before deleting anything — multiple
+  components likely read theme fields directly.
 
 ## Task
-- Replace the 10-theme system with exactly two: `light` and `dark`.
-- Keep the existing `Theme` interface shape (`colors.bg`, `bgElevated`, `canvasBg`, `accent`,
-  `text`, `clay1/2/3`, plus the legacy flat fields already read elsewhere in the codebase —
-  grep every consumer of `useCanvasStore().currentTheme` and `themes.ts` before deleting
-  anything, so nothing silently breaks).
-- `ThemePicker.tsx` becomes a simple two-option toggle (or is replaced by a settings toggle
-  entirely — agent's call, but keep it discoverable, e.g. in TitleBar or a settings area).
-- Color values for `light`/`dark` should be defined per the new skeuomorphic language in
-  Stage 4 — do not invent final hex values in this stage if Stage 4 isn't done yet; use
-  placeholder values based on the closest existing theme (`chalk` for light, `lumio-dark`
-  for dark) and flag them as placeholders in a code comment.
-- `currentTheme` persisted value: migrate any saved project/localStorage referencing a
-  removed theme id to `'dark'` as a safe default.
-
-## Non-Goals
-- Do not build a custom-theme-creator UI. Two themes, hardcoded, is the whole feature.
+1. Reduce `src/themes/themes.ts` to exactly `light` and `dark` theme objects, same
+   `Theme` interface/shape as today (don't break consumers' field access).
+2. Update `ThemePicker.tsx` to a simple Light/Dark toggle.
+3. Placeholder colors: base `dark` on the existing `lumio-dark` theme values, base `light`
+   on `chalk` — mark both with a `// TODO: replace with Stage 4 skeuomorphic tokens` comment.
+   Final values come from Stage 4, not this stage.
+4. Migrate any persisted `currentTheme` value referencing a removed theme id to `'dark'`.
 
 ## Open Questions
-- Should theme apply per-OS-preference by default (`prefers-color-scheme`) on first launch,
-  or always default to dark? Recommend defaulting to OS preference, override persisted
-  after first manual choice.
+- Default theme on first launch: OS `prefers-color-scheme`, or always `dark`? Recommend OS
+  preference, overridden once user picks manually. Confirm before implementing.

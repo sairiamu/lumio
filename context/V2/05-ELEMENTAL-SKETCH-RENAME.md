@@ -1,19 +1,21 @@
-# Stage 5 — Wire Existing Canvas into "Elemental Sketch"
+# Stage 5 — Route Existing Canvas as "Elemental Sketch"
+
+## Read First
+- `src/App.tsx` — current single canvas shell (TitleBar + ToolBar + CanvasWrapper).
+- `src/components/canvas/CanvasWrapper.tsx`, `DiagramCanvas.tsx`, `FreehandCanvas.tsx` —
+  the canvas being wrapped, unchanged functionally.
+- `src/components/shell/TitleBar.tsx`, `src/components/shell/StatusBar.tsx` — shared chrome
+  to extract so both Elemental Sketch and Electrical (Stage 6) shells can reuse it.
 
 ## Task
-This is a rename + routing stage, NOT a rebuild. The existing Diagram/Freehand canvas
-(`CanvasWrapper`, `DiagramCanvas`, `FreehandCanvas`, all `nodes/*`, `ToolBar`, etc.) becomes
-what opens when a project's `projectType === 'elemental-sketch'`.
-
-- Rename user-facing strings ("Diagram", etc. where they imply the whole app) to
-  "Elemental Sketch" where appropriate — do NOT rename internal type names like
-  `CanvasMode = 'diagram' | 'freehand'`, those stay as implementation detail.
-- `App.tsx` becomes type-aware: it mounts the Elemental Sketch shell when the loaded
-  project is that type, and the Electrical shell (Stage 6) when it's the other type. Extract
-  shared chrome (TitleBar, StatusBar) so both shells reuse it rather than duplicating.
-- No functional changes to diagram/freehand behavior. This should be a near-zero-risk
-  refactor — if you find yourself changing canvas logic, stop, that's out of scope here.
+1. Extract shared chrome (`TitleBar`, `StatusBar`) out of `App.tsx` so it's reusable by
+   both project-type shells.
+2. `App.tsx` (or a new `src/pages/ProjectShell.tsx` if cleaner) branches on
+   `projectType` (from Stage 2): `'elemental-sketch'` → current canvas content unchanged;
+   `'electrical'` → Stage 6's new canvas (stub OK if Stage 6 isn't built yet).
+3. Update user-facing strings only ("Diagram" → "Elemental Sketch" in UI labels). Do NOT
+   rename internal types like `CanvasMode = 'diagram' | 'freehand'` in
+   `src/types/index.ts` — that stays as-is.
 
 ## Non-Goals
-- No visual restyling in this stage — that's Stage 4's spec applied incrementally later,
-  not bundled into this rename.
+- Zero changes to diagram/freehand canvas logic or visuals. This is routing/extraction only.
