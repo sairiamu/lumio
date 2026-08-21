@@ -335,11 +335,7 @@ export const useCommandList = () => {
       category: 'view',
       action: () => {
         const theme = store.currentTheme;
-        if (theme === 'slate') {
-          store.setTheme('arctic');
-        } else {
-          store.setTheme('slate');
-        }
+        store.setTheme(theme === 'dark' ? 'light' : 'dark');
       }
     },
     {

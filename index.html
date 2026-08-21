@@ -12,8 +12,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Sora:wght@600;700&display=swap" rel="stylesheet">
     <script>
       try {
-        const t = localStorage.getItem('lumio_theme') || localStorage.getItem('lumio-theme') || 'lumio-dark'
-        document.documentElement.setAttribute('data-theme', t)
+        const saved = localStorage.getItem('lumio_theme') || localStorage.getItem('lumio-theme');
+        let theme = 'dark';
+        if (saved === 'light' || saved === 'dark') {
+          theme = saved;
+        } else if (saved) {
+          const lightThemes = ['chalk', 'arctic'];
+          theme = lightThemes.includes(saved) ? 'light' : 'dark';
+        } else {
+          theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
       } catch(e) {}
     </script>
     <title>Lumio</title>

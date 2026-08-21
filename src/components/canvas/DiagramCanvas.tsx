@@ -68,7 +68,7 @@ const DiagramCanvasInner: React.FC = () => {
     setPulsingNodeId,
   } = useCanvasStore();
 
-  const isDark = currentTheme !== 'arctic' && currentTheme !== 'chalk';
+  const isDark = currentTheme === 'dark';
 
   const styledEdges = useMemo(() => {
     const isDimmed = isPresentationMode && currentStep !== -1;

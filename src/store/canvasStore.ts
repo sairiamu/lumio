@@ -203,7 +203,19 @@ export const useCanvasStore = create<CanvasStore>()(
       past: [],
       future: [],
       clipboard: null,
-      currentTheme: (localStorage.getItem('lumio_theme') as ThemeName) || (localStorage.getItem('lumio-theme') as ThemeName) || 'lumio-dark',
+      currentTheme: (() => {
+        const saved = localStorage.getItem('lumio_theme') || localStorage.getItem('lumio-theme');
+        if (saved === 'light' || saved === 'dark') return saved as ThemeName;
+
+        // Migration: map old themes
+        if (saved) {
+          const lightThemes = ['chalk', 'arctic'];
+          return lightThemes.includes(saved) ? 'light' : 'dark';
+        }
+
+        // OS Preference
+        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      })(),
       isTemplateModalOpen: false,
       customTemplates: JSON.parse(localStorage.getItem('lumio-custom-templates') || '[]'),
       isHelpModalOpen: false,

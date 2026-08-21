@@ -292,11 +292,8 @@ const HelpModal: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   {[
-                    { name: 'Slate', colors: ['#0F1117', '#6366F1', '#34D399'] },
-                    { name: 'Arctic', colors: ['#F8FAFC', '#0F172A', '#38BDF8'] },
-                    { name: 'Midnight', colors: ['#020617', '#818CF8', '#C084FC'] },
-                    { name: 'Forest', colors: ['#052E16', '#10B981', '#FCD34D'] },
-                    { name: 'Rose', colors: ['#450A0A', '#FB7185', '#FDA4AF'] },
+                    { name: 'Dark', colors: ['#0A0B0F', '#6366F1', '#10B981'] },
+                    { name: 'Light', colors: ['#F8F7F4', '#4F46E5', '#059669'] },
                   ].map(theme => (
                     <div key={theme.name} className="flex-1 glass-panel p-3 rounded-xl flex flex-col items-center gap-2">
                       <div className="flex gap-1">
