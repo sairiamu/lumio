@@ -54,6 +54,7 @@ export const useFileIO = () => {
 
       store.setNodes(json.nodes ?? []);
       store.setEdges(json.edges ?? []);
+      store.setProjectType(json.projectType ?? 'elemental-sketch');
       if (json.freehandStrokes) store.setFreehandStrokes(json.freehandStrokes);
       if (json.shapeStyle) store.setShapeStyle(json.shapeStyle);
 

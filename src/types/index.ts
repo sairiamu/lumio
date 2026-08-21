@@ -108,6 +108,7 @@ export interface CanvasState {
   trackedNodeId: string | null;
   projectName: string;
   projectPath: string | null;
+  projectType: 'elemental-sketch' | 'electrical';
   isDirty: boolean;
   alignmentGuides: { x?: number; y?: number };
   isPresentationMode: boolean;

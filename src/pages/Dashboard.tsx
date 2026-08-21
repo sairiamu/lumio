@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, FileText, Clock, ChevronRight } from 'lucide-react';
-import { readDir, stat } from '@tauri-apps/plugin-fs';
+import { readDir, stat, readFile } from '@tauri-apps/plugin-fs';
 import { join } from '@tauri-apps/api/path';
 import { ensureProjectsDir } from '../utils/projectDir';
 import { useFileIO } from '../hooks/useFileIO';
 import { useCanvasStore } from '../store/canvasStore';
+import { ProjectTypeModal } from '../components/modals/ProjectTypeModal';
 
 interface ProjectInfo {
   name: string;
   path: string;
   lastModified: Date;
-  type: string;
+  type: 'elemental-sketch' | 'electrical';
 }
 
 interface DashboardProps {
@@ -19,6 +20,7 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ onProjectSelected }) => {
   const [projects, setProjects] = useState<ProjectInfo[]>([]);
+  const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
   const { loadProject } = useFileIO();
   const {
     setProjectName,
@@ -26,6 +28,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onProjectSelected }) => {
     setEdges,
     setFreehandStrokes,
     setProjectPath,
+    setProjectType,
+    setTemplateModalOpen,
     setIsDirty,
     addToast
   } = useCanvasStore();
@@ -43,8 +47,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ onProjectSelected }) => {
               const fullPath = await join(dir, e.name);
               const s = await stat(fullPath);
 
-              // For now, default to Elemental Sketch as per Stage 1
-              const type = 'Elemental Sketch';
+              let type: 'elemental-sketch' | 'electrical' = 'elemental-sketch';
+              try {
+                const bytes = await readFile(fullPath);
+                const json = JSON.parse(new TextDecoder().decode(bytes));
+                type = json.projectType || 'elemental-sketch';
+              } catch (err) {
+                console.error(`Failed to read project type for ${e.name}`, err);
+              }
 
               return {
                 name: e.name.replace('.lumio.json', ''),
@@ -66,13 +76,25 @@ export const Dashboard: React.FC<DashboardProps> = ({ onProjectSelected }) => {
   }, [addToast]);
 
   const handleNewProject = () => {
+    setIsTypeModalOpen(true);
+  };
+
+  const handleTypeSelect = (type: 'elemental-sketch' | 'electrical') => {
     // Reset store for a new project
     setProjectName('Untitled Project');
     setNodes([]);
     setEdges([]);
     setFreehandStrokes([]);
     setProjectPath(null);
+    setProjectType(type);
     setIsDirty(false);
+    setIsTypeModalOpen(false);
+
+    if (type === 'elemental-sketch') {
+      // For elemental-sketch, we want to show the template modal once App loads
+      setTemplateModalOpen(true);
+    }
+
     onProjectSelected();
   };
 
@@ -117,7 +139,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onProjectSelected }) => {
                 <FileText className="w-6 h-6" />
               </div>
               <span className="text-[10px] font-bold px-2 py-1 rounded bg-white/5 text-[var(--text-muted)] uppercase tracking-wider">
-                {project.type}
+                {project.type === 'elemental-sketch' ? 'Elemental Sketch' : 'Electrical'}
               </span>
             </div>
 
@@ -143,6 +165,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onProjectSelected }) => {
           </div>
         )}
       </div>
+
+      <ProjectTypeModal
+        isOpen={isTypeModalOpen}
+        onClose={() => setIsTypeModalOpen(false)}
+        onSelect={handleTypeSelect}
+      />
     </div>
   );
 };

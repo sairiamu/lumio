@@ -74,6 +74,7 @@ export function buildProjectJSON(): string {
   const project = {
     version: '1.0',
     projectName: state.projectName,
+    projectType: state.projectType,
     exportedAt: new Date().toISOString(),
     nodes: state.nodes,
     edges: state.edges,

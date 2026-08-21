@@ -72,9 +72,11 @@ interface CanvasStore extends CanvasState {
   setTrackedNodeId: (id: string | null) => void;
   projectName: string;
   projectPath: string | null;
+  projectType: 'elemental-sketch' | 'electrical';
   isDirty: boolean;
   setProjectName: (name: string) => void;
   setProjectPath: (path: string | null) => void;
+  setProjectType: (type: 'elemental-sketch' | 'electrical') => void;
   setIsDirty: (dirty: boolean) => void;
   setAlignmentGuides: (guides: { x?: number; y?: number }) => void;
   deleteSelectedNodes: () => void;
@@ -181,6 +183,7 @@ export const useCanvasStore = create<CanvasStore>()(
       trackedNodeId: null,
       projectName: 'Untitled Project',
       projectPath: null,
+      projectType: 'elemental-sketch',
       isDirty: false,
       alignmentGuides: {},
       isPresentationMode: false,
@@ -227,6 +230,7 @@ export const useCanvasStore = create<CanvasStore>()(
 
       setProjectName: (projectName) => set({ projectName }),
       setProjectPath: (projectPath) => set({ projectPath }),
+      setProjectType: (projectType) => set({ projectType }),
       setIsDirty: (isDirty) => set({ isDirty }),
       setAlignmentGuides: (alignmentGuides) => set({ alignmentGuides }),
 
