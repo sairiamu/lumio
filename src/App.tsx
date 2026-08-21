@@ -24,6 +24,10 @@ import { ensureProjectsDir, checkOldProjectMigration } from './utils/projectDir'
 // Prevents splash from showing on hot reloads
 let hasShownSplash = false;
 
+export const markSplashAsShown = () => {
+  hasShownSplash = true;
+};
+
 const App: React.FC = () => {
   const {
     isPanelOpen,

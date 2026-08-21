@@ -26,4 +26,19 @@ for now; email auth + cloud project storage comes later, not in this V2 scope.
 8. `08-ARDUINO-OFFLINE-COMPILE.md` — .ino → .hex via arduino-cli sidecar
 9. `09-FUTURE-NOTES.md` — read-only, for later KiCad stage
 
+## Feature Flag (Required — Main Branch Workflow)
+We commit directly to `main`, no feature branch. Every stage must stay behind a flag until
+the full arc (through at least Stage 6) is ready to ship:
+
+- Add `const V2_ENABLED = import.meta.env.VITE_V2_ENABLED === 'true'` in a shared location
+  (e.g. `src/config.ts` if it doesn't exist yet — check first).
+- `src/main.tsx` routing: if `V2_ENABLED` is false, boot straight into the current
+  `App.tsx` canvas exactly as it works today (no Login/Dashboard). If true, use the new
+  Login → Dashboard → project-type flow.
+- Default `VITE_V2_ENABLED` to unset/false in any committed `.env` — it's opted into
+  locally by the dev, not by default, until we're ready to flip it for a release.
+- Do not gate individual internal pieces (store fields, theme changes, node types) behind
+  the flag — only the top-level entry routing in `main.tsx`. Internal code can exist and be
+  inert; we're flagging the user-facing entry point, not sprinkling flags everywhere.
+
 Priority: get to Stage 6 fast. Stages 1-5 are scaffolding, keep them minimal.
