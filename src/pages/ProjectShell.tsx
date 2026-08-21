@@ -4,7 +4,6 @@ import { TitleBar } from '../components/shell/TitleBar';
 import { StatusBar } from '../components/shell/StatusBar';
 import { UpdateBanner } from '../components/shell/UpdateBanner';
 import { ThemePicker } from '../components/modals/ThemePicker';
-import { HelpModal } from '../components/modals/HelpModal';
 import { CommandPalette } from '../components/modals/CommandPalette';
 import { ToastContainer } from '../components/ui/Toast';
 import { useCanvasStore } from '../store/canvasStore';

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { ReactFlowProvider } from '@xyflow/react';
 import App, { markSplashAsShown } from "./App";
 import { ShareViewer } from "./pages/ShareViewer";
 import { Login } from "./pages/Login";
@@ -48,11 +47,7 @@ const V2Shell: React.FC = () => {
     return <Dashboard onProjectSelected={() => setProjectSelected(true)} />;
   }
 
-  return (
-    <ReactFlowProvider>
-      <App />
-    </ReactFlowProvider>
-  );
+  return <App />;
 };
 
 const Main: React.FC = () => {
@@ -66,11 +61,7 @@ const Main: React.FC = () => {
     return <V2Shell />;
   }
 
-  return (
-    <ReactFlowProvider>
-      <App />
-    </ReactFlowProvider>
-  );
+  return <App />;
 };
 
 const rootElement = document.getElementById("root");
