@@ -177,7 +177,7 @@ const HelpModal: React.FC = () => {
                   { icon: ZoomIn, name: 'Zoom', desc: 'In/Out', key: '+ / -' },
                   { icon: Move, name: 'Pan', desc: 'Space + Drag', key: 'Space' },
                   { icon: Grid, name: 'Grid toggle', desc: 'Show/hide grid', key: 'G' },
-                  { icon: Layout, name: 'Auto Layout', desc: 'Tidy up diagram', key: 'A' },
+                  { icon: Layout, name: 'Auto Layout', desc: 'Tidy up sketch', key: 'A' },
                   { icon: Maximize, name: 'Fit View', desc: 'See everything', key: 'F' },
                   { icon: Undo2, name: 'Undo', desc: 'Step back', key: 'Ctrl+Z' },
                   { icon: Redo2, name: 'Redo', desc: 'Step forward', key: 'Ctrl+Y' },
@@ -418,15 +418,15 @@ const HelpModal: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   "Use Ctrl+P to open the Command Palette — fastest way to do anything",
-                  "Ctrl+G groups selected nodes — great for organising complex diagrams",
+                  "Ctrl+G groups selected nodes — great for organising complex sketches",
                   "F11 enters Presentation Mode — clean fullscreen for meetings",
                   "Right-click empty canvas → Apply Template to start from a preset",
                   "Use Track Relations to trace data flow through your architecture",
-                  "Auto Layout (toolbar button) instantly tidies a messy diagram",
-                  "Ctrl+F searches nodes by title — useful in large diagrams",
+                  "Auto Layout (toolbar button) instantly tidies a messy sketch",
+                  "Ctrl+F searches nodes by title — useful in large sketches",
                   "Cast to projector sends live canvas to a second screen",
-                  "Pen tool supports colour and width — annotate diagrams directly",
-                  "Save as Template to reuse your diagram structure in future projects"
+                  "Pen tool supports colour and width — annotate sketches directly",
+                  "Save as Template to reuse your sketch structure in future projects"
                 ].map((tip, i) => (
                   <div key={i} className="glass-panel p-4 rounded-xl flex gap-4 items-start group hover:border-accent/30 transition-all">
                     <div className="w-6 h-6 rounded-full bg-accent/20 flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-accent group-hover:bg-accent group-hover:text-white transition-colors">

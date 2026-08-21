@@ -17,7 +17,7 @@ export const StatusBar: React.FC = () => {
           ) : (
             <Pencil className="w-3 h-3 text-accent" />
           )}
-          <span className="capitalize">{canvasMode} Mode</span>
+          <span className="capitalize">{canvasMode === 'diagram' ? 'Elemental Sketch' : 'Freehand'} Mode</span>
         </div>
 
         <div className="flex items-center gap-1.5">

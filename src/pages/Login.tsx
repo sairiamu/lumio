@@ -15,7 +15,7 @@ export const Login: React.FC<LoginProps> = ({ onAuthenticated }) => {
           <img src="/lumio.svg" alt="Lumio Logo" className="w-20 h-20" />
           <h1 className="text-4xl font-bold font-sora">Lumio</h1>
           <p className="text-[var(--text-muted)] text-center font-inter">
-            Illuminate your ideas with visual communication and diagramming.
+            Illuminate your ideas with visual communication and sketching.
           </p>
         </div>
 

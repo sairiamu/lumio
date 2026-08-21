@@ -2,7 +2,7 @@
 
 ![Lumio Banner](./assets/lumio-1.jpeg)
 
-**Lumio** is a desktop-first visual communication and diagramming platform designed for educators, developers, and teams. Built with the speed of **Vite**, the power of **React 19**, and the native performance of **Tauri v2**, Lumio provides a beautiful, glassmorphism-inspired interface for creating system architectures, app flows, and visual plans.
+**Lumio** is a desktop-first visual communication and sketching platform designed for educators, developers, and teams. Built with the speed of **Vite**, the power of **React 19**, and the native performance of **Tauri v2**, Lumio provides a beautiful, glassmorphism-inspired interface for creating system architectures, app flows, and visual plans.
 
 ---
 
@@ -41,7 +41,7 @@ If you want to contribute or build from source, follow these steps:
 
 ## ✨ Key Features
 
-### 📐 Diagram Mode (Powered by XYFlow)
+### 📐 Elemental Sketch Mode (Powered by XYFlow)
 ![Diagram Mode](./assets/lumio-2.jpeg)
 *   **Custom Nodes:** Create Rectangles, Circles, Diamonds, and Rich Cards with a single click.
 *   **Intuitive Connections:** Drag-and-drop handles to create labeled edges (Bezier, Straight, or Step).
@@ -49,13 +49,13 @@ If you want to contribute or build from source, follow these steps:
 
 ### ✍️ Freehand Mode
 ![Freehand Mode](./assets/lumio-3.jpeg)
-*   **Overlay Layer:** Draw directly over your diagrams with a pressure-sensitive pen tool.
+*   **Overlay Layer:** Draw directly over your sketches with a pressure-sensitive pen tool.
 *   **Versatile Tools:** Includes pen, straight lines, and an eraser for quick annotations.
 
 ### 🎨 Beautiful Design System
 ![Properties Panel](./assets/lumio-4.jpeg)
 *   **Glassmorphism Panels:** Modern, translucent UI that stays out of your way.
-*   **Claymorphism Shapes:** Unique 3D-styled nodes that make your diagrams pop.
+*   **Claymorphism Shapes:** Unique 3D-styled nodes that make your sketches pop.
 *   **Properties Panel:** Fine-tune colors (presets + hex), opacity, border-radius, and typography (Inter, JetBrains Mono, Sora).
 
 ### 📤 Versatile Exporting
