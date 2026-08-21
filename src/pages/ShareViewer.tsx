@@ -40,8 +40,6 @@ const ShareViewerInner: React.FC = () => {
   useEffect(() => {
     const hash = window.location.hash;
     if (hash) {
-      // The hash might be #share=[data] or just #[data]
-      // Our shareUtils.ts handles removing # if present
       const decoded = decodeShareURL(hash);
       if (decoded) {
         setData(decoded);

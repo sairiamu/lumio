@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { ReactFlowProvider } from '@xyflow/react';
 import { ProjectShell } from './pages/ProjectShell';
 import { ElementalSketch } from './pages/ElementalSketch';
+import { ElectricalProject } from './pages/ElectricalProject';
 import { SplashScreen } from './components/shell/SplashScreen';
 import { useCanvasStore } from './store/canvasStore';
 
@@ -11,15 +11,6 @@ let hasShownSplash = false;
 export const markSplashAsShown = () => {
   hasShownSplash = true;
 };
-
-const ElectricalStub: React.FC = () => (
-  <div className="flex-1 flex items-center justify-center bg-[var(--canvas)] text-[var(--text-muted)]">
-    <div className="text-center">
-      <h2 className="text-2xl font-bold mb-2">Electrical Mode</h2>
-      <p>Arduino design and simulation coming in Stage 6.</p>
-    </div>
-  </div>
-);
 
 const App: React.FC = () => {
   const { projectType } = useCanvasStore();
@@ -31,16 +22,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <ReactFlowProvider>
-      <ProjectShell>
-        {projectType === 'elemental-sketch' ? (
-          <ElementalSketch />
-        ) : (
-          <ElectricalStub />
-        )}
-        {showSplash && <SplashScreen onAnimationEnd={handleSplashEnd} />}
-      </ProjectShell>
-    </ReactFlowProvider>
+    <ProjectShell>
+      {projectType === 'elemental-sketch' ? (
+        <ElementalSketch />
+      ) : (
+        <ElectricalProject />
+      )}
+      {showSplash && <SplashScreen onAnimationEnd={handleSplashEnd} />}
+    </ProjectShell>
   );
 };
 

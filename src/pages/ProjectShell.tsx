@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
+import { ReactFlowProvider } from '@xyflow/react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { TitleBar } from '../components/shell/TitleBar';
 import { StatusBar } from '../components/shell/StatusBar';
 import { UpdateBanner } from '../components/shell/UpdateBanner';
 import { ThemePicker } from '../components/modals/ThemePicker';
+import HelpModal from '../components/modals/HelpModal';
 import { CommandPalette } from '../components/modals/CommandPalette';
 import { ToastContainer } from '../components/ui/Toast';
 import { useCanvasStore } from '../store/canvasStore';
@@ -68,30 +70,34 @@ export const ProjectShell: React.FC<ProjectShellProps> = ({ children }) => {
   }, [isPresentationMode]);
 
   return (
-    <div
-      className="flex flex-col h-screen overflow-hidden"
-      style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}
-    >
-      {!isPresentationMode && <TitleBar />}
-      {!isPresentationMode && updater.updateAvailable && !updater.isDismissed && (
-        <UpdateBanner
-          updateAvailable={updater.updateAvailable}
-          updateInfo={updater.updateInfo}
-          isDownloading={updater.isDownloading}
-          downloadProgress={updater.downloadProgress}
-          installUpdate={updater.installUpdate}
-          onDismiss={() => updater.setIsDismissed(true)}
-        />
-      )}
+    <ReactFlowProvider>
+      <div
+        className="flex flex-col h-screen overflow-hidden"
+        style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}
+      >
+        {!isPresentationMode && <TitleBar />}
+        {!isPresentationMode && updater.updateAvailable && !updater.isDismissed && (
+          <UpdateBanner
+            updateAvailable={updater.updateAvailable}
+            updateInfo={updater.updateInfo}
+            isDownloading={updater.isDownloading}
+            downloadProgress={updater.downloadProgress}
+            installUpdate={updater.installUpdate}
+            onDismiss={() => updater.setIsDismissed(true)}
+          />
+        )}
 
-      {children}
+        <main className="flex-1 relative overflow-hidden">
+          {children}
+        </main>
 
-      {!isPresentationMode && <StatusBar />}
+        {!isPresentationMode && <StatusBar />}
 
-      <ThemePicker />
-      <HelpModal />
-      <CommandPalette />
-      <ToastContainer />
-    </div>
+        <ThemePicker />
+        <HelpModal />
+        <CommandPalette />
+        <ToastContainer />
+      </div>
+    </ReactFlowProvider>
   );
 };

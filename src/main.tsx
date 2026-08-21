@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom/client";
+import { ReactFlowProvider } from "@xyflow/react";
 import App, { markSplashAsShown } from "./App";
 import { ShareViewer } from "./pages/ShareViewer";
 import { Login } from "./pages/Login";
@@ -9,8 +10,6 @@ import { V2_ENABLED } from "./config";
 import { ensureProjectsDir } from "./utils/projectDir";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import "./index.css";
-
-console.log("Lumio: Initializing...");
 
 const V2Shell: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -24,16 +23,16 @@ const V2Shell: React.FC = () => {
         const win = getCurrentWindow();
         await win.show();
       } catch (error) {
-        console.error('Failed to initialize app:', error);
+        console.error("V2Shell Init Error:", error);
       }
     };
     initApp();
   }, []);
 
-  const handleSplashEnd = () => {
+  const handleSplashEnd = useCallback(() => {
     setShowSplash(false);
     markSplashAsShown();
-  };
+  }, []);
 
   if (showSplash) {
     return <SplashScreen onAnimationEnd={handleSplashEnd} />;
@@ -57,19 +56,17 @@ const Main: React.FC = () => {
     return <ShareViewer />;
   }
 
-  if (V2_ENABLED) {
-    return <V2Shell />;
-  }
-
-  return <App />;
+  return (
+    <ReactFlowProvider>
+      {V2_ENABLED ? <V2Shell /> : <App />}
+      <div className="fixed bottom-0 left-0 bg-red-600 text-white text-[9px] z-[9999] px-2 font-mono pointer-events-none rounded-tr-md">
+        LUMIO CORE ACTIVE | {new Date().toLocaleTimeString()}
+      </div>
+    </ReactFlowProvider>
+  );
 };
 
 const rootElement = document.getElementById("root");
-
 if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(
-    <React.StrictMode>
-      <Main />
-    </React.StrictMode>
-  );
+  ReactDOM.createRoot(rootElement).render(<Main />);
 }

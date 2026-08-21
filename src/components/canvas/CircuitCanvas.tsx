@@ -1,10 +1,9 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import {
   ReactFlow,
   Background,
   BackgroundVariant,
   Panel,
-  ReactFlowProvider,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import '@wokwi/elements';
