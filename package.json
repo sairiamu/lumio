@@ -19,6 +19,7 @@
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-updater": "^2.10.1",
+    "@wokwi/elements": "^1.9.2",
     "@xyflow/react": "^12.11.0",
     "html-to-image": "^1.11.13",
     "jspdf": "^4.2.1",
