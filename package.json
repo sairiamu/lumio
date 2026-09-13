@@ -9,7 +9,10 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "release": "git tag v$npm_package_version && git push origin v$npm_package_version"
+    "release": "git tag v$npm_package_version && git push origin v$npm_package_version",
+    "test": "vitest run",
+    "lint": "eslint src/ --max-warnings 0",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.8",
@@ -27,6 +30,7 @@
     "qrcode": "^1.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "vitest": "^5.0.0",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
@@ -37,13 +41,14 @@
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@typescript-eslint/eslint-plugin": "^8.4.0",
+    "@typescript-eslint/parser": "^8.4.0",
     "@vitejs/plugin-react": "^4.6.0",
     "autoprefixer": "^10.5.0",
     "eslint": "^9.10.0",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc-0",
-    "@typescript-eslint/eslint-plugin": "^8.4.0",
-    "@typescript-eslint/parser": "^8.4.0",
+    "jsdom": "^30.0.1",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.0",
     "typescript": "~5.8.3",

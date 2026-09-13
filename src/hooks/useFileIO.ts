@@ -1,7 +1,7 @@
 import { save, open } from '@tauri-apps/plugin-dialog';
 import { writeFile, readFile } from '@tauri-apps/plugin-fs';
 import { useCanvasStore } from '../store/canvasStore';
-import { buildProjectJSON, showToast } from '../utils/exportUtils';
+import { buildProjectJSON, showToast, migrateProject } from '../utils/exportUtils';
 import { getDefaultSavePath, ensureProjectsDir } from '../utils/projectDir';
 
 export const useFileIO = () => {
@@ -27,9 +27,9 @@ export const useFileIO = () => {
       store.addRecentProject(path);
       showToast('Project saved successfully', 'success');
       return true;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to save project:', err);
-      showToast(`Save failed: ${err.message || err}`, 'error');
+      showToast(`Save failed: ${err instanceof Error ? err.message : String(err)}`, 'error');
       return false;
     }
   };
@@ -50,7 +50,8 @@ export const useFileIO = () => {
       }
 
       const bytes = await readFile(path);
-      const json = JSON.parse(new TextDecoder().decode(bytes));
+      const rawJson = JSON.parse(new TextDecoder().decode(bytes));
+      const json = migrateProject(rawJson);
 
       store.setNodes(json.nodes ?? []);
       store.setEdges(json.edges ?? []);
@@ -68,9 +69,9 @@ export const useFileIO = () => {
       store.setExportModalOpen(false);
       showToast('Project loaded successfully', 'success');
       return true;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load project:', err);
-      showToast(`Load failed: ${err.message || err}`, 'error');
+      showToast(`Load failed: ${err instanceof Error ? err.message : String(err)}`, 'error');
       return false;
     }
   };

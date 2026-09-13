@@ -6,13 +6,6 @@ import { CircuitNodeData } from '../../../store/circuitStore';
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'wokwi-arduino-uno': any;
-      'wokwi-led': any;
-      'wokwi-resistor': any;
-      'wokwi-pushbutton': any;
-      'wokwi-potentiometer': any;
-      'wokwi-buzzer': any;
-      'wokwi-servo': any;
       'wokwi-breadboard': any;
     }
   }

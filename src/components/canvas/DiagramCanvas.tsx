@@ -7,9 +7,11 @@ import {
   MarkerType,
   MiniMap,
   NodeTypes,
+  Node,
   Edge
 } from '@xyflow/react';
 import { useCanvasStore } from '../../store/canvasStore';
+import { NodeData } from '../../types';
 import { RectNode } from '../nodes/RectNode';
 import { CircleNode } from '../nodes/CircleNode';
 import { DiamondNode } from '../nodes/DiamondNode';
@@ -50,6 +52,7 @@ const DiagramCanvasInner: React.FC = () => {
     currentTool,
     pendingNodeType,
     pendingNodeTitle,
+    pendingNodeSemantic,
     setCurrentTool,
     setNodes,
     setSelectedNodeIds,
@@ -220,7 +223,7 @@ const DiagramCanvasInner: React.FC = () => {
         y: event.clientY,
       });
 
-      const newNode = {
+      const newNode: Node<NodeData> = {
         id: `node_${Date.now()}`,
         type: currentTool,
         position,
@@ -228,7 +231,11 @@ const DiagramCanvasInner: React.FC = () => {
           title: '',
           parameters: [],
           description: '',
-          clayColor: currentTool === 'text' ? 'transparent' : 'var(--accent-light)'
+          clayColor: currentTool === 'text' ? 'transparent' : 'var(--accent-light)',
+          semantic: {
+            category: 'generic',
+            metadata: {}
+          }
         },
       };
 
@@ -240,7 +247,7 @@ const DiagramCanvasInner: React.FC = () => {
         y: event.clientY,
       });
 
-      const newNode = {
+      const newNode: Node<NodeData> = {
         id: `node_${Date.now()}`,
         type: 'universal',
         position,
@@ -249,14 +256,18 @@ const DiagramCanvasInner: React.FC = () => {
           shapeType: pendingNodeType,
           parameters: [],
           description: '',
-          clayColor: 'var(--accent-light)'
+          clayColor: 'var(--accent-light)',
+          semantic: pendingNodeSemantic || {
+            category: 'generic',
+            metadata: {}
+          }
         },
       };
 
       setNodes([...nodes, newNode]);
       setCurrentTool('select');
     }
-  }, [currentTool, pendingNodeType, pendingNodeTitle, nodes, setNodes, screenToFlowPosition, deselectAll, setIsPanelOpen, setCurrentTool, pushHistory, setTrackedNodeId]);
+  }, [currentTool, pendingNodeType, pendingNodeTitle, pendingNodeSemantic, nodes, setNodes, screenToFlowPosition, deselectAll, setIsPanelOpen, setCurrentTool, pushHistory, setTrackedNodeId]);
 
   const onSelectionChange = useCallback(({ nodes, edges }: { nodes: any[]; edges: any[] }) => {
     if (nodes.length > 0 || edges.length > 0) {

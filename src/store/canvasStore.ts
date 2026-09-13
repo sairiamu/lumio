@@ -14,6 +14,7 @@ import {
   OnConnect
 } from '@xyflow/react';
 import { CanvasState, CanvasMode, ToolType, ShapeStyle, Stroke, NodeData, EdgeData } from '../types';
+import { NodeSemantic } from '../types/semantic';
 import { ThemeName } from '../themes/themes';
 import { Template } from '../data/templates';
 
@@ -68,6 +69,8 @@ interface CanvasStore extends CanvasState {
   setPendingNodeType: (type: string | null) => void;
   pendingNodeTitle: string | null;
   setPendingNodeTitle: (title: string | null) => void;
+  pendingNodeSemantic: NodeSemantic | null;
+  setPendingNodeSemantic: (semantic: NodeSemantic | null) => void;
   trackedNodeId: string | null;
   setTrackedNodeId: (id: string | null) => void;
   projectName: string;
@@ -180,6 +183,7 @@ export const useCanvasStore = create<CanvasStore>()(
       isShapeLibraryOpen: false,
       pendingNodeType: null,
       pendingNodeTitle: null,
+      pendingNodeSemantic: null,
       trackedNodeId: null,
       projectName: 'Untitled Project',
       projectPath: null,
@@ -266,6 +270,7 @@ export const useCanvasStore = create<CanvasStore>()(
       setIsShapeLibraryOpen: (isShapeLibraryOpen) => set({ isShapeLibraryOpen }),
       setPendingNodeType: (pendingNodeType) => set({ pendingNodeType }),
       setPendingNodeTitle: (pendingNodeTitle) => set({ pendingNodeTitle }),
+      setPendingNodeSemantic: (pendingNodeSemantic) => set({ pendingNodeSemantic }),
       setTrackedNodeId: (trackedNodeId) => set({ trackedNodeId }),
       setSelectedNodeIds: (selectedNodeIds) => set({ selectedNodeIds }),
       setSelectedEdgeIds: (selectedEdgeIds) => set({ selectedEdgeIds }),
@@ -706,7 +711,11 @@ export const useCanvasStore = create<CanvasStore>()(
             parameters: [],
             description: '',
             content: '',
-            viewMode: 'compact'
+            viewMode: 'compact',
+            semantic: {
+              category: 'generic',
+              metadata: {}
+            }
           },
           style: { width, height },
         };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { ColourPicker } from './ColourPicker';
+import { RelationshipSelector } from './RelationshipSelector';
 import {
   Minus,
   GripHorizontal,
@@ -40,6 +41,11 @@ export const EdgePropertiesPanel: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6 pb-8">
+      {/* RELATIONSHIP SELECTOR */}
+      <RelationshipSelector />
+
+      <div className="h-px w-full bg-border/50 my-[-8px]" />
+
       {/* COLOUR ROW */}
       <ColourPicker mode="edge" />
 

@@ -11,6 +11,7 @@ export const ShapeLibrary: React.FC = () => {
     setCurrentTool,
     setPendingNodeType,
     setPendingNodeTitle,
+    setPendingNodeSemantic,
   } = useCanvasStore();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,6 +52,7 @@ export const ShapeLibrary: React.FC = () => {
   const handleShapeSelect = (shape: ShapeLibraryItem) => {
     setPendingNodeType(shape.lucideIcon);
     setPendingNodeTitle(shape.label);
+    setPendingNodeSemantic(shape.defaultSemantic || { category: 'generic', metadata: {} });
     setCurrentTool('place');
     setIsShapeLibraryOpen(false);
   };

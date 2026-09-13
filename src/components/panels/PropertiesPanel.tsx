@@ -3,6 +3,9 @@ import { useCanvasStore } from '../../store/canvasStore';
 import { Settings2 } from 'lucide-react';
 import { ColourPicker } from './ColourPicker';
 import { EdgePropertiesPanel } from './EdgePropertiesPanel';
+import { SemanticSelector } from './SemanticSelector';
+import { TechnologySelector } from './TechnologySelector';
+import { SemanticIdentity } from './SemanticIdentity';
 
 export const PropertiesPanel: React.FC = () => {
   const { nodes, edges, selectedNodeIds, selectedEdgeIds } = useCanvasStore();
@@ -33,7 +36,18 @@ export const PropertiesPanel: React.FC = () => {
       </div>
 
       <div className="p-4 flex flex-col gap-6 overflow-y-auto flex-1 min-h-0">
-        {selectedNode ? <ColourPicker mode="node" /> : <EdgePropertiesPanel />}
+        {selectedNode ? (
+          <>
+            <SemanticIdentity />
+            <div className="h-px w-full bg-border/50 my-[-8px]" />
+            <SemanticSelector />
+            <TechnologySelector />
+            <div className="h-px w-full bg-border/50 my-1" />
+            <ColourPicker mode="node" />
+          </>
+        ) : (
+          <EdgePropertiesPanel />
+        )}
       </div>
     </div>
   );

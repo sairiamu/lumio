@@ -1,4 +1,5 @@
 import { Node, Edge } from '@xyflow/react';
+import { NodeSemantic, EdgeSemantic } from './semantic';
 
 export type CanvasMode = 'diagram' | 'freehand';
 
@@ -31,6 +32,7 @@ export interface ShapeLibraryItem {
   label: string;
   lucideIcon: string;
   shapeType: string;
+  defaultSemantic?: NodeSemantic;
 }
 
 export interface ShapeCategory {
@@ -60,6 +62,7 @@ export interface NodeData extends Record<string, unknown> {
   textAlign?: 'left' | 'center' | 'right'
   opacity?: number
   clayColorOverride?: string
+  semantic?: NodeSemantic
 }
 
 export const defaultNodeData: NodeData = {
@@ -68,6 +71,10 @@ export const defaultNodeData: NodeData = {
   description: '',
   content: '',
   viewMode: 'compact',
+  semantic: {
+    category: 'generic',
+    metadata: {}
+  }
 }
 
 export interface EdgeData extends Record<string, unknown> {
@@ -82,6 +89,7 @@ export interface EdgeData extends Record<string, unknown> {
   animationType?: 'none' | 'flow' | 'pulse' | 'dash-march' | 'signal';
   animationSpeed?: 'slow' | 'normal' | 'fast';
   animationColor?: string;
+  semantic?: EdgeSemantic;
 }
 
 export interface CanvasState {

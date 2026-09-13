@@ -1,6 +1,8 @@
 import { toPng, toSvg } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useCanvasStore } from '../store/canvasStore';
+import { Node, Edge } from '@xyflow/react';
+import { NodeData, EdgeData, Stroke, ShapeStyle } from '../types';
 
 export async function exportPNG(): Promise<Uint8Array> {
   // Target the inner viewport — not the outer wrapper
@@ -69,10 +71,79 @@ export async function exportSVG(): Promise<Uint8Array> {
   return encoder.encode(trimmed);
 }
 
+export const LUMIO_PROJECT_VERSION = '1.1';
+
+export interface LumioProject {
+  version: string;
+  projectName: string;
+  projectType: 'elemental-sketch' | 'electrical';
+  exportedAt: string;
+  nodes: Node<NodeData>[];
+  edges: Edge<EdgeData>[];
+  freehandStrokes: Stroke[];
+  shapeStyle: ShapeStyle;
+}
+
+export function migrateProject(json: unknown): LumioProject {
+  if (!json || typeof json !== 'object' || json === null) {
+    return json as LumioProject;
+  }
+
+  const project = json as Record<string, unknown>;
+  const version = (project.version as string) || '1.0';
+
+  // Clone top-level to avoid mutating original
+  const migrated = { ...project } as unknown as LumioProject;
+
+  // 1.0 -> 1.1 Migration: Add semantic metadata to nodes and edges
+  // Backwards compatibility: safely assign semantic defaults without corrupting appearance
+  if (version === '1.0') {
+    if (Array.isArray(migrated.nodes)) {
+      migrated.nodes = migrated.nodes.map((node: unknown) => {
+        const n = node as Record<string, unknown>;
+        // Deep enough clone for data.semantic
+        const newNode = { ...n };
+        if (newNode.data && typeof newNode.data === 'object') {
+          const data = { ...(newNode.data as Record<string, unknown>) };
+          if (!data.semantic) {
+            data.semantic = {
+              category: 'generic',
+              metadata: {}
+            };
+          }
+          newNode.data = data;
+        }
+        return newNode as Node<NodeData>;
+      });
+    }
+
+    if (Array.isArray(migrated.edges)) {
+      migrated.edges = migrated.edges.map((edge: unknown) => {
+        const e = edge as Record<string, unknown>;
+        const newEdge = { ...e };
+        if (newEdge.data && typeof newEdge.data === 'object') {
+          const data = { ...(newEdge.data as Record<string, unknown>) };
+          if (!data.semantic) {
+            data.semantic = {
+              relationship: 'generic',
+              metadata: {}
+            };
+          }
+          newEdge.data = data;
+        }
+        return newEdge as Edge<EdgeData>;
+      });
+    }
+    migrated.version = LUMIO_PROJECT_VERSION;
+  }
+
+  return migrated;
+}
+
 export function buildProjectJSON(): string {
   const state = useCanvasStore.getState();
   const project = {
-    version: '1.0',
+    version: LUMIO_PROJECT_VERSION,
     projectName: state.projectName,
     projectType: state.projectType,
     exportedAt: new Date().toISOString(),
