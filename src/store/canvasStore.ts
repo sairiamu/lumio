@@ -149,6 +149,10 @@ interface CanvasStore extends CanvasState {
   toggleAnimations: () => void;
   pulsingNodeId: string | null;
   setPulsingNodeId: (id: string | null) => void;
+  preferredLayoutDirection: 'LR' | 'TB';
+  setPreferredLayoutDirection: (dir: 'LR' | 'TB') => void;
+  currentLayoutPreset: 'architecture-flow' | 'top-down' | 'compact' | 'presentation';
+  setCurrentLayoutPreset: (preset: 'architecture-flow' | 'top-down' | 'compact' | 'presentation') => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -169,6 +173,8 @@ export const useCanvasStore = create<CanvasStore>()(
       selectedEdgeIds: [],
       canvasMode: 'diagram',
       currentTool: 'select',
+      preferredLayoutDirection: 'LR',
+      currentLayoutPreset: 'architecture-flow',
       shapeStyle: {
         fill: 'var(--accent)',
         stroke: 'var(--border)',
@@ -242,6 +248,8 @@ export const useCanvasStore = create<CanvasStore>()(
       toasts: [],
 
       setTemplateModalOpen: (isTemplateModalOpen) => set({ isTemplateModalOpen }),
+      setPreferredLayoutDirection: (preferredLayoutDirection) => set({ preferredLayoutDirection }),
+      setCurrentLayoutPreset: (currentLayoutPreset) => set({ currentLayoutPreset }),
 
       addCustomTemplate: (template) => {
         set((state) => {
@@ -830,7 +838,9 @@ export const useCanvasStore = create<CanvasStore>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         recentProjects: state.recentProjects,
-        gridStyle: state.gridStyle
+        gridStyle: state.gridStyle,
+        preferredLayoutDirection: state.preferredLayoutDirection,
+        currentLayoutPreset: state.currentLayoutPreset
       }),
     }
   )

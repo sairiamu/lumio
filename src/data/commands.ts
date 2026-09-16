@@ -11,6 +11,7 @@ import { useFileIO } from '../hooks/useFileIO';
 import { useExport } from '../hooks/useExport';
 import { useReactFlow } from '@xyflow/react';
 import { useUpdater } from '../hooks/useUpdater';
+import { autoLayout, autoLayoutSelected } from '../utils/layoutUtils';
 
 export interface Command {
   id: string;
@@ -183,10 +184,31 @@ export const useCommandList = () => {
       label: 'Auto Layout',
       description: 'Organize nodes automatically',
       icon: Layout,
+      shortcut: 'Ctrl+L',
       category: 'canvas',
       action: () => {
-        // Logic for auto layout if available, or just a toast
-        console.log('Auto layout requested');
+        store.pushHistory();
+        const laid = autoLayout(store.nodes, store.edges, store.preferredLayoutDirection, store.currentLayoutPreset);
+        store.setNodes(laid as any);
+        setTimeout(() => fitView({ padding: 0.25, duration: 400 }), 50);
+      }
+    },
+    {
+      id: 'auto-layout-selected',
+      label: 'Auto Layout Selected',
+      description: 'Organize only the currently selected nodes',
+      icon: Layout,
+      shortcut: 'Ctrl+Shift+L',
+      category: 'canvas',
+      action: () => {
+        if (!store.selectedNodeIds || store.selectedNodeIds.length === 0) return;
+        store.pushHistory();
+        const laid = autoLayoutSelected(store.nodes, store.edges, store.selectedNodeIds, store.preferredLayoutDirection, store.currentLayoutPreset);
+        store.setNodes(laid as any);
+        setTimeout(() => {
+          const selNodes = laid.filter(n => store.selectedNodeIds.includes(n.id));
+          fitView({ nodes: selNodes, duration: 400, padding: 0.25 });
+        }, 50);
       }
     },
     {

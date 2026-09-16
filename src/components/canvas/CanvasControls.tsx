@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2, LayoutDashboard, Map, Square, Grip, Rows, Hash, Zap } from 'lucide-react';
+import { Plus, Minus, Maximize, Grid3X3, Undo2, Redo2, LayoutDashboard, Map, Square, Grip, Rows, Hash, Zap, ArrowRight, ArrowDown } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow, useViewport, Node } from '@xyflow/react';
-import { autoLayout } from '../../utils/layoutUtils';
+import { autoLayout, autoLayoutSelected } from '../../utils/layoutUtils';
 import { NodeData } from '../../types';
 
 export interface CanvasControlsProps {}
@@ -24,13 +24,19 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
     isMinimapOpen,
     toggleMinimap,
     animationsEnabled,
-    toggleAnimations
+    toggleAnimations,
+    selectedNodeIds,
+    preferredLayoutDirection,
+    setPreferredLayoutDirection,
+    setCurrentLayoutPreset
   } = useCanvasStore();
   const { zoomIn, zoomOut, fitView, setViewport, getViewport } = useReactFlow();
   const { zoom } = useViewport();
 
   const [showGridOptions, setShowGridOptions] = useState(false);
+  const [showLayoutOptions, setShowLayoutOptions] = useState(false);
   const gridButtonRef = useRef<HTMLDivElement>(null);
+  const layoutButtonRef = useRef<HTMLDivElement>(null);
 
   const displayZoom = Math.round((zoom ?? 1) * 100);
 
@@ -38,6 +44,9 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (gridButtonRef.current && !gridButtonRef.current.contains(event.target as globalThis.Node)) {
         setShowGridOptions(false);
+      }
+      if (layoutButtonRef.current && !layoutButtonRef.current.contains(event.target as globalThis.Node)) {
+        setShowLayoutOptions(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -47,17 +56,32 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
   const handleFitView = () => {
     const viewport = getViewport();
     if (viewport) {
-      fitView({ padding: 0.2, duration: 300 });
+      fitView({ padding: useCanvasStore.getState().preferredLayoutDirection ? 0.25 : 0.2, duration: 300 });
     } else {
       setViewport({ x: 0, y: 0, zoom: 1 }, { duration: 0 });
     }
   };
 
   const handleAutoLayout = () => {
+    const { currentLayoutPreset } = useCanvasStore.getState();
     pushHistory();
-    const laid = autoLayout(nodes, edges);
+    const laid = selectedNodeIds && selectedNodeIds.length > 0
+      ? autoLayoutSelected(nodes, edges, selectedNodeIds, preferredLayoutDirection, currentLayoutPreset)
+      : autoLayout(nodes, edges, preferredLayoutDirection, currentLayoutPreset);
     setNodes(laid as Node<NodeData>[]);
-    setTimeout(() => fitView({ padding: 0.2, duration: 400 }), 50);
+    setTimeout(() => {
+      if (selectedNodeIds && selectedNodeIds.length > 0) {
+        const selNodes = (laid as Node<NodeData>[]).filter(n => selectedNodeIds.includes(n.id));
+        fitView({ nodes: selNodes, duration: 400, padding: 0.25 });
+      } else {
+        fitView({ padding: 0.25, duration: 400 });
+      }
+    }, 50);
+  };
+
+  const handleLayoutContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowLayoutOptions(true);
   };
 
   const handleGridContextMenu = (e: React.MouseEvent) => {
@@ -106,13 +130,66 @@ export const CanvasControls: React.FC<CanvasControlsProps> = () => {
         </button>
       </div>
 
-      <button
-        onClick={handleAutoLayout}
-        className="glass-panel p-2.5 text-text-muted hover:text-text"
-        aria-label="Auto Layout"
-      >
-        <LayoutDashboard className="w-4 h-4" />
-      </button>
+      <div className="relative" ref={layoutButtonRef}>
+        <button
+          onClick={handleAutoLayout}
+          onContextMenu={handleLayoutContextMenu}
+          className="glass-panel p-2.5 text-text-muted hover:text-text"
+          aria-label="Auto Layout"
+          title="Right-click for layout direction"
+        >
+          <LayoutDashboard className="w-4 h-4" />
+        </button>
+
+        {showLayoutOptions && (
+          <div className="absolute bottom-full left-0 mb-2 glass-panel p-2 flex flex-col gap-1 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-200 min-w-[160px]">
+            <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-text-muted border-b border-white/5 mb-1">
+              Direction
+            </div>
+            <button
+              onClick={() => {
+                setPreferredLayoutDirection('LR');
+                setShowLayoutOptions(false);
+              }}
+              className={`p-1.5 rounded-lg transition-all flex items-center gap-2 text-xs text-text ${preferredLayoutDirection === 'LR' ? 'bg-accent/20 ring-1 ring-accent font-medium' : 'hover:bg-white/10'}`}
+            >
+              <ArrowRight className="w-3.5 h-3.5" />
+              Left → Right
+            </button>
+            <button
+              onClick={() => {
+                setPreferredLayoutDirection('TB');
+                setShowLayoutOptions(false);
+              }}
+              className={`p-1.5 rounded-lg transition-all flex items-center gap-2 text-xs text-text ${preferredLayoutDirection === 'TB' ? 'bg-accent/20 ring-1 ring-accent font-medium' : 'hover:bg-white/10'}`}
+            >
+              <ArrowDown className="w-3.5 h-3.5" />
+              Top → Bottom
+            </button>
+
+            <div className="px-2 py-1 mt-2 text-[10px] font-bold uppercase tracking-wider text-text-muted border-b border-white/5 mb-1">
+              Presets
+            </div>
+            {[
+              { id: 'architecture-flow', label: 'Architecture Flow' },
+              { id: 'top-down', label: 'Top Down' },
+              { id: 'compact', label: 'Compact' },
+              { id: 'presentation', label: 'Presentation' }
+            ].map((preset) => (
+              <button
+                key={preset.id}
+                onClick={() => {
+                  setCurrentLayoutPreset(preset.id as any);
+                  setShowLayoutOptions(false);
+                }}
+                className={`p-1.5 rounded-lg transition-all text-left text-xs text-text ${useCanvasStore.getState().currentLayoutPreset === preset.id ? 'bg-accent/20 ring-1 ring-accent font-medium' : 'hover:bg-white/10'}`}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="relative" ref={gridButtonRef}>
         <button

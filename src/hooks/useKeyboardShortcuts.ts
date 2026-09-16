@@ -3,6 +3,7 @@ import { useReactFlow } from '@xyflow/react';
 import { useCanvasStore } from '../store/canvasStore';
 import { useFileIO } from './useFileIO';
 import { useExport } from './useExport';
+import { autoLayout, autoLayoutSelected } from '../utils/layoutUtils';
 
 export const useKeyboardShortcuts = () => {
   const { deleteElements, zoomIn, zoomOut, setViewport, fitView } = useReactFlow();
@@ -44,7 +45,10 @@ export const useKeyboardShortcuts = () => {
     isHelpModalOpen,
     setHelpModalOpen,
     expandedNodeId,
-    setExpandedNodeId
+    setExpandedNodeId,
+    setNodes,
+    preferredLayoutDirection,
+    currentLayoutPreset
   } = useCanvasStore();
 
   const { saveProject } = useFileIO();
@@ -87,11 +91,33 @@ export const useKeyboardShortcuts = () => {
           return;
         }
 
+        // Handle Ctrl+Shift+L for Auto Layout Selected
+        if (e.shiftKey && e.key.toLowerCase() === 'l') {
+          e.preventDefault();
+          if (selectedNodeIds.length > 0) {
+            pushHistory();
+            const laid = autoLayoutSelected(nodes, edges, selectedNodeIds, preferredLayoutDirection, currentLayoutPreset);
+            setNodes(laid as any);
+            setTimeout(() => {
+              const selNodes = laid.filter(n => selectedNodeIds.includes(n.id));
+              fitView({ nodes: selNodes, duration: 400, padding: 0.25 });
+            }, 50);
+          }
+          return;
+        }
+
         switch (e.key.toLowerCase()) {
           case 'p':
           case 'k':
             e.preventDefault();
             toggleCommandPalette();
+            break;
+          case 'l':
+            e.preventDefault();
+            pushHistory();
+            const laid = autoLayout(nodes, edges, preferredLayoutDirection, currentLayoutPreset);
+            setNodes(laid as any);
+            setTimeout(() => fitView({ padding: 0.25, duration: 400 }), 50);
             break;
           case 'f':
             e.preventDefault();
@@ -298,6 +324,9 @@ export const useKeyboardShortcuts = () => {
     isHelpModalOpen,
     setHelpModalOpen,
     expandedNodeId,
-    setExpandedNodeId
+    setExpandedNodeId,
+    setNodes,
+    preferredLayoutDirection,
+    currentLayoutPreset
   ]);
 };

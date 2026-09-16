@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { useReactFlow } from '@xyflow/react';
-import { Waypoints, Presentation, Trash2, Group, Ungroup, ZoomIn } from 'lucide-react';
+import { Waypoints, Presentation, Trash2, Group, Ungroup, ZoomIn, LayoutDashboard } from 'lucide-react';
+import { autoLayout, autoLayoutSelected } from '../../utils/layoutUtils';
 
 interface ContextMenuProps {
   visible: boolean;
@@ -188,6 +189,29 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
     close();
   };
 
+  const handleAutoLayout = () => {
+    const { preferredLayoutDirection, currentLayoutPreset, pushHistory } = useCanvasStore.getState();
+    pushHistory();
+    const laid = autoLayout(nodes, edges, preferredLayoutDirection, currentLayoutPreset);
+    setNodes(laid as any);
+    setTimeout(() => fitView({ padding: 0.25, duration: 400 }), 50);
+    close();
+  };
+
+  const handleAutoLayoutSelected = () => {
+    const { preferredLayoutDirection, currentLayoutPreset, pushHistory } = useCanvasStore.getState();
+    pushHistory();
+    const ids = selectedNodeIds && selectedNodeIds.length > 0 ? selectedNodeIds : (targetNodeId ? [targetNodeId] : []);
+    if (ids.length === 0) return;
+    const laid = autoLayoutSelected(nodes, edges, ids, preferredLayoutDirection, currentLayoutPreset);
+    setNodes(laid as any);
+    setTimeout(() => {
+      const selNodes = laid.filter(n => ids.includes(n.id));
+      fitView({ nodes: selNodes, duration: 400, padding: 0.25 });
+    }, 50);
+    close();
+  };
+
   const handleZoomToNode = () => {
     if (!targetNodeId) return;
     const node = nodes.find(n => n.id === targetNodeId);
@@ -284,6 +308,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
             <ZoomIn size={16} className="text-accent" />
             Zoom to Node <span className="ml-auto opacity-50 text-[10px]">Z</span>
           </button>
+          <button
+            className="flex items-center gap-2 text-left px-3 py-2 hover:bg-white/10 rounded transition-colors"
+            onClick={handleAutoLayoutSelected}
+          >
+            <LayoutDashboard size={16} className="text-accent" />
+            Auto Layout Selected
+          </button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleEditProperties}>Edit Properties</button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleOpenColour}>Change Colour</button>
           {showColourPicker && (
@@ -302,6 +333,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ visible, x, y, targetN
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors disabled:opacity-30" onClick={handlePaste} disabled={!hasPaste}>Paste</button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleSelectAll}>Select All</button>
           <button className="text-left px-3 py-2 hover:bg-white/10 rounded transition-colors" onClick={handleFitView}>Fit View</button>
+          <button
+            className="flex items-center gap-2 text-left px-3 py-2 hover:bg-white/10 rounded transition-colors text-accent"
+            onClick={handleAutoLayout}
+          >
+            <LayoutDashboard size={16} />
+            Auto Layout
+          </button>
           <button
             className="flex items-center gap-2 text-left px-3 py-2 hover:bg-white/10 rounded transition-colors text-danger"
             onClick={handleClearPresentation}
