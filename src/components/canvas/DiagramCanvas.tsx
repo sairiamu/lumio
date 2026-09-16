@@ -77,30 +77,67 @@ const DiagramCanvasInner: React.FC = () => {
   const isDark = currentTheme === 'dark';
 
   const styledEdges = useMemo(() => {
+    const { activeValidationResult, isArchitectureValidationModalOpen } = useCanvasStore.getState();
+    const validatedIssues = isArchitectureValidationModalOpen && activeValidationResult ? activeValidationResult.issues : [];
     const isDimmed = isPresentationMode && currentStep !== -1;
-    return edges.map((edge) => ({
-      ...edge,
-      type: edge.data?.pathType === 'default' ? undefined : edge.data?.pathType,
-      style: {
-        stroke: edge.data?.strokeColor || 'var(--text-muted)',
-        strokeWidth: edge.data?.strokeWidth || 2,
-        strokeDasharray:
-          edge.data?.strokeStyle === 'dashed' ? '8 4' :
-          edge.data?.strokeStyle === 'dotted' ? '2 4' :
-          undefined,
-        opacity: isDimmed ? 0.05 : 1,
-        transition: 'opacity 300ms ease-in-out',
-      },
-      markerStart: edge.data?.lineStart === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } :
-                  edge.data?.lineStart === 'circle' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } : undefined,
-      markerEnd: edge.data?.lineEnd === 'arrow' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } :
-                edge.data?.lineEnd === 'circle' ? { type: MarkerType.ArrowClosed, color: edge.data?.strokeColor || 'var(--text-muted)' } : undefined,
-      animated: edge.data?.animated || false,
-    }));
+
+    return edges.map((edge) => {
+      const issue = validatedIssues.find((i: any) => i.affectedEdgeIds.includes(edge.id));
+      let strokeColor = edge.data?.strokeColor || 'var(--text-muted)';
+      if (issue && !isDimmed) {
+        if (issue.severity === 'critical') strokeColor = '#EF4444';
+        else if (issue.severity === 'error') strokeColor = '#F97316';
+        else if (issue.severity === 'warning') strokeColor = '#EAB308';
+        else strokeColor = '#3B82F6';
+      }
+
+      return {
+        ...edge,
+        type: edge.data?.pathType === 'default' ? undefined : edge.data?.pathType,
+        style: {
+          stroke: strokeColor,
+          strokeWidth: issue && !isDimmed ? (edge.data?.strokeWidth || 2) + 1 : (edge.data?.strokeWidth || 2),
+          strokeDasharray:
+            edge.data?.strokeStyle === 'dashed' ? '8 4' :
+            edge.data?.strokeStyle === 'dotted' ? '2 4' :
+            undefined,
+          opacity: isDimmed ? 0.05 : 1,
+          transition: 'opacity 300ms ease-in-out, stroke 300ms ease-in-out, stroke-width 300ms ease-in-out',
+        },
+        markerStart: edge.data?.lineStart === 'arrow' ? { type: MarkerType.ArrowClosed, color: strokeColor } :
+                    edge.data?.lineStart === 'circle' ? { type: MarkerType.ArrowClosed, color: strokeColor } : undefined,
+        markerEnd: edge.data?.lineEnd === 'arrow' ? { type: MarkerType.ArrowClosed, color: strokeColor } :
+                  edge.data?.lineEnd === 'circle' ? { type: MarkerType.ArrowClosed, color: strokeColor } : undefined,
+        animated: edge.data?.animated || (issue && !isDimmed && ['critical', 'error'].includes(issue.severity)),
+      };
+    });
   }, [edges, isPresentationMode, currentStep]);
 
   const styledNodes = useMemo(() => {
-    if (!isPresentationMode || currentStep === -1) return nodes;
+    const { activeValidationResult, isArchitectureValidationModalOpen } = useCanvasStore.getState();
+    const validatedIssues = isArchitectureValidationModalOpen && activeValidationResult ? activeValidationResult.issues : [];
+
+    if (!isPresentationMode || currentStep === -1) {
+      if (validatedIssues.length === 0) return nodes;
+      return nodes.map((node) => {
+        const issue = validatedIssues.find((i: any) => i.affectedNodeIds.includes(node.id));
+        if (issue) {
+          let shadowColor = 'rgba(59, 130, 246, 0.5)';
+          if (issue.severity === 'critical') shadowColor = 'rgba(239, 68, 68, 0.6)';
+          if (issue.severity === 'error') shadowColor = 'rgba(249, 115, 22, 0.6)';
+          if (issue.severity === 'warning') shadowColor = 'rgba(234, 179, 8, 0.5)';
+          return {
+            ...node,
+            style: {
+              ...node.style,
+              boxShadow: `0 0 14px 4px ${shadowColor}`,
+              transition: 'box-shadow 300ms ease-in-out'
+            }
+          };
+        }
+        return node;
+      });
+    }
 
     const currentId = stepNodes[currentStep];
     const prevId = currentStep > 0 ? stepNodes[currentStep - 1] : null;

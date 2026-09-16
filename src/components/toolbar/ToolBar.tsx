@@ -85,8 +85,8 @@ export const ToolBar: React.FC = () => {
             label="Architecture Guard"
             isActive={useCanvasStore().isArchitectureValidationModalOpen}
             onClick={() => {
-              const openState = useCanvasStore().isArchitectureValidationModalOpen;
-              useCanvasStore().setArchitectureValidationModalOpen(!openState);
+              const current = useCanvasStore.getState().isArchitectureValidationModalOpen;
+              useCanvasStore.setState({ isArchitectureValidationModalOpen: !current });
             }}
           />
         </div>
