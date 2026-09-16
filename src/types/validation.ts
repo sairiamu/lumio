@@ -1,6 +1,5 @@
-/**
- * Strongly typed architecture validation domain model.
- */
+import { Node, Edge } from '@xyflow/react';
+import { NodeData, EdgeData } from './index';
 
 export type ArchitectureValidationSeverity = 'info' | 'warning' | 'error' | 'critical';
 
@@ -32,5 +31,5 @@ export interface ArchitectureRule {
   ruleId: string;
   name: string;
   description: string;
-  severity: ArchitectureValidationSeverity;
+  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[]): ArchitectureValidationIssue[];
 }
