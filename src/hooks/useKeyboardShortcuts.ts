@@ -48,7 +48,8 @@ export const useKeyboardShortcuts = () => {
     setExpandedNodeId,
     setNodes,
     preferredLayoutDirection,
-    currentLayoutPreset
+    currentLayoutPreset,
+    pushHistory
   } = useCanvasStore();
 
   const { saveProject } = useFileIO();

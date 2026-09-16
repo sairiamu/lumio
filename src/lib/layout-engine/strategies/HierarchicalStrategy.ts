@@ -106,9 +106,6 @@ export class HierarchicalStrategy extends BaseStrategy implements ILayoutStrateg
     return allUpdates;
   }
 
-    return allUpdates;
-  }
-
   /**
    * Core hierarchical layout for a single connected component.
    */
