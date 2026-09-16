@@ -53,6 +53,11 @@ export const useFileIO = () => {
       const rawJson = JSON.parse(new TextDecoder().decode(bytes));
       const json = migrateProject(rawJson);
 
+      // Perform optional fast validation upon load
+      const { validateProject } = await import('../utils/semanticValidation');
+      const validation = validateProject(json.nodes ?? [], json.edges ?? []);
+      store.setActiveValidationResult(validation);
+
       store.setNodes(json.nodes ?? []);
       store.setEdges(json.edges ?? []);
       store.setProjectType(json.projectType ?? 'elemental-sketch');

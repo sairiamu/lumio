@@ -153,6 +153,10 @@ interface CanvasStore extends CanvasState {
   setPreferredLayoutDirection: (dir: 'LR' | 'TB') => void;
   currentLayoutPreset: 'architecture-flow' | 'top-down' | 'compact' | 'presentation';
   setCurrentLayoutPreset: (preset: 'architecture-flow' | 'top-down' | 'compact' | 'presentation') => void;
+  isArchitectureValidationModalOpen: boolean;
+  setArchitectureValidationModalOpen: (open: boolean) => void;
+  activeValidationResult: any | null;
+  setActiveValidationResult: (res: any | null) => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -191,6 +195,8 @@ export const useCanvasStore = create<CanvasStore>()(
       isCommandPaletteOpen: false,
       zoomLevel: 1,
       isExportModalOpen: false,
+      isArchitectureValidationModalOpen: false,
+      activeValidationResult: null,
       isShareModalOpen: false,
       isPresentationSetupOpen: false,
       isThemePickerOpen: false,
@@ -288,6 +294,8 @@ export const useCanvasStore = create<CanvasStore>()(
         set({ edges, isDirty: true });
       },
       setExportModalOpen: (isExportModalOpen) => set({ isExportModalOpen }),
+      setArchitectureValidationModalOpen: (isArchitectureValidationModalOpen) => set({ isArchitectureValidationModalOpen }),
+      setActiveValidationResult: (activeValidationResult) => set({ activeValidationResult }),
       setShareModalOpen: (isShareModalOpen) => set({ isShareModalOpen }),
       setPresentationSetupOpen: (isPresentationSetupOpen) => set({ isPresentationSetupOpen }),
       setThemePickerOpen: (isThemePickerOpen) => set({ isThemePickerOpen }),
