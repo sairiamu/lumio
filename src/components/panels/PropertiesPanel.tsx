@@ -3,9 +3,8 @@ import { useCanvasStore } from '../../store/canvasStore';
 import { Settings2 } from 'lucide-react';
 import { ColourPicker } from './ColourPicker';
 import { EdgePropertiesPanel } from './EdgePropertiesPanel';
-import { SemanticSelector } from './SemanticSelector';
-import { TechnologySelector } from './TechnologySelector';
 import { SemanticIdentity } from './SemanticIdentity';
+import { DynamicCatalogProperties } from './DynamicCatalogProperties';
 
 export const PropertiesPanel: React.FC = () => {
   const { nodes, edges, selectedNodeIds, selectedEdgeIds } = useCanvasStore();
@@ -39,9 +38,7 @@ export const PropertiesPanel: React.FC = () => {
         {selectedNode ? (
           <>
             <SemanticIdentity />
-            <div className="h-px w-full bg-border/50 my-[-8px]" />
-            <SemanticSelector />
-            <TechnologySelector />
+            <DynamicCatalogProperties />
             <div className="h-px w-full bg-border/50 my-1" />
             <ColourPicker mode="node" />
           </>

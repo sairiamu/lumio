@@ -3,36 +3,56 @@ import { NodeProps, NodeResizer, Node } from '@xyflow/react';
 import { BaseNode } from './BaseNode';
 import { NodeData } from '../../types';
 import * as LucideIcons from 'lucide-react';
+import { getCatalogItem, getCatalogItemVisuals } from '../../data/architectureCatalog';
 
 export const UniversalNode: React.FC<NodeProps<Node<NodeData>>> = (props) => {
   const data = props.data as NodeData;
-  const shapeType = (data.shapeType as string) || 'Database';
+  const catalogItem = data.catalogId ? getCatalogItem(data.catalogId) : null;
+  const visuals = data.catalogId ? getCatalogItemVisuals(data.catalogId) : null;
+
+  const shapeType = catalogItem?.icon || (data.shapeType as string) || 'Database';
+  const displayName = data.title || catalogItem?.displayName || shapeType;
+
+  // Technology and Version Label logic - driven by catalog metadata or instance overrides
+  const technology = (data.semantic?.metadata?.technology || catalogItem?.defaultSemantic?.metadata?.technology || '') as string;
+  const version = (data.semantic?.metadata?.version || data.parameters?.find(p => p.key === 'version' || p.key === 'runtime')?.value || '') as string;
+  const techLabel = technology ? (version ? `${technology} ${version}` : technology) : '';
+
   // Fallback to Box if icon not found
   const IconComponent = (LucideIcons as any)[shapeType] || LucideIcons.Box;
 
   return (
     <BaseNode
       {...props}
-      clayColor={data.clayColor || 'var(--accent-light)'}
+      clayColor={data.clayColor || visuals?.clayColor || 'var(--accent-light)'}
       className="rounded-[20px] flex items-center justify-center min-w-[80px] min-h-[80px] group"
       contentClassName="!p-0"
       hideHeader={true}
+      style={{
+        borderColor: data.strokeColor || visuals?.accentColor || 'var(--border-subtle)',
+        borderWidth: data.strokeWidth || 1.5,
+      }}
     >
-      <div className="w-full h-full flex flex-col" style={{ color: 'var(--text)' }}>
-        <div className="h-[45%] flex items-center justify-center pt-2">
+      <div className="w-full h-full flex flex-col py-2 px-1" style={{ color: 'var(--text)' }}>
+        {/* Technology Icon */}
+        <div className="flex-none flex items-center justify-center pt-1 pb-0.5">
           <IconComponent
-            size={Math.max(20, Math.min(32, ((props.width as number) ?? 80) * 0.3))}
-            color="currentColor"
+            size={Math.max(18, Math.min(28, ((props.width as number) ?? 80) * 0.25))}
+            className="opacity-90"
+            strokeWidth={1.5}
+            color={visuals?.accentColor || 'currentColor'}
           />
         </div>
-        <div className="h-[55%] overflow-hidden px-2 flex items-start justify-center">
+
+        {/* Display Name & Tech/Version Info */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-0.5 overflow-hidden">
           <p
-            className="m-0 text-center w-full"
+            className="m-0 text-center w-full px-2"
             style={{
-              fontSize: 'clamp(9px, 3%, 13px)',
+              fontSize: 'clamp(9px, 3.5%, 12px)',
               fontWeight: 700,
               fontFamily: "'Sora', sans-serif",
-              lineHeight: 1.2,
+              lineHeight: 1.1,
               wordBreak: 'break-word',
               overflowWrap: 'break-word',
               display: '-webkit-box',
@@ -41,16 +61,37 @@ export const UniversalNode: React.FC<NodeProps<Node<NodeData>>> = (props) => {
               overflow: 'hidden',
             }}
           >
-            {data.title || shapeType}
+            {displayName}
           </p>
+
+          {techLabel && (
+            <p
+              className="m-0 text-center w-full opacity-60 px-2 italic"
+              style={{
+                fontSize: '8.5px',
+                fontWeight: 500,
+                fontFamily: "'JetBrains Mono', monospace",
+                lineHeight: 1,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                textTransform: 'lowercase'
+              }}
+            >
+              {techLabel}
+            </p>
+          )}
         </div>
       </div>
 
       {/* Tooltip on hover */}
-      <div className="absolute invisible group-hover:visible bg-graphite/90 backdrop-blur-md border border-white/10 p-2 rounded-lg shadow-xl -bottom-12 left-1/2 -translate-x-1/2 z-[100] min-w-[120px] pointer-events-none">
-        <p className="text-[11px] font-bold text-white m-0">{data.title || shapeType}</p>
+      <div className="absolute invisible group-hover:visible bg-graphite/90 backdrop-blur-md border border-white/10 p-2 rounded-lg shadow-xl -bottom-14 left-1/2 -translate-x-1/2 z-[100] min-w-[140px] pointer-events-none transition-all duration-200">
+        <p className="text-[11px] font-bold text-white m-0">{displayName}</p>
+        {techLabel && (
+          <p className="text-[9px] text-accent-light font-mono m-0 mt-0.5 uppercase tracking-wider">{techLabel}</p>
+        )}
         {data.description && (
-          <p className="text-[9px] text-fog m-0 mt-1 line-clamp-2">{data.description}</p>
+          <p className="text-[9px] text-fog m-0 mt-1 line-clamp-2 leading-relaxed">{data.description}</p>
         )}
       </div>
 

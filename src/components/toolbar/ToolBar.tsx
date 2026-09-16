@@ -10,7 +10,8 @@ import {
   Eraser,
   Download,
   LayoutGrid,
-  Layout
+  Layout,
+  Cpu
 } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { ToolButton } from './ToolButton';
@@ -23,6 +24,8 @@ export const ToolBar: React.FC = () => {
     setExportModalOpen,
     isShapeLibraryOpen,
     setIsShapeLibraryOpen,
+    isArchitectureCatalogOpen,
+    setIsArchitectureCatalogOpen,
     setTemplateModalOpen
   } = useCanvasStore();
 
@@ -50,6 +53,7 @@ export const ToolBar: React.FC = () => {
             onClick={() => {
               setCurrentTool(tool.type);
               setIsShapeLibraryOpen(false);
+              setIsArchitectureCatalogOpen(false);
             }}
           />
         ))}
@@ -60,7 +64,20 @@ export const ToolBar: React.FC = () => {
             label="Shape Library"
             shortcut="L"
             isActive={isShapeLibraryOpen}
-            onClick={() => setIsShapeLibraryOpen(!isShapeLibraryOpen)}
+            onClick={() => {
+              setIsShapeLibraryOpen(!isShapeLibraryOpen);
+              setIsArchitectureCatalogOpen(false);
+            }}
+          />
+          <ToolButton
+            icon={Cpu}
+            label="Architecture Catalog"
+            shortcut="A"
+            isActive={isArchitectureCatalogOpen}
+            onClick={() => {
+              setIsArchitectureCatalogOpen(!isArchitectureCatalogOpen);
+              setIsShapeLibraryOpen(false);
+            }}
           />
         </div>
       </div>

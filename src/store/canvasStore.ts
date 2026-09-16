@@ -13,10 +13,13 @@ import {
   OnEdgesChange,
   OnConnect
 } from '@xyflow/react';
-import { CanvasState, CanvasMode, ToolType, ShapeStyle, Stroke, NodeData, EdgeData } from '../types';
+import { CanvasState, CanvasMode, ToolType, ShapeStyle, Stroke, NodeData, EdgeData, ProjectMetadata } from '../types';
 import { NodeSemantic } from '../types/semantic';
 import { ThemeName } from '../themes/themes';
 import { Template } from '../data/templates';
+import { catalogRegistry } from '../data/catalogRegistry';
+import { RelationshipConstraint } from '../types/catalog';
+import { EdgeRelationshipType } from '../types/semantic';
 
 export interface ToastMessage {
   id: string;
@@ -65,6 +68,10 @@ interface CanvasStore extends CanvasState {
   togglePanelOpen: () => void;
   isShapeLibraryOpen: boolean;
   setIsShapeLibraryOpen: (open: boolean) => void;
+  isArchitectureCatalogOpen: boolean;
+  setIsArchitectureCatalogOpen: (open: boolean) => void;
+  pendingCatalogItemId: string | null;
+  setPendingCatalogItemId: (id: string | null) => void;
   pendingNodeType: string | null;
   setPendingNodeType: (type: string | null) => void;
   pendingNodeTitle: string | null;
@@ -76,10 +83,12 @@ interface CanvasStore extends CanvasState {
   projectName: string;
   projectPath: string | null;
   projectType: 'elemental-sketch' | 'electrical';
+  projectMetadata: ProjectMetadata;
   isDirty: boolean;
   setProjectName: (name: string) => void;
   setProjectPath: (path: string | null) => void;
   setProjectType: (type: 'elemental-sketch' | 'electrical') => void;
+  setProjectMetadata: (metadata: Partial<ProjectMetadata>) => void;
   setIsDirty: (dirty: boolean) => void;
   setAlignmentGuides: (guides: { x?: number; y?: number }) => void;
   deleteSelectedNodes: () => void;
@@ -181,6 +190,7 @@ export const useCanvasStore = create<CanvasStore>()(
       isThemePickerOpen: false,
       isPanelOpen: false,
       isShapeLibraryOpen: false,
+      isArchitectureCatalogOpen: false,
       pendingNodeType: null,
       pendingNodeTitle: null,
       pendingNodeSemantic: null,
@@ -188,6 +198,11 @@ export const useCanvasStore = create<CanvasStore>()(
       projectName: 'Untitled Project',
       projectPath: null,
       projectType: 'elemental-sketch',
+      projectMetadata: {
+        description: '',
+        tags: [],
+        createdWith: 'Lumio v1.2',
+      },
       isDirty: false,
       alignmentGuides: {},
       isPresentationMode: false,
@@ -247,6 +262,9 @@ export const useCanvasStore = create<CanvasStore>()(
       setProjectName: (projectName) => set({ projectName }),
       setProjectPath: (projectPath) => set({ projectPath }),
       setProjectType: (projectType) => set({ projectType }),
+      setProjectMetadata: (metadata) => set((state) => ({
+        projectMetadata: { ...state.projectMetadata, ...metadata }
+      })),
       setIsDirty: (isDirty) => set({ isDirty }),
       setAlignmentGuides: (alignmentGuides) => set({ alignmentGuides }),
 
@@ -268,6 +286,9 @@ export const useCanvasStore = create<CanvasStore>()(
       setIsPanelOpen: (isPanelOpen) => set({ isPanelOpen }),
       togglePanelOpen: () => set((state) => ({ isPanelOpen: !state.isPanelOpen })),
       setIsShapeLibraryOpen: (isShapeLibraryOpen) => set({ isShapeLibraryOpen }),
+      setIsArchitectureCatalogOpen: (isArchitectureCatalogOpen) => set({ isArchitectureCatalogOpen }),
+      pendingCatalogItemId: null,
+      setPendingCatalogItemId: (pendingCatalogItemId) => set({ pendingCatalogItemId }),
       setPendingNodeType: (pendingNodeType) => set({ pendingNodeType }),
       setPendingNodeTitle: (pendingNodeTitle) => set({ pendingNodeTitle }),
       setPendingNodeSemantic: (pendingNodeSemantic) => set({ pendingNodeSemantic }),
@@ -400,6 +421,34 @@ export const useCanvasStore = create<CanvasStore>()(
 
       onConnect: (connection: Connection) => {
         get().pushHistory();
+
+        // Try to find a sensible default relationship
+        const { nodes } = get();
+        const sourceNode = nodes.find(n => n.id === connection.source);
+        const targetNode = nodes.find(n => n.id === connection.target);
+        let defaultRel: EdgeRelationshipType = 'generic';
+
+        if (sourceNode && targetNode && sourceNode.data?.catalogId) {
+          const item = catalogRegistry.getItem(sourceNode.data.catalogId);
+          if (item && item.supportedRelationships && item.supportedRelationships.length > 0) {
+            const targetCategory = targetNode.data?.semantic?.category;
+
+            // Find first match or just first supported
+            for (const rel of item.supportedRelationships) {
+              if (typeof rel === 'string') {
+                defaultRel = rel;
+                break;
+              } else {
+                const constraint = rel as RelationshipConstraint;
+                if (!constraint.targetCategories || (targetCategory && constraint.targetCategories.includes(targetCategory))) {
+                  defaultRel = constraint.type;
+                  break;
+                }
+              }
+            }
+          }
+        }
+
         const newEdge: Edge<EdgeData> = {
           ...connection,
           id: `edge_${Date.now()}`,
@@ -414,6 +463,10 @@ export const useCanvasStore = create<CanvasStore>()(
             pathType: 'default',
             animationType: 'none',
             animationSpeed: 'normal',
+            semantic: {
+              relationship: defaultRel,
+              metadata: {}
+            }
           }
         };
         set({

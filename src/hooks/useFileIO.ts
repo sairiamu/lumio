@@ -58,6 +58,7 @@ export const useFileIO = () => {
       store.setProjectType(json.projectType ?? 'elemental-sketch');
       if (json.freehandStrokes) store.setFreehandStrokes(json.freehandStrokes);
       if (json.shapeStyle) store.setShapeStyle(json.shapeStyle);
+      if (json.metadata) store.setProjectMetadata(json.metadata);
 
       const name = path.split(/[\\/]/).pop()?.replace('.lumio.json', '') || 'Project';
       store.setProjectName(name);

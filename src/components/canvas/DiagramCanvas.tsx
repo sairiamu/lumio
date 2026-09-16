@@ -22,6 +22,7 @@ import { GroupNode } from '../nodes/GroupNode';
 import { CustomEdge } from './CustomEdge';
 import ContextMenu from './ContextMenu';
 import { ExpandedNode } from './ExpandedNode';
+import { getCatalogItem, getCatalogItemVisuals } from '../../data/architectureCatalog';
 
 const nodeTypes = {
   rect: RectNode,
@@ -50,11 +51,13 @@ const DiagramCanvasInner: React.FC = () => {
     gridStyle,
     canvasMode,
     currentTool,
+    pendingCatalogItemId,
     pendingNodeType,
     pendingNodeTitle,
     pendingNodeSemantic,
     setCurrentTool,
     setNodes,
+    setPendingCatalogItemId,
     setSelectedNodeIds,
     setIsPanelOpen,
     deselectAll,
@@ -240,34 +243,65 @@ const DiagramCanvasInner: React.FC = () => {
       };
 
       setNodes([...nodes, newNode]);
-    } else if (currentTool === 'place' && pendingNodeType) {
-      pushHistory();
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
+    } else if (currentTool === 'place') {
+      if (pendingCatalogItemId) {
+        pushHistory();
+        const position = screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
 
-      const newNode: Node<NodeData> = {
-        id: `node_${Date.now()}`,
-        type: 'universal',
-        position,
-        data: {
-          title: pendingNodeTitle || '',
-          shapeType: pendingNodeType,
-          parameters: [],
-          description: '',
-          clayColor: 'var(--accent-light)',
-          semantic: pendingNodeSemantic || {
-            category: 'generic',
-            metadata: {}
-          }
-        },
-      };
+        const catalogItem = getCatalogItem(pendingCatalogItemId);
+        if (catalogItem) {
+          const visuals = getCatalogItemVisuals(pendingCatalogItemId);
+          const newNode: Node<NodeData> = {
+            id: `node_${Date.now()}`,
+            type: 'universal',
+            position,
+            data: {
+              title: '',
+              catalogId: catalogItem.id,
+              parameters: catalogItem.properties.map(p => ({ key: p.key, value: String(p.defaultValue ?? '') })),
+              description: catalogItem.description,
+              clayColor: visuals.clayColor || 'var(--accent-light)',
+              semantic: catalogItem.defaultSemantic,
+            },
+            width: visuals.width,
+            height: visuals.height,
+          };
+          setNodes([...nodes, newNode]);
+        }
+        setPendingCatalogItemId(null);
+        setCurrentTool('select');
+      } else if (pendingNodeType) {
+        pushHistory();
+        const position = screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
 
-      setNodes([...nodes, newNode]);
-      setCurrentTool('select');
+        const newNode: Node<NodeData> = {
+          id: `node_${Date.now()}`,
+          type: 'universal',
+          position,
+          data: {
+            title: pendingNodeTitle || '',
+            shapeType: pendingNodeType,
+            parameters: [],
+            description: '',
+            clayColor: 'var(--accent-light)',
+            semantic: pendingNodeSemantic || {
+              category: 'generic',
+              metadata: {}
+            }
+          },
+        };
+
+        setNodes([...nodes, newNode]);
+        setCurrentTool('select');
+      }
     }
-  }, [currentTool, pendingNodeType, pendingNodeTitle, pendingNodeSemantic, nodes, setNodes, screenToFlowPosition, deselectAll, setIsPanelOpen, setCurrentTool, pushHistory, setTrackedNodeId]);
+  }, [currentTool, pendingCatalogItemId, pendingNodeType, pendingNodeTitle, pendingNodeSemantic, nodes, setNodes, screenToFlowPosition, deselectAll, setIsPanelOpen, setCurrentTool, pushHistory, setTrackedNodeId, setPendingCatalogItemId]);
 
   const onSelectionChange = useCallback(({ nodes, edges }: { nodes: any[]; edges: any[] }) => {
     if (nodes.length > 0 || edges.length > 0) {

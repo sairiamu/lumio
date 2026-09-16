@@ -2,7 +2,7 @@ import { toPng, toSvg } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useCanvasStore } from '../store/canvasStore';
 import { Node, Edge } from '@xyflow/react';
-import { NodeData, EdgeData, Stroke, ShapeStyle } from '../types';
+import { NodeData, EdgeData, Stroke, ShapeStyle, ProjectMetadata } from '../types';
 
 export async function exportPNG(): Promise<Uint8Array> {
   // Target the inner viewport — not the outer wrapper
@@ -71,7 +71,7 @@ export async function exportSVG(): Promise<Uint8Array> {
   return encoder.encode(trimmed);
 }
 
-export const LUMIO_PROJECT_VERSION = '1.1';
+export const LUMIO_PROJECT_VERSION = '1.2';
 
 export interface LumioProject {
   version: string;
@@ -82,6 +82,7 @@ export interface LumioProject {
   edges: Edge<EdgeData>[];
   freehandStrokes: Stroke[];
   shapeStyle: ShapeStyle;
+  metadata?: ProjectMetadata;
 }
 
 export function migrateProject(json: unknown): LumioProject {
@@ -89,60 +90,73 @@ export function migrateProject(json: unknown): LumioProject {
     return json as LumioProject;
   }
 
-  const project = json as Record<string, unknown>;
-  const version = (project.version as string) || '1.0';
+  let migrated = JSON.parse(JSON.stringify(json));
+  let version = migrated.version || '1.0';
 
-  // Clone top-level to avoid mutating original
-  const migrated = { ...project } as unknown as LumioProject;
-
-  // 1.0 -> 1.1 Migration: Add semantic metadata to nodes and edges
-  // Backwards compatibility: safely assign semantic defaults without corrupting appearance
+  // Step 1: 1.0 -> 1.1 (Node/Edge Semantics)
   if (version === '1.0') {
     if (Array.isArray(migrated.nodes)) {
-      migrated.nodes = migrated.nodes.map((node: unknown) => {
-        const n = node as Record<string, unknown>;
-        // Deep enough clone for data.semantic
-        const newNode = { ...n };
-        if (newNode.data && typeof newNode.data === 'object') {
-          const data = { ...(newNode.data as Record<string, unknown>) };
-          if (!data.semantic) {
-            data.semantic = {
-              category: 'generic',
-              metadata: {}
-            };
-          }
-          newNode.data = data;
+      migrated.nodes = migrated.nodes.map((node: any) => {
+        if (node.data && !node.data.semantic) {
+          node.data = {
+            ...node.data,
+            semantic: { category: 'generic', metadata: {} }
+          };
         }
-        return newNode as Node<NodeData>;
+        return node;
       });
     }
-
     if (Array.isArray(migrated.edges)) {
-      migrated.edges = migrated.edges.map((edge: unknown) => {
-        const e = edge as Record<string, unknown>;
-        const newEdge = { ...e };
-        if (newEdge.data && typeof newEdge.data === 'object') {
-          const data = { ...(newEdge.data as Record<string, unknown>) };
-          if (!data.semantic) {
-            data.semantic = {
-              relationship: 'generic',
-              metadata: {}
-            };
-          }
-          newEdge.data = data;
+      migrated.edges = migrated.edges.map((edge: any) => {
+        if (edge.data && !edge.data.semantic) {
+          edge.data = {
+            ...edge.data,
+            semantic: { relationship: 'generic', metadata: {} }
+          };
         }
-        return newEdge as Edge<EdgeData>;
+        return edge;
       });
     }
-    migrated.version = LUMIO_PROJECT_VERSION;
+    version = '1.1';
   }
 
-  return migrated;
+  // Step 2: 1.1 -> 1.2 (Project Metadata)
+  if (version === '1.1') {
+    if (!migrated.metadata) {
+      migrated.metadata = {
+        description: '',
+        tags: [],
+        createdWith: 'Lumio'
+      };
+    }
+    version = '1.2';
+  }
+
+  // Final updates
+  migrated.version = LUMIO_PROJECT_VERSION;
+
+  // Backwards compatibility safety check: Ensure all nodes/edges have semantic metadata even if version was high
+  if (Array.isArray(migrated.nodes)) {
+    migrated.nodes.forEach((node: any) => {
+      if (node.data && !node.data.semantic) {
+        node.data.semantic = { category: 'generic', metadata: {} };
+      }
+    });
+  }
+  if (Array.isArray(migrated.edges)) {
+    migrated.edges.forEach((edge: any) => {
+      if (edge.data && !edge.data.semantic) {
+        edge.data.semantic = { relationship: 'generic', metadata: {} };
+      }
+    });
+  }
+
+  return migrated as LumioProject;
 }
 
 export function buildProjectJSON(): string {
   const state = useCanvasStore.getState();
-  const project = {
+  const project: LumioProject = {
     version: LUMIO_PROJECT_VERSION,
     projectName: state.projectName,
     projectType: state.projectType,
@@ -151,6 +165,10 @@ export function buildProjectJSON(): string {
     edges: state.edges,
     freehandStrokes: state.freehandStrokes,
     shapeStyle: state.shapeStyle,
+    metadata: {
+      ...state.projectMetadata,
+      semanticVersion: LUMIO_PROJECT_VERSION,
+    }
   };
 
   return JSON.stringify(project, null, 2);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useCanvasStore } from '../../store/canvasStore';
 import {
   Database,
@@ -13,11 +13,9 @@ import {
   HardDrive,
   Share2,
   Zap,
-  Info,
-  ShieldCheck,
-  Activity
+  ChevronDown
 } from 'lucide-react';
-import { SemanticCategory, SemanticMetadata } from '../../types/semantic';
+import { SemanticCategory, SemanticMetadata, SEMANTIC_CATEGORIES } from '../../types/semantic';
 
 const SEMANTIC_ICONS: Record<SemanticCategory, React.ElementType> = {
   user: User,
@@ -34,16 +32,36 @@ const SEMANTIC_ICONS: Record<SemanticCategory, React.ElementType> = {
   generic: Box,
 };
 
-const ENV_COLORS: Record<string, string> = {
-  development: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
-  staging: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
-  production: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
-  infrastructure: 'text-purple-400 bg-purple-400/10 border-purple-400/20',
+const SEMANTIC_DISPLAY_NAMES: Record<SemanticCategory, string> = {
+  user: 'User',
+  client: 'Client',
+  service: 'Service',
+  api: 'API',
+  database: 'Database',
+  cache: 'Cache',
+  queue: 'Queue',
+  storage: 'Storage',
+  cloud_resource: 'Cloud',
+  device: 'Device',
+  external_system: 'System',
+  generic: 'Generic',
 };
 
 export const SemanticIdentity: React.FC = () => {
   const { nodes, selectedNodeIds, updateNodeData } = useCanvasStore();
   const selectedNode = nodes.find((n) => selectedNodeIds.includes(n.id));
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const selectorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectorRef.current && !selectorRef.current.contains(event.target as Node)) {
+        setIsSelectorOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (!selectedNode) return null;
 
@@ -54,6 +72,16 @@ export const SemanticIdentity: React.FC = () => {
   const description = selectedNode.data.description;
 
   const Icon = SEMANTIC_ICONS[category] || Box;
+
+  const handleCategoryChange = (cat: SemanticCategory) => {
+    updateNodeData(selectedNode.id, {
+      semantic: {
+        category: cat,
+        metadata: semantic?.metadata || {}
+      }
+    });
+    setIsSelectorOpen(false);
+  };
 
   const handleEnvChange = (newEnv: SemanticMetadata['environment']) => {
     updateNodeData(selectedNode.id, {
@@ -67,68 +95,111 @@ export const SemanticIdentity: React.FC = () => {
     });
   };
 
-  return (
-    <div className="flex flex-col gap-4 p-3 rounded-2xl bg-accent/5 border border-accent/10 shadow-inner">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-accent/20 text-accent">
-            <Icon size={18} />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-black uppercase tracking-widest text-accent/60 leading-none mb-1">
-              {category.replace('_', ' ')}
-            </span>
-            <span className="text-[13px] font-bold text-text truncate max-w-[140px]">
-              {tech || 'Unspecified Tech'}
-            </span>
-          </div>
-        </div>
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    updateNodeData(selectedNode.id, {
+      description: e.target.value
+    });
+  };
 
-        {env && (
-          <div className={`px-2 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-tighter ${ENV_COLORS[env] || 'text-text-muted bg-white/5 border-white/10'}`}>
-            {env}
-          </div>
-        )}
+  const handleTechChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateNodeData(selectedNode.id, {
+      semantic: {
+        category,
+        metadata: {
+          ...(semantic?.metadata || {}),
+          technology: e.target.value
+        }
+      }
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-2 mb-1">
+        <div className="p-1.5 rounded-lg bg-accent/20 text-accent">
+          <Icon size={14} />
+        </div>
+        <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-text">
+          Semantic Identity
+        </h3>
       </div>
 
-      {(description || env) && (
-        <div className="flex flex-col gap-2 pt-2 border-t border-white/5">
-          {description && (
-            <div className="flex gap-2">
-              <Info size={10} className="text-text-muted shrink-0 mt-0.5" />
-              <p className="text-[10px] text-text-muted/80 leading-relaxed line-clamp-2 italic">
-                {description}
-              </p>
-            </div>
-          )}
+      <div className="flex flex-col gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 shadow-inner backdrop-blur-sm">
+        {/* Basic Info Grid */}
+        <div className="grid grid-cols-[80px_1fr] gap-y-3 items-center">
+          <span className="text-[9px] font-black uppercase tracking-widest text-text-muted/50">Type</span>
+          <div className="relative" ref={selectorRef}>
+            <button
+              onClick={() => setIsSelectorOpen(!isSelectorOpen)}
+              className="flex items-center gap-1.5 text-[11px] font-bold text-accent uppercase tracking-wider hover:opacity-80 transition-opacity"
+            >
+              {SEMANTIC_DISPLAY_NAMES[category]}
+              <ChevronDown size={10} className={`transition-transform ${isSelectorOpen ? 'rotate-180' : ''}`} />
+            </button>
 
-          <div className="flex items-center gap-2 mt-1">
-            <Activity size={10} className="text-text-muted shrink-0" />
-            <div className="flex gap-1 overflow-x-auto no-scrollbar">
-              {(['development', 'staging', 'production', 'infrastructure'] as const).map((e) => (
-                <button
-                  key={e}
-                  onClick={() => handleEnvChange(env === e ? undefined : e)}
-                  className={`px-1.5 py-0.5 rounded text-[7px] font-bold uppercase transition-all ${
-                    env === e
-                      ? 'bg-accent text-white'
-                      : 'bg-white/5 text-text-muted hover:bg-white/10'
-                  }`}
-                >
-                  {e.slice(0, 3)}
-                </button>
-              ))}
-            </div>
+            {isSelectorOpen && (
+              <div className="absolute top-full left-0 mt-2 p-1.5 rounded-xl glass-panel border border-white/10 shadow-2xl z-[100] w-40 max-h-48 overflow-y-auto custom-scrollbar">
+                {SEMANTIC_CATEGORIES.map((cat) => {
+                  const CatIcon = SEMANTIC_ICONS[cat] || Box;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => handleCategoryChange(cat)}
+                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[9px] font-bold uppercase transition-colors ${
+                        category === cat ? 'bg-accent text-white' : 'hover:bg-white/10 text-text-muted'
+                      }`}
+                    >
+                      <CatIcon size={12} />
+                      {SEMANTIC_DISPLAY_NAMES[cat]}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <span className="text-[9px] font-black uppercase tracking-widest text-text-muted/50">Stack</span>
+          <input
+            type="text"
+            value={tech || ''}
+            onChange={handleTechChange}
+            placeholder="e.g. React, Node.js"
+            className="bg-transparent border-none p-0 text-[11px] font-bold text-text outline-none placeholder:text-text-muted/30"
+          />
+
+          <span className="text-[9px] font-black uppercase tracking-widest text-text-muted/50">Env</span>
+          <div className="flex gap-1">
+            {(['development', 'staging', 'production', 'infrastructure'] as const).map((e) => (
+              <button
+                key={e}
+                onClick={() => handleEnvChange(env === e ? undefined : e)}
+                title={e}
+                className={`w-6 h-5 rounded-md text-[7px] font-black uppercase transition-all border flex items-center justify-center ${
+                  env === e
+                    ? 'bg-accent border-accent text-white shadow-lg shadow-accent/20'
+                    : 'bg-white/5 border-transparent text-text-muted hover:bg-white/10'
+                }`}
+              >
+                {e.slice(0, 1)}
+              </button>
+            ))}
+            {!env && <span className="text-[8px] text-text-muted/40 italic ml-1 self-center">None</span>}
           </div>
         </div>
-      )}
 
-      {!env && !description && (
-        <div className="text-[9px] text-text-muted/40 italic flex items-center gap-1.5">
-          <ShieldCheck size={10} />
-          Semantic identity partially defined
+        {/* Description Field */}
+        <div className="flex flex-col gap-2 pt-3 border-t border-white/5">
+          <label className="text-[9px] font-black uppercase tracking-widest text-text-muted/50">
+            Description
+          </label>
+          <textarea
+            value={description || ''}
+            onChange={handleDescriptionChange}
+            placeholder="What does this component do?"
+            className="w-full bg-void/30 border border-white/5 rounded-xl px-3 py-2 text-[10px] text-text-muted leading-relaxed placeholder:text-text-muted/30 focus:outline-none focus:border-accent/30 transition-colors resize-none h-16 custom-scrollbar"
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 };

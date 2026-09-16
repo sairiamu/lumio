@@ -11,6 +11,7 @@ import { PresentationFinishedOverlay } from '../shell/PresentationFinishedOverla
 import { ExportModal } from '../modals/ExportModal';
 import { ShareModal } from '../modals/ShareModal';
 import { ShapeLibrary } from '../panels/ShapeLibrary';
+import { ArchitectureCatalogPanel } from '../panels/ArchitectureCatalogPanel';
 import { useCanvasStore } from '../../store/canvasStore';
 
 export const CanvasWrapper: React.FC = () => {
@@ -42,6 +43,7 @@ export const CanvasWrapper: React.FC = () => {
       {!isPresentationMode && <CanvasControls />}
 
       <ShapeLibrary />
+      <ArchitectureCatalogPanel />
 
       <PresentationMode />
 

@@ -71,7 +71,35 @@ export const COMMON_TECHNOLOGIES: string[] = [
   'nginx',
   's3',
   'dynamodb',
+  'firebase',
+  'supabase',
+  'graphql',
+  'elasticsearch',
+  'snowflake',
+  'terraform',
+  'ansible',
+  'jenkins',
+  'github_actions',
 ];
+
+/**
+ * Maps semantic categories to relevant technologies.
+ * Used to filter suggestions in the UI.
+ */
+export const CATEGORY_TECH_MAP: Record<SemanticCategory, string[]> = {
+  database: ['postgresql', 'mongodb', 'dynamodb', 'snowflake', 'supabase', 'firebase', 'elasticsearch'],
+  cache: ['redis', 'memcached'],
+  queue: ['kafka', 'rabbitmq', 'sqs'],
+  service: ['node', 'go', 'python', 'rust', 'aws_lambda', 'kubernetes', 'docker'],
+  api: ['graphql', 'rest', 'grpc', 'node', 'go'],
+  client: ['react', 'vue', 'angular', 'nextjs'],
+  storage: ['s3', 'ebs', 'gcs'],
+  cloud_resource: ['terraform', 'ansible', 'aws', 'gcp', 'azure'],
+  external_system: ['stripe', 'auth0', 'sendgrid', 'clerk'],
+  user: [],
+  device: ['ios', 'android', 'iot'],
+  generic: [],
+};
 
 /**
  * Metadata associated with a specific technology or category.
@@ -122,9 +150,20 @@ export const EDGE_RELATIONSHIP_TYPES: EdgeRelationshipType[] = [
 ];
 
 /**
+ * Metadata associated with a specific relationship between nodes.
+ * Used to describe the nature of the connection in detail.
+ */
+export interface EdgeMetadata {
+  description?: string;
+  protocol?: string;
+  dataFlow?: 'bidirectional' | 'unidirectional';
+  [key: string]: unknown;
+}
+
+/**
  * The core semantic identity of an edge.
  */
 export interface EdgeSemantic {
   relationship?: EdgeRelationshipType;
-  metadata?: Record<string, unknown>;
+  metadata?: EdgeMetadata;
 }

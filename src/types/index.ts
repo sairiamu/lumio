@@ -63,6 +63,7 @@ export interface NodeData extends Record<string, unknown> {
   opacity?: number
   clayColorOverride?: string
   semantic?: NodeSemantic
+  catalogId?: string
 }
 
 export const defaultNodeData: NodeData = {
@@ -92,6 +93,14 @@ export interface EdgeData extends Record<string, unknown> {
   semantic?: EdgeSemantic;
 }
 
+export interface ProjectMetadata {
+  description?: string;
+  tags?: string[];
+  semanticVersion?: string;
+  createdWith?: string;
+  [key: string]: unknown;
+}
+
 export interface CanvasState {
   nodes: Node<NodeData>[];
   edges: Edge<EdgeData>[];
@@ -117,6 +126,7 @@ export interface CanvasState {
   projectName: string;
   projectPath: string | null;
   projectType: 'elemental-sketch' | 'electrical';
+  projectMetadata: ProjectMetadata;
   isDirty: boolean;
   alignmentGuides: { x?: number; y?: number };
   isPresentationMode: boolean;

@@ -26,6 +26,8 @@ export const useKeyboardShortcuts = () => {
     setIsPanelOpen,
     isShapeLibraryOpen,
     setIsShapeLibraryOpen,
+    isArchitectureCatalogOpen,
+    setIsArchitectureCatalogOpen,
     setTrackedNodeId,
     projectName,
     isPresentationMode,
@@ -206,6 +208,11 @@ export const useKeyboardShortcuts = () => {
           break;
         case 'l':
           setIsShapeLibraryOpen(!isShapeLibraryOpen);
+          setIsArchitectureCatalogOpen(false);
+          break;
+        case 'a':
+          setIsArchitectureCatalogOpen(!isArchitectureCatalogOpen);
+          setIsShapeLibraryOpen(false);
           break;
         case 'z':
           if (selectedNodeIds.length === 1) {
@@ -268,6 +275,8 @@ export const useKeyboardShortcuts = () => {
     setIsPanelOpen,
     isShapeLibraryOpen,
     setIsShapeLibraryOpen,
+    isArchitectureCatalogOpen,
+    setIsArchitectureCatalogOpen,
     zoomIn,
     zoomOut,
     setViewport,

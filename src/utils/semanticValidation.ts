@@ -63,7 +63,7 @@ export function validateNode(node: Node<NodeData>): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const semantic = node.data?.semantic;
 
-  // Rule: Missing Semantic Category
+  // 1. Rule: Missing Semantic Category
   if (!semantic || !semantic.category) {
     issues.push({
       id: node.id,
@@ -74,7 +74,7 @@ export function validateNode(node: Node<NodeData>): ValidationIssue[] {
       property: 'semantic.category',
     });
   }
-  // Rule: Invalid Semantic Category
+  // 2. Rule: Invalid Semantic Category
   else if (!SEMANTIC_CATEGORIES.includes(semantic.category as SemanticCategory)) {
     issues.push({
       id: node.id,
@@ -83,6 +83,18 @@ export function validateNode(node: Node<NodeData>): ValidationIssue[] {
       code: 'INVALID_SEMANTIC_TYPE',
       message: `Node "${node.data?.title || node.id}" has an unknown semantic category: ${semantic.category}.`,
       property: 'semantic.category',
+    });
+  }
+
+  // 3. Rule: Invalid Semantic Metadata Structure
+  if (semantic?.metadata && typeof semantic.metadata !== 'object') {
+    issues.push({
+      id: node.id,
+      type: 'node',
+      severity: 'error',
+      code: 'INVALID_METADATA',
+      message: `Node "${node.data?.title || node.id}" has invalid metadata structure.`,
+      property: 'semantic.metadata',
     });
   }
 
@@ -140,6 +152,18 @@ export function validateEdges(nodes: Node<NodeData>[], edges: Edge<EdgeData>[]):
         code: 'INVALID_RELATIONSHIP',
         message: `Edge "${edge.id}" has an unknown relationship type: ${relationship}.`,
         property: 'semantic.relationship',
+      });
+    }
+
+    // Rule: Invalid Edge Metadata Structure
+    if (edge.data?.semantic?.metadata && typeof edge.data.semantic.metadata !== 'object') {
+      issues.push({
+        id: edge.id,
+        type: 'edge',
+        severity: 'error',
+        code: 'INVALID_EDGE_METADATA',
+        message: `Edge "${edge.id}" has invalid metadata structure.`,
+        property: 'semantic.metadata',
       });
     }
 
