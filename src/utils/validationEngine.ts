@@ -1,6 +1,7 @@
 import { Node, Edge } from '@xyflow/react';
 import { NodeData, EdgeData } from '../types';
 import { ArchitectureRule, ArchitectureValidationIssue, ArchitectureValidationResult } from '../types/validation';
+import { ArchitecturePolicyConfig, DEFAULT_ARCHITECTURE_POLICY } from '../types/policy';
 
 /**
  * Headless architecture validation engine.
@@ -26,14 +27,18 @@ export class ArchitectureValidationEngine {
   }
 
   /**
-   * Executes all registered rules against the provided architectural graph.
+   * Executes all registered rules against the provided architectural graph under a customizable policy configuration.
    */
-  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[]): ArchitectureValidationResult {
+  validate(
+    nodes: Node<NodeData>[],
+    edges: Edge<EdgeData>[],
+    policy: ArchitecturePolicyConfig = DEFAULT_ARCHITECTURE_POLICY
+  ): ArchitectureValidationResult {
     const allIssues: ArchitectureValidationIssue[] = [];
 
     this.rules.forEach((rule) => {
       try {
-        const findings = rule.validate(nodes, edges);
+        const findings = rule.validate(nodes, edges, policy);
         allIssues.push(...findings);
       } catch (error) {
         console.error(`Error executing rule "${rule.ruleId}":`, error);

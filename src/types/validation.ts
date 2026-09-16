@@ -1,5 +1,6 @@
 import { Node, Edge } from '@xyflow/react';
 import { NodeData, EdgeData } from './index';
+import { ArchitecturePolicyConfig } from './policy';
 
 export type ArchitectureValidationSeverity = 'info' | 'warning' | 'error' | 'critical';
 
@@ -31,5 +32,9 @@ export interface ArchitectureRule {
   ruleId: string;
   name: string;
   description: string;
-  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[]): ArchitectureValidationIssue[];
+  validate(
+    nodes: Node<NodeData>[],
+    edges: Edge<EdgeData>[],
+    policy?: ArchitecturePolicyConfig
+  ): ArchitectureValidationIssue[];
 }

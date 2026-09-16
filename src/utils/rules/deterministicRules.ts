@@ -1,6 +1,7 @@
 import { Node, Edge } from '@xyflow/react';
 import { NodeData, EdgeData } from '../../types';
 import { ArchitectureRule, ArchitectureValidationIssue } from '../../types/validation';
+import { ArchitecturePolicyConfig } from '../../types/policy';
 
 /**
  * 1. Public Database Exposure Rule
@@ -10,7 +11,9 @@ export const publicDatabaseExposureRule: ArchitectureRule = {
   ruleId: 'PUBLIC_DB_EXPOSURE',
   name: 'Public Database Exposure',
   description: 'Detects if client actors or end-user interfaces have direct connections straight into database stores bypassing services or APIs.',
-  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[]): ArchitectureValidationIssue[] {
+  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[], policy?: ArchitecturePolicyConfig): ArchitectureValidationIssue[] {
+    if (policy && policy.prohibitPublicDatabaseExposure === false) return [];
+
     const issues: ArchitectureValidationIssue[] = [];
     const dbNodes = new Set(nodes.filter(n => n.data?.semantic?.category === 'database').map(n => n.id));
     const publicCategories = ['user', 'client'];
@@ -46,7 +49,9 @@ export const unauthenticatedServiceRule: ArchitectureRule = {
   ruleId: 'UNAUTHENTICATED_SERVICE_ENTRY',
   name: 'Unauthenticated Service Entry',
   description: 'Detects services or API gateways explicitly configured without an authorization guard when structural components require security context.',
-  validate(nodes: Node<NodeData>[]): ArchitectureValidationIssue[] {
+  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[], policy?: ArchitecturePolicyConfig): ArchitectureValidationIssue[] {
+    if (policy && policy.requireExternalApiAuth === false) return [];
+
     const issues: ArchitectureValidationIssue[] = [];
 
     nodes.forEach((node) => {
@@ -79,7 +84,9 @@ export const productionDatabaseBackupRule: ArchitectureRule = {
   ruleId: 'PRODUCTION_DB_BACKUP_MISSING',
   name: 'Production Database Backup Missing',
   description: 'Asserts that any database element explicitly assigned to a production tier includes configuration details validating backup parameters.',
-  validate(nodes: Node<NodeData>[]): ArchitectureValidationIssue[] {
+  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[], policy?: ArchitecturePolicyConfig): ArchitectureValidationIssue[] {
+    if (policy && policy.requireProductionDbBackups === false) return [];
+
     const issues: ArchitectureValidationIssue[] = [];
 
     nodes.forEach((node) => {
@@ -113,7 +120,9 @@ export const unencryptedSensitiveFlowRule: ArchitectureRule = {
   ruleId: 'UNENCRYPTED_SENSITIVE_FLOW',
   name: 'Unencrypted Sensitive Data Flow',
   description: 'Scans relationships between endpoints for plaintext or unencrypted protocols on sensitive data boundaries.',
-  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[]): ArchitectureValidationIssue[] {
+  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[], policy?: ArchitecturePolicyConfig): ArchitectureValidationIssue[] {
+    if (policy && policy.enforceEncryptedDataFlows === false) return [];
+
     const issues: ArchitectureValidationIssue[] = [];
 
     edges.forEach((edge) => {
@@ -223,10 +232,14 @@ export const nodeDependencyBottleneckRule: ArchitectureRule = {
   ruleId: 'SINGLE_NODE_BOTTLENECK',
   name: 'Single-Node Dependency Bottleneck',
   description: 'Scans the topology to flag nodes with excessive connection densities representing single points of failure.',
-  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[]): ArchitectureValidationIssue[] {
-    const issues: ArchitectureValidationIssue[] = [];
-    if (nodes.length < 4) return []; // Only execute validation on reasonably sized diagrams to avoid false positives
+  validate(nodes: Node<NodeData>[], edges: Edge<EdgeData>[], policy?: ArchitecturePolicyConfig): ArchitectureValidationIssue[] {
+    const thresholds = (policy?.customThresholds as Record<string, number>) || {};
+    const densityRatio = thresholds.bottleneckLinkDensityRatio ?? 0.75;
+    const minNodes = thresholds.minimumNodesForBottleneckCheck ?? 4;
 
+    if (nodes.length < minNodes) return [];
+
+    const issues: ArchitectureValidationIssue[] = [];
     const connectionCounts: Record<string, number> = {};
     nodes.forEach(n => { connectionCounts[n.id] = 0; });
 
@@ -237,8 +250,7 @@ export const nodeDependencyBottleneckRule: ArchitectureRule = {
 
     nodes.forEach((node) => {
       const count = connectionCounts[node.id];
-      // Conservative structural threshold: a single node handles more than 75% of total node-count degrees
-      if (count > nodes.length * 0.75) {
+      if (count > nodes.length * densityRatio) {
         issues.push({
           ruleId: 'SINGLE_NODE_BOTTLENECK',
           code: 'SINGLE_NODE_BOTTLENECK',
