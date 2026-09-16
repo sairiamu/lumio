@@ -12,6 +12,7 @@ import { ExportModal } from '../modals/ExportModal';
 import { ShareModal } from '../modals/ShareModal';
 import { ShapeLibrary } from '../panels/ShapeLibrary';
 import { ArchitectureCatalogPanel } from '../panels/ArchitectureCatalogPanel';
+import { ArchitectureValidationPanel } from '../panels/ArchitectureValidationPanel';
 import { useCanvasStore } from '../../store/canvasStore';
 
 export const CanvasWrapper: React.FC = () => {
@@ -44,6 +45,7 @@ export const CanvasWrapper: React.FC = () => {
 
       <ShapeLibrary />
       <ArchitectureCatalogPanel />
+      <ArchitectureValidationPanel />
 
       <PresentationMode />
 

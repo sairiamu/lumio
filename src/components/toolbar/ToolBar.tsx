@@ -11,7 +11,8 @@ import {
   Download,
   LayoutGrid,
   Layout,
-  Cpu
+  Cpu,
+  ShieldCheck
 } from 'lucide-react';
 import { useCanvasStore } from '../../store/canvasStore';
 import { ToolButton } from './ToolButton';
@@ -77,6 +78,15 @@ export const ToolBar: React.FC = () => {
             onClick={() => {
               setIsArchitectureCatalogOpen(!isArchitectureCatalogOpen);
               setIsShapeLibraryOpen(false);
+            }}
+          />
+          <ToolButton
+            icon={ShieldCheck}
+            label="Architecture Guard"
+            isActive={useCanvasStore().isArchitectureValidationModalOpen}
+            onClick={() => {
+              const openState = useCanvasStore().isArchitectureValidationModalOpen;
+              useCanvasStore().setArchitectureValidationModalOpen(!openState);
             }}
           />
         </div>
